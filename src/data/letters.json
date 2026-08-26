@@ -1,0 +1,506 @@
+[
+  {
+    "id": "baa",
+    "character": "ب",
+    "nameAr": "بَاء",
+    "englishName": "Baa",
+    "order": 2,
+    "color": "from-rose-400 to-pink-500",
+    "bgAccent": "bg-pink-100 border-pink-400 text-pink-700",
+    "mouthGuide": {
+      "tip": "أغلق الشفتين معًا بلطف ثم افتحهما مع إخراج الهواء: بْ",
+      "mouthShape": "closed_lips",
+      "lipPosition": "الشفتان متلاصقتان"
+    },
+    "defaultUnlocked": true,
+    "exampleWord": "بَطَّة",
+    "exampleEmoji": "🦆",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "meem",
+    "character": "م",
+    "nameAr": "مِيم",
+    "englishName": "Meem",
+    "order": 24,
+    "color": "from-amber-400 to-orange-500",
+    "bgAccent": "bg-orange-100 border-orange-400 text-orange-700",
+    "mouthGuide": {
+      "tip": "أغلق الشفتين بلطف ودع الصوت يخرج بنعومة من الأنف: مْ",
+      "mouthShape": "closed_lips_nasal",
+      "lipPosition": "الشفتان مغلقتان برفق"
+    },
+    "defaultUnlocked": true,
+    "exampleWord": "مَوْز",
+    "exampleEmoji": "🍌",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "taa",
+    "character": "ت",
+    "nameAr": "تَاء",
+    "englishName": "Taa",
+    "order": 3,
+    "color": "from-emerald-400 to-teal-500",
+    "bgAccent": "bg-emerald-100 border-emerald-400 text-emerald-700",
+    "mouthGuide": {
+      "tip": "ضع طرف اللسان خلف الأسنان العلوية مباشرة واضغط بخفة: تْ",
+      "mouthShape": "tongue_top_teeth",
+      "lipPosition": "شفتان مفتوحتان قليلًا واللسان للأعلى"
+    },
+    "defaultUnlocked": true,
+    "exampleWord": "تُفَّاح",
+    "exampleEmoji": "🍎",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "noon",
+    "character": "ن",
+    "nameAr": "نُون",
+    "englishName": "Noon",
+    "order": 25,
+    "color": "from-sky-400 to-blue-500",
+    "bgAccent": "bg-sky-100 border-sky-400 text-sky-700",
+    "mouthGuide": {
+      "tip": "طرف اللسان يلامس سقف الحلق الأمامي مع خروج غنة جميلة: نْ",
+      "mouthShape": "tongue_palate",
+      "lipPosition": "ابتسامة خفيفة مع رفع اللسان"
+    },
+    "defaultUnlocked": true,
+    "exampleWord": "نَجْمَة",
+    "exampleEmoji": "⭐",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "seen",
+    "character": "س",
+    "nameAr": "سِين",
+    "englishName": "Seen",
+    "order": 12,
+    "color": "from-purple-400 to-indigo-500",
+    "bgAccent": "bg-purple-100 border-purple-400 text-purple-700",
+    "mouthGuide": {
+      "tip": "قرّب الأسنان من بعضها واخرج هواءً صافيًا كالنسيم: سْ",
+      "mouthShape": "teeth_close_smile",
+      "lipPosition": "ابتسامة واضحة والأسنان متقاربة"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "سَيَّارَة",
+    "exampleEmoji": "🚗",
+    "difficulty": "easy"
+  },
+  {
+    "id": "laam",
+    "character": "ل",
+    "nameAr": "لاَم",
+    "englishName": "Laam",
+    "order": 23,
+    "color": "from-cyan-400 to-teal-500",
+    "bgAccent": "bg-cyan-100 border-cyan-400 text-cyan-700",
+    "mouthGuide": {
+      "tip": "ارفع مقدمة لسانك لتلمس سقف الفم العلوي برفق: لْ",
+      "mouthShape": "tongue_up",
+      "lipPosition": "فم مفتوح قليلًا واللسان يرتفع"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "لَيْمُون",
+    "exampleEmoji": "🍋",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alif",
+    "character": "أ",
+    "nameAr": "أَلِف",
+    "englishName": "Alif",
+    "order": 1,
+    "color": "from-amber-400 to-red-400",
+    "bgAccent": "bg-red-100 border-red-400 text-red-700",
+    "mouthGuide": {
+      "tip": "افتح الفم بحرية وأخرج صوت الهمزة من الحلق: أَ",
+      "mouthShape": "open_wide",
+      "lipPosition": "فم مفتوح ومرتاح"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "أَرْنَب",
+    "exampleEmoji": "🐰",
+    "difficulty": "beginner"
+  },
+  {
+    "id": "raa",
+    "character": "ر",
+    "nameAr": "رَاء",
+    "englishName": "Raa",
+    "order": 10,
+    "color": "from-lime-400 to-green-500",
+    "bgAccent": "bg-lime-100 border-lime-400 text-lime-700",
+    "mouthGuide": {
+      "tip": "دع طرف اللسان يرتعش برفق عند سقف الحلق: رْ",
+      "mouthShape": "tongue_vibrate",
+      "lipPosition": "فم مفتوح باعتدال واللسان يهتز"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "رُمَّان",
+    "exampleEmoji": "🍇",
+    "difficulty": "medium"
+  },
+  {
+    "id": "daal",
+    "character": "د",
+    "nameAr": "دَال",
+    "englishName": "Daal",
+    "order": 8,
+    "color": "from-teal-400 to-emerald-500",
+    "bgAccent": "bg-teal-100 border-teal-400 text-teal-700",
+    "mouthGuide": {
+      "tip": "المس خلف الأسنان العلوية بطرف اللسان بقوة خفيفة: دْ",
+      "mouthShape": "tongue_top_teeth",
+      "lipPosition": "طرف اللسان يلمس أصول الثنايا"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "دُبّ",
+    "exampleEmoji": "🐻",
+    "difficulty": "easy"
+  },
+  {
+    "id": "kaaf",
+    "character": "ك",
+    "nameAr": "كَاف",
+    "englishName": "Kaaf",
+    "order": 22,
+    "color": "from-fuchsia-400 to-pink-500",
+    "bgAccent": "bg-fuchsia-100 border-fuchsia-400 text-fuchsia-700",
+    "mouthGuide": {
+      "tip": "أقصى اللسان من الخلف يلامس الحنك مع خروج هواء: كْ",
+      "mouthShape": "back_tongue",
+      "lipPosition": "فم نصف مفتوح"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "كُرَة",
+    "exampleEmoji": "⚽",
+    "difficulty": "easy"
+  },
+  {
+    "id": "jeem",
+    "character": "ج",
+    "nameAr": "جِيم",
+    "englishName": "Jeem",
+    "order": 5,
+    "color": "from-yellow-400 to-amber-500",
+    "bgAccent": "bg-amber-100 border-amber-400 text-amber-700",
+    "mouthGuide": {
+      "tip": "وسط اللسان يرتفع لوسط سقف الحلق: جْ",
+      "mouthShape": "middle_tongue",
+      "lipPosition": "شفتان مدورتان قليلًا"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "جَمَل",
+    "exampleEmoji": "🐪",
+    "difficulty": "medium"
+  },
+  {
+    "id": "haa",
+    "character": "ح",
+    "nameAr": "حَاء",
+    "englishName": "Haa",
+    "order": 6,
+    "color": "from-orange-400 to-rose-500",
+    "bgAccent": "bg-orange-100 border-orange-400 text-orange-700",
+    "mouthGuide": {
+      "tip": "أخرج هواءً دافئًا ناعمًا من وسط الحلق: حْ",
+      "mouthShape": "throat_warm",
+      "lipPosition": "فم مفتوح براحة وهواء دافئ"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "حِصَان",
+    "exampleEmoji": "🐴",
+    "difficulty": "medium"
+  },
+  {
+    "id": "khaa",
+    "character": "خ",
+    "nameAr": "خَاء",
+    "englishName": "Khaa",
+    "order": 7,
+    "color": "from-green-400 to-emerald-600",
+    "bgAccent": "bg-green-100 border-green-400 text-green-700",
+    "mouthGuide": {
+      "tip": "صوت يخرج من أعلى الحلق بنعومة: خْ",
+      "mouthShape": "upper_throat",
+      "lipPosition": "فم مسترخٍ"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "خَرُوف",
+    "exampleEmoji": "🐑",
+    "difficulty": "medium"
+  },
+  {
+    "id": "zaal",
+    "character": "ذ",
+    "nameAr": "ذَال",
+    "englishName": "Zaal",
+    "order": 9,
+    "color": "from-indigo-400 to-blue-600",
+    "bgAccent": "bg-indigo-100 border-indigo-400 text-indigo-700",
+    "mouthGuide": {
+      "tip": "أخرج طرف لسانك قليلاً بين الأسنان: ذْ",
+      "mouthShape": "tongue_between_teeth",
+      "lipPosition": "طرف اللسان بين الأسنان"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "ذُرَة",
+    "exampleEmoji": "🌽",
+    "difficulty": "medium"
+  },
+  {
+    "id": "zay",
+    "character": "ز",
+    "nameAr": "زَاي",
+    "englishName": "Zay",
+    "order": 11,
+    "color": "from-purple-400 to-violet-600",
+    "bgAccent": "bg-purple-100 border-purple-400 text-purple-700",
+    "mouthGuide": {
+      "tip": "أغلق الأسنان واجعل الصوت يهتز مثل طنين النحلة: زْ",
+      "mouthShape": "teeth_buzz",
+      "lipPosition": "ابتسامة واهتزاز خفيف"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "زَرَافَة",
+    "exampleEmoji": "🦒",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sheen",
+    "character": "ش",
+    "nameAr": "شِين",
+    "englishName": "Sheen",
+    "order": 13,
+    "color": "from-teal-400 to-cyan-600",
+    "bgAccent": "bg-teal-100 border-teal-400 text-teal-700",
+    "mouthGuide": {
+      "tip": "ضم الشفتين قليلاً للأمام واخرج هواءً واسعًا: شْ",
+      "mouthShape": "lips_round_forward",
+      "lipPosition": "شفتان مدورتان للأمام"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "شَمْس",
+    "exampleEmoji": "☀️",
+    "difficulty": "easy"
+  },
+  {
+    "id": "saad",
+    "character": "ص",
+    "nameAr": "صَاد",
+    "englishName": "Saad",
+    "order": 14,
+    "color": "from-amber-500 to-orange-600",
+    "bgAccent": "bg-amber-100 border-amber-400 text-amber-700",
+    "mouthGuide": {
+      "tip": "صوت قوي مفخم مع تقريب الأسنان: صْ",
+      "mouthShape": "thick_sound",
+      "lipPosition": "فم ممتلئ بالصوت المفخم"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "صَقْر",
+    "exampleEmoji": "🦅",
+    "difficulty": "medium"
+  },
+  {
+    "id": "daad",
+    "character": "ض",
+    "nameAr": "ضَاد",
+    "englishName": "Daad",
+    "order": 15,
+    "color": "from-emerald-500 to-green-700",
+    "bgAccent": "bg-emerald-100 border-emerald-400 text-emerald-700",
+    "mouthGuide": {
+      "tip": "حافة اللسان تلامس الأضراس العلوية بصوت قوي: ضْ",
+      "mouthShape": "side_tongue_molars",
+      "lipPosition": "ضغط جانبي باللسان"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "ضِفْدَع",
+    "exampleEmoji": "🐸",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "taa_heavy",
+    "character": "ط",
+    "nameAr": "طَاء",
+    "englishName": "Taa Heavy",
+    "order": 16,
+    "color": "from-red-400 to-rose-600",
+    "bgAccent": "bg-rose-100 border-rose-400 text-rose-700",
+    "mouthGuide": {
+      "tip": "طرف اللسان يلتصق بقوة بسقف الفم مع تفخيم: طْ",
+      "mouthShape": "heavy_tongue_roof",
+      "lipPosition": "ارتفاع كامل لمقدمة اللسان"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "طَائِرَة",
+    "exampleEmoji": "✈️",
+    "difficulty": "medium"
+  },
+  {
+    "id": "zaa_heavy",
+    "character": "ظ",
+    "nameAr": "ظَاء",
+    "englishName": "Zaa Heavy",
+    "order": 17,
+    "color": "from-purple-500 to-indigo-700",
+    "bgAccent": "bg-purple-100 border-purple-400 text-purple-700",
+    "mouthGuide": {
+      "tip": "طرف اللسان بين الأسنان بصوت مفخم وقوي: ظْ",
+      "mouthShape": "tongue_between_teeth_heavy",
+      "lipPosition": "طرف اللسان بارز ومفخم"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "ظَرْف",
+    "exampleEmoji": "✉️",
+    "difficulty": "advanced"
+  },
+  {
+    "id": "ayn",
+    "character": "ع",
+    "nameAr": "عَيْن",
+    "englishName": "Ayn",
+    "order": 18,
+    "color": "from-blue-400 to-cyan-600",
+    "bgAccent": "bg-blue-100 border-blue-400 text-blue-700",
+    "mouthGuide": {
+      "tip": "صوت عميق يخرج من وسط الحلق بانسيابية: عْ",
+      "mouthShape": "deep_throat",
+      "lipPosition": "تراجع خفيف لوسط الحلق"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "عَيْن",
+    "exampleEmoji": "👁️",
+    "difficulty": "medium"
+  },
+  {
+    "id": "ghayn",
+    "character": "غ",
+    "nameAr": "غَيْن",
+    "englishName": "Ghayn",
+    "order": 19,
+    "color": "from-violet-400 to-purple-600",
+    "bgAccent": "bg-violet-100 border-violet-400 text-violet-700",
+    "mouthGuide": {
+      "tip": "صوت ناعم يشبه الغرغرة الخفيفة في أعلى الحلق: غْ",
+      "mouthShape": "gargle_throat",
+      "lipPosition": "فم مفتوح باسترخاء"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "غَزَال",
+    "exampleEmoji": "🦌",
+    "difficulty": "medium"
+  },
+  {
+    "id": "faa",
+    "character": "ف",
+    "nameAr": "فَاء",
+    "englishName": "Faa",
+    "order": 20,
+    "color": "from-pink-400 to-rose-500",
+    "bgAccent": "bg-pink-100 border-pink-400 text-pink-700",
+    "mouthGuide": {
+      "tip": "الأسنان العلوية تلمس الشفة السفلية مع نفخ الهواء: فْ",
+      "mouthShape": "teeth_lower_lip",
+      "lipPosition": "الأسنان فوق الشفة السفلية"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "فَرَاشَة",
+    "exampleEmoji": "🦋",
+    "difficulty": "easy"
+  },
+  {
+    "id": "qaaf",
+    "character": "ق",
+    "nameAr": "قَاف",
+    "englishName": "Qaaf",
+    "order": 21,
+    "color": "from-yellow-500 to-amber-600",
+    "bgAccent": "bg-yellow-100 border-yellow-400 text-yellow-700",
+    "mouthGuide": {
+      "tip": "أقصى اللسان من الخلف يرتفع لأقصى الحلق بقوة: قْ",
+      "mouthShape": "deep_back_tongue",
+      "lipPosition": "فم مفتوح ونبض حلقي"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "قَمَر",
+    "exampleEmoji": "🌙",
+    "difficulty": "medium"
+  },
+  {
+    "id": "haa_soft",
+    "character": "هـ",
+    "nameAr": "هَاء",
+    "englishName": "Haa Soft",
+    "order": 26,
+    "color": "from-sky-300 to-indigo-400",
+    "bgAccent": "bg-sky-100 border-sky-400 text-sky-700",
+    "mouthGuide": {
+      "tip": "تنفس لطيف وخفيف يخرج كالهواء النقي: هْ",
+      "mouthShape": "gentle_breath",
+      "lipPosition": "فم مفتوح بهدوء"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "هَدِيَّة",
+    "exampleEmoji": "🎁",
+    "difficulty": "easy"
+  },
+  {
+    "id": "waaw",
+    "character": "و",
+    "nameAr": "وَاو",
+    "englishName": "Waaw",
+    "order": 27,
+    "color": "from-amber-400 to-orange-400",
+    "bgAccent": "bg-amber-100 border-amber-400 text-amber-700",
+    "mouthGuide": {
+      "tip": "ضم الشفتين كالدائرة الجميلة إلى الأمام: وْ",
+      "mouthShape": "circle_lips",
+      "lipPosition": "استدارة كاملة للشفتين"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "وَرْدَة",
+    "exampleEmoji": "🌹",
+    "difficulty": "easy"
+  },
+  {
+    "id": "yaa",
+    "character": "ي",
+    "nameAr": "يَاء",
+    "englishName": "Yaa",
+    "order": 28,
+    "color": "from-emerald-400 to-teal-600",
+    "bgAccent": "bg-emerald-100 border-emerald-400 text-emerald-700",
+    "mouthGuide": {
+      "tip": "وسط اللسان يرتفع مع ابتسامة عريضة لطيفة: يْ",
+      "mouthShape": "wide_smile_tongue",
+      "lipPosition": "ابتسامة واضحة"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "يَد",
+    "exampleEmoji": "✋",
+    "difficulty": "easy"
+  },
+  {
+    "id": "thaa",
+    "character": "ث",
+    "nameAr": "ثَاء",
+    "englishName": "Thaa",
+    "order": 4,
+    "color": "from-indigo-400 to-purple-500",
+    "bgAccent": "bg-indigo-100 border-indigo-400 text-indigo-700",
+    "mouthGuide": {
+      "tip": "أخرج طرف اللسان بلطف بين الأسنان مع هواء خفيف: ثْ",
+      "mouthShape": "tongue_between_teeth_soft",
+      "lipPosition": "طرف اللسان بين الأسنان بلطف"
+    },
+    "defaultUnlocked": false,
+    "exampleWord": "ثَعْلَب",
+    "exampleEmoji": "🦊",
+    "difficulty": "medium"
+  }
+]

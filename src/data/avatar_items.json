@@ -1,0 +1,28 @@
+[
+  { "id": "skin_yellow", "nameAr": "البطل اللامع", "category": "skin", "color": "#fde047", "price": 0, "stars": 0, "emoji": "🌟" },
+  { "id": "skin_pink", "nameAr": "البطل الوردي", "category": "skin", "color": "#f472b6", "price": 20, "stars": 3, "emoji": "🌸" },
+  { "id": "skin_cyan", "nameAr": "البطل المائي", "category": "skin", "color": "#38bdf8", "price": 30, "stars": 5, "emoji": "🌊" },
+  { "id": "skin_green", "nameAr": "بطل الطبيعة", "category": "skin", "color": "#4ade80", "price": 40, "stars": 8, "emoji": "🍀" },
+  { "id": "skin_purple", "nameAr": "بطل الفضاء", "category": "skin", "color": "#c084fc", "price": 60, "stars": 12, "emoji": "🚀" },
+
+  { "id": "hat_none", "nameAr": "بدون قبعة", "category": "hat", "price": 0, "stars": 0, "emoji": "❌" },
+  { "id": "hat_cap", "nameAr": "قبعة المغامر", "category": "hat", "price": 15, "stars": 2, "emoji": "🧢" },
+  { "id": "hat_crown", "nameAr": "تاج الأبطال", "category": "hat", "price": 50, "stars": 10, "emoji": "👑" },
+  { "id": "hat_wizard", "nameAr": "قبعة العباقرة", "category": "hat", "price": 35, "stars": 6, "emoji": "🧙" },
+  { "id": "hat_party", "nameAr": "قبعة الاحتفال", "category": "hat", "price": 25, "stars": 4, "emoji": "🎉" },
+
+  { "id": "outfit_casual", "nameAr": "لباس المستكشف", "category": "outfit", "price": 0, "stars": 0, "emoji": "👕" },
+  { "id": "outfit_hero", "nameAr": "زي البطل الخارق", "category": "outfit", "price": 45, "stars": 7, "emoji": "🦸" },
+  { "id": "outfit_spacesuit", "nameAr": "بدلة رائد الفضاء", "category": "outfit", "price": 70, "stars": 15, "emoji": "🧑‍🚀" },
+  { "id": "outfit_artist", "nameAr": "زي الفنان الصغير", "category": "outfit", "price": 30, "stars": 5, "emoji": "🎨" },
+
+  { "id": "acc_none", "nameAr": "بدون إكسسوار", "category": "accessory", "price": 0, "stars": 0, "emoji": "❌" },
+  { "id": "acc_glasses", "nameAr": "نظارة ذكية", "category": "accessory", "price": 20, "stars": 3, "emoji": "🕶️" },
+  { "id": "acc_medal", "nameAr": "وسام الشجاعة", "category": "accessory", "price": 40, "stars": 8, "emoji": "🏅" },
+  { "id": "acc_wand", "nameAr": "عصا النجوم", "category": "accessory", "price": 50, "stars": 10, "emoji": "🪄" },
+
+  { "id": "room_hills", "nameAr": "تلال الأصوات الخضراء", "category": "room", "price": 0, "stars": 0, "emoji": "🏞️", "gradient": "from-emerald-300 via-teal-200 to-sky-300" },
+  { "id": "room_cloud", "nameAr": "قصر الغيوم", "category": "room", "price": 30, "stars": 5, "emoji": "☁️", "gradient": "from-sky-300 via-indigo-200 to-pink-200" },
+  { "id": "room_space", "nameAr": "مجرة النجوم", "category": "room", "price": 60, "stars": 12, "emoji": "🌌", "gradient": "from-indigo-900 via-purple-900 to-slate-900" },
+  { "id": "room_candy", "nameAr": "أرض الحلوى", "category": "room", "price": 45, "stars": 8, "emoji": "🍭", "gradient": "from-pink-300 via-rose-200 to-yellow-200" }
+]

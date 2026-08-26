@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    user-select: none;
+    touch-action: manipulation;
+  }
+}
+
+/* Custom Playful Game Elements */
+.game-btn {
+  position: relative;
+  font-weight: 900;
+  transition: all 0.15s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+}
+
+.game-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.game-card {
+  border-radius: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Visual Glow Animations */
+@keyframes visualPulse {
+  0%, 100% { outline: 4px solid #38bdf8; outline-offset: 4px; }
+  50% { outline: 6px solid #f43f5e; outline-offset: 6px; }
+}
+
+.visual-mode-active {
+  animation: visualPulse 1.5s infinite;
+}
+
+/* Speech Wave Bar Animation */
+.speech-bar {
+  transform-origin: bottom;
+  animation: barBounce 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes barBounce {
+  0% { transform: scaleY(0.2); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: floatAnim 3s ease-in-out infinite;
+}
+
+@keyframes wiggleAnim {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-wiggle {
+  animation: wiggleAnim 1.2s ease-in-out infinite;
+}
+
+@keyframes popAnim {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop {
+  animation: popAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}

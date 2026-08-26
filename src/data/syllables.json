@@ -1,0 +1,50 @@
+{
+  "baa": {
+    "short": [
+      { "id": "baa_fatha", "syllable": "بَ", "vowel": "fatha", "nameAr": "باء بالفتحة", "soundTip": "بَ.. افتح الفم لأعلى", "audioKey": "ba_short" },
+      { "id": "baa_kasra", "syllable": "بِ", "vowel": "kasra", "nameAr": "باء بالكسرة", "soundTip": "بِ.. ابتسم بلطف", "audioKey": "bi_short" },
+      { "id": "baa_damma", "syllable": "بُ", "vowel": "damma", "nameAr": "باء بالضمة", "soundTip": "بُ.. ضم الشفتين", "audioKey": "bu_short" }
+    ],
+    "long": [
+      { "id": "baa_alif", "syllable": "بَا", "vowel": "madd_alif", "nameAr": "مد بالألف", "soundTip": "بَااا.. مد الصوت طويلًا", "example": "بَاب" },
+      { "id": "baa_yaa", "syllable": "بِي", "vowel": "madd_yaa", "nameAr": "مد بالياء", "soundTip": "بِييي.. ابتسم ومد الصوت", "example": "طَبِيب" },
+      { "id": "baa_waw", "syllable": "بُو", "vowel": "madd_waw", "nameAr": "مد بالواو", "soundTip": "بُووو.. ضم الشفتين ومد", "example": "بُومَة" }
+    ]
+  },
+  "meem": {
+    "short": [
+      { "id": "meem_fatha", "syllable": "مَ", "vowel": "fatha", "nameAr": "ميم بالفتحة", "soundTip": "مَ.. افتح الفم بعد إغلاق الشفتين", "audioKey": "ma_short" },
+      { "id": "meem_kasra", "syllable": "مِ", "vowel": "kasra", "nameAr": "ميم بالكسرة", "soundTip": "مِ.. ابتسم مع الغنة", "audioKey": "mi_short" },
+      { "id": "meem_damma", "syllable": "مُ", "vowel": "damma", "nameAr": "ميم بالضمة", "soundTip": "مُ.. ضم الشفتين مع الغنة", "audioKey": "mu_short" }
+    ],
+    "long": [
+      { "id": "meem_alif", "syllable": "مَا", "vowel": "madd_alif", "nameAr": "مد بالألف", "soundTip": "مَااا.. مد الصوت الميم", "example": "مَاء" },
+      { "id": "meem_yaa", "syllable": "مِي", "vowel": "madd_yaa", "nameAr": "مد بالياء", "soundTip": "مِييي.. مد الياء مع الميم", "example": "أَمِير" },
+      { "id": "meem_waw", "syllable": "مُو", "vowel": "madd_waw", "nameAr": "مد بالواو", "soundTip": "مُووو.. ضم الشفتين ومد", "example": "لَيْمُون" }
+    ]
+  },
+  "taa": {
+    "short": [
+      { "id": "taa_fatha", "syllable": "تَ", "vowel": "fatha", "nameAr": "تاء بالفتحة", "soundTip": "تَ.. طرف اللسان مع فتح الفم", "audioKey": "ta_short" },
+      { "id": "taa_kasra", "syllable": "تِ", "vowel": "kasra", "nameAr": "تاء بالكسرة", "soundTip": "تِ.. ابتسامة مع التاء", "audioKey": "ti_short" },
+      { "id": "taa_damma", "syllable": "تُ", "vowel": "damma", "nameAr": "تاء بالضمة", "soundTip": "تُ.. ضم الشفتين مع التاء", "audioKey": "tu_short" }
+    ],
+    "long": [
+      { "id": "taa_alif", "syllable": "تَا", "vowel": "madd_alif", "nameAr": "مد بالألف", "soundTip": "تَااا.. مد الصوت", "example": "تَاج" },
+      { "id": "taa_yaa", "syllable": "تِي", "vowel": "madd_yaa", "nameAr": "مد بالياء", "soundTip": "تِييي.. مد الياء", "example": "تِين" },
+      { "id": "taa_waw", "syllable": "تُو", "vowel": "madd_waw", "nameAr": "مد بالواو", "soundTip": "تُووو.. مد الواو", "example": "تُوت" }
+    ]
+  },
+  "noon": {
+    "short": [
+      { "id": "noon_fatha", "syllable": "نَ", "vowel": "fatha", "nameAr": "نون بالفتحة", "soundTip": "نَ.. نون مفتوحة خفيفة", "audioKey": "na_short" },
+      { "id": "noon_kasra", "syllable": "نِ", "vowel": "kasra", "nameAr": "نون بالكسرة", "soundTip": "نِ.. نون مكسورة رقيقة", "audioKey": "ni_short" },
+      { "id": "noon_damma", "syllable": "نُ", "vowel": "damma", "nameAr": "نون بالضمة", "soundTip": "نُ.. نون مضمومة جميلة", "audioKey": "nu_short" }
+    ],
+    "long": [
+      { "id": "noon_alif", "syllable": "نَا", "vowel": "madd_alif", "nameAr": "مد بالألف", "soundTip": "نَااا.. مد النون", "example": "نَار" },
+      { "id": "noon_yaa", "syllable": "نِي", "vowel": "madd_yaa", "nameAr": "مد بالياء", "soundTip": "نِييي.. مد الياء مع النون", "example": "تِين" },
+      { "id": "noon_waw", "syllable": "نُو", "vowel": "madd_waw", "nameAr": "مد بالواو", "soundTip": "نُووو.. مد الواو مع النون", "example": "نُور" }
+    ]
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "baa": [
+    {
+      "id": "baa_w1",
+      "word": "بَاب",
+      "meaning": "باب البيت",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-rose-600 font-extrabold text-4xl'>بَـ</span>ـاب",
+      "emoji": "🚪",
+      "lettersBreakdown": ["ب", "ا", "ب"],
+      "syllables": ["بَا", "بْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "baa_w2",
+      "word": "بَطَّة",
+      "meaning": "بطة تسبح في الماء",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-rose-600 font-extrabold text-4xl'>بَـ</span>ـطَّة",
+      "emoji": "🦆",
+      "lettersBreakdown": ["ب", "ط", "ة"],
+      "syllables": ["بَطْ", "طَة"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "baa_w3",
+      "word": "بَيْت",
+      "meaning": "بيت دافئ وجميل",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-rose-600 font-extrabold text-4xl'>بَـ</span>ـيْت",
+      "emoji": "🏠",
+      "lettersBreakdown": ["ب", "ي", "ت"],
+      "syllables": ["بَيْ", "تْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "baa_w4",
+      "word": "بَحْر",
+      "meaning": "بحر أزرق واسع",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-rose-600 font-extrabold text-4xl'>بَـ</span>ـحْر",
+      "emoji": "🌊",
+      "lettersBreakdown": ["ب", "ح", "ر"],
+      "syllables": ["بَحْ", "رْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "baa_w5",
+      "word": "حَبْل",
+      "meaning": "حبل متين",
+      "position": "middle",
+      "positionLabel": "في وسط الكلمة",
+      "highlightedWord": "حَـ<span class='text-rose-600 font-extrabold text-4xl'>ـبْـ</span>ـل",
+      "emoji": "🪢",
+      "lettersBreakdown": ["ح", "ب", "ل"],
+      "syllables": ["حَبْ", "لْ"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "baa_w6",
+      "word": "خُبْز",
+      "meaning": "خبز طازج ولذيذ",
+      "position": "middle",
+      "positionLabel": "في وسط الكلمة",
+      "highlightedWord": "خُـ<span class='text-rose-600 font-extrabold text-4xl'>ـبْـ</span>ـز",
+      "emoji": "🍞",
+      "lettersBreakdown": ["خ", "ب", "ز"],
+      "syllables": ["خُبْ", "زْ"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "baa_w7",
+      "word": "كَتَبَ",
+      "meaning": "كتب بالقلم",
+      "position": "end",
+      "positionLabel": "في آخر الكلمة",
+      "highlightedWord": "كَـتَـ<span class='text-rose-600 font-extrabold text-4xl'>ـبَ</span>",
+      "emoji": "✍️",
+      "lettersBreakdown": ["ك", "ت", "ب"],
+      "syllables": ["كَ", "تَ", "بَ"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "baa_w8",
+      "word": "عِنَب",
+      "meaning": "عنب حلو ولذيذ",
+      "position": "end",
+      "positionLabel": "في آخر الكلمة",
+      "highlightedWord": "عِـنَـ<span class='text-rose-600 font-extrabold text-4xl'>ـب</span>",
+      "emoji": "🍇",
+      "lettersBreakdown": ["ع", "ن", "ب"],
+      "syllables": ["عِ", "نَ", "بْ"],
+      "difficulty": "easy"
+    }
+  ],
+  "meem": [
+    {
+      "id": "meem_w1",
+      "word": "مَوْز",
+      "meaning": "موز أصفر حلو",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-amber-600 font-extrabold text-4xl'>مَـ</span>ـوْز",
+      "emoji": "🍌",
+      "lettersBreakdown": ["م", "و", "ز"],
+      "syllables": ["مَوْ", "زْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "meem_w2",
+      "word": "مَطَر",
+      "meaning": "مطر ينزل من السحاب",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-amber-600 font-extrabold text-4xl'>مَـ</span>ـطَر",
+      "emoji": "🌧️",
+      "lettersBreakdown": ["م", "ط", "ر"],
+      "syllables": ["مَ", "طَ", "رْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "meem_w3",
+      "word": "شَمْس",
+      "meaning": "شمس مشرقة ودافئة",
+      "position": "middle",
+      "positionLabel": "في وسط الكلمة",
+      "highlightedWord": "شَـ<span class='text-amber-600 font-extrabold text-4xl'>ـمْـ</span>ـس",
+      "emoji": "☀️",
+      "lettersBreakdown": ["ش", "م", "س"],
+      "syllables": ["شَمْ", "سْ"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "meem_w4",
+      "word": "قَلَم",
+      "meaning": "قلم أكتب به",
+      "position": "end",
+      "positionLabel": "في آخر الكلمة",
+      "highlightedWord": "قَـلَـ<span class='text-amber-600 font-extrabold text-4xl'>ـم</span>",
+      "emoji": "✏️",
+      "lettersBreakdown": ["ق", "ل", "م"],
+      "syllables": ["قَ", "لَ", "مْ"],
+      "difficulty": "easy"
+    }
+  ],
+  "taa": [
+    {
+      "id": "taa_w1",
+      "word": "تُفَّاح",
+      "meaning": "تفاح أحمر لذيذ",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-emerald-600 font-extrabold text-4xl'>تُـ</span>ـفَّاح",
+      "emoji": "🍎",
+      "lettersBreakdown": ["ت", "ف", "ا", "ح"],
+      "syllables": ["تُفْ", "فَاحْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "taa_w2",
+      "word": "تَاج",
+      "meaning": "تاج ذهبي جميل",
+      "position": "start",
+      "positionLabel": "في أول الكلمة",
+      "highlightedWord": "<span class='text-emerald-600 font-extrabold text-4xl'>تَـ</span>ـاج",
+      "emoji": "👑",
+      "lettersBreakdown": ["ت", "ا", "ج"],
+      "syllables": ["تَا", "جْ"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "taa_w3",
+      "word": "كِتَاب",
+      "meaning": "كتاب أقرأ فيه",
+      "position": "middle",
+      "positionLabel": "في وسط الكلمة",
+      "highlightedWord": "كِـ<span class='text-emerald-600 font-extrabold text-4xl'>ـتَـ</span>ـاب",
+      "emoji": "📖",
+      "lettersBreakdown": ["ك", "ت", "ا", "ب"],
+      "syllables": ["كِ", "تَا", "بْ"],
+      "difficulty": "medium"
+    },
+    {
+      "id": "taa_w4",
+      "word": "بَيْت",
+      "meaning": "بيت جميل",
+      "position": "end",
+      "positionLabel": "في آخر الكلمة",
+      "highlightedWord": "بَـيْـ<span class='text-emerald-600 font-extrabold text-4xl'>ـت</span>",
+      "emoji": "🏡",
+      "lettersBreakdown": ["ب", "ي", "ت"],
+      "syllables": ["بَيْ", "تْ"],
+      "difficulty": "easy"
+    }
+  ]
+}
