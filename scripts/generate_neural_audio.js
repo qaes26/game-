@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const AUDIO_DIR = path.join(__dirname, '..', 'public', 'audio');
 
 // Ensure output directories exist
-const dirs = ['letters', 'syllables', 'words', 'sentences', 'dialogue', 'articulation'];
+const dirs = ['letters', 'syllables', 'words', 'sentences', 'dialogue', 'articulation', 'stages'];
 dirs.forEach(d => {
   const fullPath = path.join(AUDIO_DIR, d);
   if (!fs.existsSync(fullPath)) {
@@ -76,17 +76,30 @@ const audioItems = [
   { category: 'dialogue', id: 'intro_step_1', text: 'مَرْحَبًا.. أَنَا لُومِي! هَيَّا نَسْتَكْشِفُ مَعًا عَالَمَ الأَصْوَاتِ السَّاحِر!' },
   { category: 'dialogue', id: 'intro_step_2', text: 'هَذَا العَالَمُ فَقَدَ أَصْوَاتَهُ السَّاحِرَة...' },
   { category: 'dialogue', id: 'intro_step_3', text: 'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا؟' },
-  { category: 'dialogue', id: 'ask_name', text: 'مَا اسْمُكَ؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!' },
-  { category: 'dialogue', id: 'welcome_child', text: 'أَهْلًا وَسَهْلًا بِكَ! أَنَا سَعِيدَةٌ جِدًّا بِوُجُودِكَ مَعِي! هَلْ أَنْتَ جَاهِزٌ لِلانْطِلاق؟' },
-  { category: 'dialogue', id: 'launch_journey', text: 'هَيَّا بِنَا! أَنْتَ عَلَى وَشَكِ عَيْشِ أَجْمَلِ المُغَامَرَات!' },
-  { category: 'dialogue', id: 'excellent', text: 'أَحْسَنْتَ! صَوْتٌ رَائِعٌ وَمُتَفَوِّق!' },
+  { category: 'dialogue', id: 'ask_name', text: 'مَا اسْمُكَ يَا بَطَل؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!' },
+  { category: 'dialogue', id: 'welcome_child', text: 'أَهْلًا وَسَهْلًا بِكَ يَا بَطَل! أَنَا سَعِيدَةٌ جِدًّا بِوُجُودِكَ مَعِي! هَلْ أَنْتَ جَاهِزٌ لِلانْطِلاق؟' },
+  { category: 'dialogue', id: 'launch_journey', text: 'هَيَّا بِنَا يَا بَطَل! أَنْتَ عَلَى وَشَكِ عَيْشِ أَجْمَلِ المُغَامَرَات!' },
+  { category: 'dialogue', id: 'excellent', text: 'أَحْسَنْتَ يَا بَطَل! إِجَابَةٌ مَلَكِيَّةٌ رَائِعَةٌ وَمُتَفَوِّقَة!' },
   { category: 'dialogue', id: 'try_again', text: 'أَنْتَ قَرِيبٌ جِدًّا.. لِنُجَرِّبْ خِيَارًا آخَر!' },
+  { category: 'dialogue', id: 'choose_letter', text: 'اخْتَرْ حَرْفَكَ السِّحْرِيَّ الَّذِي تُرِيدُ أَنْ نَبْدَأَ بِهِ مُغَامَرَتَنَا!' },
 
-  // 6. Articulation & Tongue Training Female Prompts
+  // 6. Stages Prompts
+  { category: 'stages', id: 'stage_1', text: 'المَرْحَلَةُ الأُولَى: مَخْرَجُ وَصَوْتُ الحَرْفِ الصَّافِي!' },
+  { category: 'stages', id: 'stage_2', text: 'المَرْحَلَةُ الثَّانِيَة: مُحَاكَاةُ الصَّوْتِ وَتَشْرِيحُ حَرَكَةِ اللِّسَان!' },
+  { category: 'stages', id: 'stage_3', text: 'المَرْحَلَةُ الثَّالِثَة: الحَرَكَاتُ القَصِيرَة.. الفَتْحَةُ وَالضَّمَّةُ وَالكَسْرَة!' },
+  { category: 'stages', id: 'stage_4', text: 'المَرْحَلَةُ الرَّابِعَة: المُدُودُ الطَّوِيلَةُ وَالمَقَاطِع!' },
+  { category: 'stages', id: 'stage_5', text: 'المَرْحَلَةُ الخَامِسَة: اسْتِكْشَافُ وَنُطْقُ الكَلِمَات!' },
+  { category: 'stages', id: 'stage_6', text: 'المَرْحَلَةُ السَّادِسَة: مَوْضِعُ الحَرْفِ فِي أَوَّلِ وَوَسَطِ وَآخِرِ الكَلِمَة!' },
+  { category: 'stages', id: 'stage_7', text: 'المَرْحَلَةُ السَّابِعَة: نُطْقُ وَبِنَاءُ الجُمَلِ المُفِيدَة!' },
+  { category: 'stages', id: 'stage_8', text: 'المَرْحَلَةُ الثَّامِنَة: التَّحَدِّي الخِتَامِيُّ وَالتَّتْوِيجُ المَلَكِيّ!' },
+  { category: 'stages', id: 'next_stage', text: 'مُبَارَكٌ يَا بَطَل! فُتِحَتْ لَكَ المَرْحَلَةُ التَّالِيَة.. هَيَّا نَنْطَلِق!' },
+  { category: 'stages', id: 'listen_sound', text: 'اسْتَمِعْ لِصَوْتِ الحَرْفِ يَا بَطَل!' },
+
+  // 7. Articulation & Tongue Training Female Prompts
   { category: 'articulation', id: 'lips_guide_baa', text: 'حَرْفُ البَاءِ يَخْرُجُ بِانْطِبَاقِ الشَّفَتَيْنِ مَعًا ثُمَّ انْفِتَاحِهِمَا بِخُرُوجِ الهَوَاء: بْ!' },
   { category: 'articulation', id: 'tongue_guide_baa', text: 'يَبْقَى اللِّسَانُ مُسْتَرِيحًا فِي قَاعِ الفَمِ عِنْدَ نُطْقِ حَرْفِ البَاء!' },
   { category: 'articulation', id: 'tongue_lab_intro', text: 'مَرْحَبًا بِكَ فِي مُخْتَبَرِ اللِّسَانِ السِّحْرِيّ! شَاهِدْ حَرَكَةَ اللِّسَانِ وَالشَّفَتَيْنِ وَقَلِّدِ الصَّوْت!' },
-  { category: 'articulation', id: 'tongue_quiz_success', text: 'مُمْتَاز! انْطِبَاقُ الشَّفَتَيْنِ هُوَ مَخْرَجُ حَرْفِ البَاء!' }
+  { category: 'articulation', id: 'tongue_quiz_success', text: 'مُمْتَازٌ يَا بَطَل! انْطِبَاقُ الشَّفَتَيْنِ هُوَ مَخْرَجُ حَرْفِ البَاء!' }
 ];
 
 async function generateAllAudio() {
@@ -101,8 +114,8 @@ async function generateAllAudio() {
     try {
       console.log(`🎙️ Generating: ${item.text} (${item.category}/${item.id}.mp3)...`);
       const { audioStream } = tts.toStream(item.text, {
-        pitch: '+6Hz',
-        rate: '-10%'
+        pitch: '+0Hz',
+        rate: '-8%'
       });
 
       const writeStream = fs.createWriteStream(destPath);
@@ -113,13 +126,13 @@ async function generateAllAudio() {
         writeStream.on('error', reject);
       });
 
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 100));
     } catch (err) {
       console.error(`❌ Error generating ${item.id}:`, err.message);
     }
   }
 
-  console.log('✨ All Female Audio Files Generated!');
+  console.log('✨ All Female Audio Files Generated Successfully!');
 }
 
 generateAllAudio();

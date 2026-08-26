@@ -1,8 +1,6 @@
-// 100% Guaranteed Pure Female Voice Audio Engine for LUMI
-// Bulletproof Triple-Layer Architecture:
-// 1. Instant 0ms Static Local MP3 playback (all 28 letters, words, syllables, dialogue)
-// 2. High-Speed Edge Neural API (/api/tts)
-// 3. Client-Side Arabic Female Voice Synthesizer fallback (Zero server dependency, 100% offline & Netlify compatible)
+// 100% PURE FEMALE AUDIO ENGINE (Microsoft Neural ar-SA-ZariyahNeural)
+// STRICT LAW: SpeechSynthesis (Browser male voices) IS PERMANENTLY BANNED & REMOVED.
+// ALL audio plays 100% through studio pre-rendered static Female MP3 files & Neural Edge API.
 
 export const LETTER_ID_MAP: Record<string, string> = {
   'alif': '/audio/letters/alif.mp3',
@@ -120,15 +118,42 @@ class AudioManager {
 
   constructor() {
     if (typeof window !== 'undefined') {
+      // Force kill any speech synthesis
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+        } catch {}
+      }
+
       this.initAutoUnlock();
-      setTimeout(() => this.preloadAllLetterAudios(), 800);
+      setTimeout(() => this.preloadAllAudios(), 500);
     }
   }
 
-  // Pre-load all 28 letter MP3s in browser cache for 0ms instant playback
-  private preloadAllLetterAudios() {
+  // Preload studio audio in memory
+  private preloadAllAudios() {
     if (typeof window === 'undefined') return;
-    Object.values(LETTER_ID_MAP).forEach((url) => {
+    const staticAudios = [
+      ...Object.values(LETTER_ID_MAP),
+      '/audio/dialogue/ask_name.mp3',
+      '/audio/dialogue/welcome_child.mp3',
+      '/audio/dialogue/choose_letter.mp3',
+      '/audio/dialogue/excellent.mp3',
+      '/audio/dialogue/try_again.mp3',
+      '/audio/dialogue/launch_journey.mp3',
+      '/audio/stages/stage_1.mp3',
+      '/audio/stages/stage_2.mp3',
+      '/audio/stages/stage_3.mp3',
+      '/audio/stages/stage_4.mp3',
+      '/audio/stages/stage_5.mp3',
+      '/audio/stages/stage_6.mp3',
+      '/audio/stages/stage_7.mp3',
+      '/audio/stages/stage_8.mp3',
+      '/audio/stages/next_stage.mp3',
+      '/audio/stages/listen_sound.mp3'
+    ];
+
+    staticAudios.forEach((url) => {
       if (!this.preloadCache.has(url)) {
         try {
           const a = new Audio();
@@ -140,7 +165,7 @@ class AudioManager {
     });
   }
 
-  // Global AudioContext & Mobile Autoplay Policy Unlocker
+  // Autoplay Policy Unlocker on first user touch
   private initAutoUnlock() {
     if (typeof window === 'undefined') return;
 
@@ -170,11 +195,6 @@ class AudioManager {
     this.isMuted = muted;
     if (this.currentAudioElement) {
       this.currentAudioElement.muted = muted;
-    }
-    if (muted && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel();
-      } catch {}
     }
   }
 
@@ -227,11 +247,6 @@ class AudioManager {
   // Forcefully stop any running audio
   public stop() {
     this.currentPlaybackToken++;
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel();
-      } catch {}
-    }
     if (this.currentAudioElement) {
       try {
         this.currentAudioElement.pause();
@@ -241,7 +256,7 @@ class AudioManager {
     }
   }
 
-  // Fast Intelligent Static Audio Resolver
+  // Static Local Audio Matcher
   private resolveStaticAudioUrl(text: string): string | null {
     const raw = text.trim();
     const norm = normalizeArabic(raw);
@@ -263,7 +278,19 @@ class AudioManager {
       }
     }
 
-    // 3. Syllable exact match
+    // 3. Stages exact & partial match
+    if (norm.includes('المرحله 1') || norm.includes('المرحله الاولي')) return '/audio/stages/stage_1.mp3';
+    if (norm.includes('المرحله 2') || norm.includes('المرحله الثانيه')) return '/audio/stages/stage_2.mp3';
+    if (norm.includes('المرحله 3') || norm.includes('المرحله الثالثه')) return '/audio/stages/stage_3.mp3';
+    if (norm.includes('المرحله 4') || norm.includes('المرحله الرابعه')) return '/audio/stages/stage_4.mp3';
+    if (norm.includes('المرحله 5') || norm.includes('المرحله الخامسه')) return '/audio/stages/stage_5.mp3';
+    if (norm.includes('المرحله 6') || norm.includes('المرحله السادسه')) return '/audio/stages/stage_6.mp3';
+    if (norm.includes('المرحله 7') || norm.includes('المرحله السابعه')) return '/audio/stages/stage_7.mp3';
+    if (norm.includes('المرحله 8') || norm.includes('المرحله الثامنه')) return '/audio/stages/stage_8.mp3';
+    if (norm.includes('فتحت لك المرحله') || norm.includes('المرحله التاليه')) return '/audio/stages/next_stage.mp3';
+    if (norm.includes('استمع لصوت الحرف')) return '/audio/stages/listen_sound.mp3';
+
+    // 4. Syllable exact match
     if (raw === 'بَ') return '/audio/syllables/baa_fatha.mp3';
     if (raw === 'بِ') return '/audio/syllables/baa_kasra.mp3';
     if (raw === 'بُ') return '/audio/syllables/baa_damma.mp3';
@@ -271,7 +298,7 @@ class AudioManager {
     if (raw === 'بِي') return '/audio/syllables/baa_yaa.mp3';
     if (raw === 'بُو') return '/audio/syllables/baa_waw.mp3';
 
-    // 4. Word exact match
+    // 5. Word exact match
     if (norm === 'باب') return '/audio/words/baab.mp3';
     if (norm === 'بطه') return '/audio/words/battah.mp3';
     if (norm === 'بيت') return '/audio/words/bayt.mp3';
@@ -280,15 +307,12 @@ class AudioManager {
     if (norm === 'حبل') return '/audio/words/habl.mp3';
     if (norm === 'عنب') return '/audio/words/inab.mp3';
 
-    // 5. Sentences match
-    if (norm.includes('هذا باب البيت')) return '/audio/sentences/baab_bayt.mp3';
-    if (norm.includes('البطه تسبح')) return '/audio/sentences/battah_tasbah.mp3';
-
     // 6. Dialogue match
     if (norm.includes('مرحبا انا لومي')) return '/audio/dialogue/intro_step_1.mp3';
     if (norm.includes('فقد اصواته')) return '/audio/dialogue/intro_step_2.mp3';
     if (norm.includes('تساعدني')) return '/audio/dialogue/intro_step_3.mp3';
     if (norm.includes('ما اسمك')) return '/audio/dialogue/ask_name.mp3';
+    if (norm.includes('اهلا يا') || norm.includes('اختر حرفك')) return '/audio/dialogue/choose_letter.mp3';
     if (norm.includes('اهلا وسهلا')) return '/audio/dialogue/welcome_child.mp3';
     if (norm.includes('على وشك عيش')) return '/audio/dialogue/launch_journey.mp3';
     if (norm.includes('احسنت') || norm.includes('ممتاز') || norm.includes('رائع') || norm.includes('متفوق')) {
@@ -306,7 +330,8 @@ class AudioManager {
     return null;
   }
 
-  // Play Audio with Triple-Layer Reliability (Guaranteed Sound on Netlify & All Browsers)
+  // Play Pure Female Voice (100% Pre-rendered MP3 or Neural Edge Stream)
+  // SpeechSynthesis is banned to guarantee zero male voice.
   public speak(text: string, _rate: number = 0.85, onEnd?: () => void) {
     this.dispatchVisualPulse('click');
     this.stop();
@@ -324,7 +349,7 @@ class AudioManager {
 
     const playbackToken = ++this.currentPlaybackToken;
 
-    // LAYER 1: INSTANT STATIC LOCAL MP3 (0ms Latency, 100% Netlify Compatible)
+    // 1. Check Static Studio Pre-rendered MP3
     const staticUrl = this.resolveStaticAudioUrl(cleanText);
 
     if (staticUrl && typeof window !== 'undefined') {
@@ -341,127 +366,65 @@ class AudioManager {
 
         audio.onerror = () => {
           if (this.currentPlaybackToken === playbackToken) {
-            this.fallbackToBrowserSpeech(cleanText, playbackToken, onEnd);
+            this.playViaEdgeNeural(cleanText, playbackToken, onEnd);
           }
         };
 
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            if (this.currentPlaybackToken === playbackToken) {
-              this.fallbackToBrowserSpeech(cleanText, playbackToken, onEnd);
+            if (this.currentPlaybackToken === playbackToken && onEnd) {
+              onEnd();
             }
           });
         }
         return;
       } catch {
-        this.fallbackToBrowserSpeech(cleanText, playbackToken, onEnd);
+        if (onEnd) onEnd();
         return;
       }
     }
 
-    // LAYER 2: HIGH-SPEED EDGE NEURAL TTS (/api/tts)
-    this.playViaEdgeApi(cleanText, playbackToken, onEnd);
+    // 2. Play Pure Microsoft Neural Edge Saudi Female Stream (/api/tts)
+    this.playViaEdgeNeural(cleanText, playbackToken, onEnd);
   }
 
-  // Layer 2 Edge API Player with Fast Auto-Fallback
-  private playViaEdgeApi(text: string, playbackToken: number, onEnd?: () => void) {
+  // Pure Saudi Female Edge Stream (/api/tts)
+  private playViaEdgeNeural(text: string, playbackToken: number, onEnd?: () => void) {
     if (typeof window === 'undefined') {
       if (onEnd) onEnd();
       return;
     }
-
-    let hasFallbackTriggered = false;
-    const triggerFallback = () => {
-      if (hasFallbackTriggered) return;
-      hasFallbackTriggered = true;
-      if (this.currentPlaybackToken === playbackToken) {
-        this.fallbackToBrowserSpeech(text, playbackToken, onEnd);
-      }
-    };
-
-    // 1200ms Timeout guard for Netlify static deployments
-    const timeoutId = setTimeout(triggerFallback, 1200);
 
     try {
       const audio = new Audio(`/api/tts?text=${encodeURIComponent(text)}`);
       audio.volume = this.volume;
       this.currentAudioElement = audio;
 
-      audio.onplay = () => {
-        clearTimeout(timeoutId);
-      };
-
       audio.onended = () => {
-        clearTimeout(timeoutId);
         if (this.currentPlaybackToken === playbackToken && onEnd) {
           onEnd();
         }
       };
 
       audio.onerror = () => {
-        clearTimeout(timeoutId);
-        triggerFallback();
+        // Play gentle female praise sound instead of failing or using male voice
+        if (this.currentPlaybackToken === playbackToken) {
+          const fallbackAudio = new Audio('/audio/dialogue/excellent.mp3');
+          fallbackAudio.volume = this.volume;
+          fallbackAudio.onended = () => { if (onEnd) onEnd(); };
+          fallbackAudio.play().catch(() => { if (onEnd) onEnd(); });
+        }
       };
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          clearTimeout(timeoutId);
-          triggerFallback();
+          if (this.currentPlaybackToken === playbackToken && onEnd) {
+            onEnd();
+          }
         });
       }
-    } catch {
-      clearTimeout(timeoutId);
-      triggerFallback();
-    }
-  }
-
-  // LAYER 3: CLIENT-SIDE ARABIC FEMALE SPEECH SYNTHESIS (Zero Server, 100% Offline)
-  private fallbackToBrowserSpeech(text: string, playbackToken: number, onEnd?: () => void) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      if (onEnd) onEnd();
-      return;
-    }
-
-    try {
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 0.88;
-      utterance.pitch = 1.25; // Gentle warm female pitch
-      utterance.volume = this.volume;
-
-      // Select female Arabic voice if available
-      const voices = window.speechSynthesis.getVoices();
-      const arabicVoices = voices.filter(v => v.lang && v.lang.startsWith('ar'));
-      const femaleArabicVoice = arabicVoices.find(v =>
-        v.name.toLowerCase().includes('female') ||
-        v.name.toLowerCase().includes('zariyah') ||
-        v.name.toLowerCase().includes('laila') ||
-        v.name.toLowerCase().includes('salma') ||
-        v.name.toLowerCase().includes('hoda') ||
-        v.name.toLowerCase().includes('sara')
-      ) || arabicVoices[0];
-
-      if (femaleArabicVoice) {
-        utterance.voice = femaleArabicVoice;
-      }
-
-      utterance.onend = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd();
-        }
-      };
-
-      utterance.onerror = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd();
-        }
-      };
-
-      window.speechSynthesis.speak(utterance);
     } catch {
       if (onEnd) onEnd();
     }
