@@ -75,13 +75,13 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
   };
 
   const teamMembers = [
+    { name: 'رنيم حسان العمري', role: 'إعداد وتطوير' },
     { name: 'فاطمة راضي البلاونة', role: 'إعداد وتطوير' },
     { name: 'هبة وليد ابو طبنجة', role: 'إعداد وتطوير' },
     { name: 'جنى عاطف الخوالدة', role: 'إعداد وتطوير' },
     { name: 'ميرا هيثم ذيابات', role: 'إعداد وتطوير' },
     { name: 'ديمة قاسم الكفيري', role: 'إعداد وتطوير' },
-    { name: 'طيبة رامي الزعبي', role: 'إعداد وتطوير' },
-    { name: 'رنيم حسان العمري', role: 'إعداد وتطوير' }
+    { name: 'طيبة رامي الزعبي', role: 'إعداد وتطوير' }
   ];
 
   return (
