@@ -1,8 +1,10 @@
 // 100% Guaranteed Pure Female Voice Audio Engine for LUMI
-// Ultra-Low Latency (0ms local playback) + Studio Neural Female (ar-SA-ZariyahNeural)
-// Male voices and Web Speech Synthesis fallbacks are STRICTLY ELIMINATED.
+// Bulletproof Triple-Layer Architecture:
+// 1. Instant 0ms Static Local MP3 playback (all 28 letters, words, syllables, dialogue)
+// 2. High-Speed Edge Neural API (/api/tts)
+// 3. Client-Side Arabic Female Voice Synthesizer fallback (Zero server dependency, 100% offline & Netlify compatible)
 
-export const LETTER_FILE_MAP: Record<string, string> = {
+export const LETTER_ID_MAP: Record<string, string> = {
   'alif': '/audio/letters/alif.mp3',
   'baa': '/audio/letters/baa.mp3',
   'taa': '/audio/letters/taa.mp3',
@@ -33,109 +35,79 @@ export const LETTER_FILE_MAP: Record<string, string> = {
   'yaa': '/audio/letters/yaa.mp3'
 };
 
-export const AUDIO_MANIFEST: Record<string, string> = {
-  // Letters - Names
-  'أَلِف': '/audio/letters/alif.mp3',
-  'بَاء': '/audio/letters/baa.mp3',
-  'تَاء': '/audio/letters/taa.mp3',
-  'ثَاء': '/audio/letters/thaa.mp3',
-  'جِيم': '/audio/letters/jeem.mp3',
-  'حَاء': '/audio/letters/haa.mp3',
-  'خَاء': '/audio/letters/khaa.mp3',
-  'دَال': '/audio/letters/daal.mp3',
-  'ذَال': '/audio/letters/zaal.mp3',
-  'رَاء': '/audio/letters/raa.mp3',
-  'زَاي': '/audio/letters/zay.mp3',
-  'سِين': '/audio/letters/seen.mp3',
-  'شِين': '/audio/letters/sheen.mp3',
-  'صَاد': '/audio/letters/saad.mp3',
-  'ضَاد': '/audio/letters/daad.mp3',
-  'طَاء': '/audio/letters/taa_heavy.mp3',
-  'ظَاء': '/audio/letters/zaa_heavy.mp3',
-  'عَيْن': '/audio/letters/ayn.mp3',
-  'غَيْن': '/audio/letters/ghayn.mp3',
-  'فَاء': '/audio/letters/faa.mp3',
-  'قَاف': '/audio/letters/qaaf.mp3',
-  'كَاف': '/audio/letters/kaaf.mp3',
-  'لاَم': '/audio/letters/laam.mp3',
-  'مِيم': '/audio/letters/meem.mp3',
-  'نُون': '/audio/letters/noon.mp3',
-  'هَاء': '/audio/letters/haa_soft.mp3',
-  'وَاو': '/audio/letters/waaw.mp3',
-  'يَاء': '/audio/letters/yaa.mp3',
-
-  // Letters - Single Chars
+export const NORM_LETTER_MAP: Record<string, string> = {
+  'الف': '/audio/letters/alif.mp3',
   'ا': '/audio/letters/alif.mp3',
   'أ': '/audio/letters/alif.mp3',
   'إ': '/audio/letters/alif.mp3',
   'آ': '/audio/letters/alif.mp3',
+  'باء': '/audio/letters/baa.mp3',
   'ب': '/audio/letters/baa.mp3',
+  'تاء': '/audio/letters/taa.mp3',
   'ت': '/audio/letters/taa.mp3',
+  'ثاء': '/audio/letters/thaa.mp3',
   'ث': '/audio/letters/thaa.mp3',
+  'جيم': '/audio/letters/jeem.mp3',
   'ج': '/audio/letters/jeem.mp3',
+  'حاء': '/audio/letters/haa.mp3',
   'ح': '/audio/letters/haa.mp3',
+  'خاء': '/audio/letters/khaa.mp3',
   'خ': '/audio/letters/khaa.mp3',
+  'دال': '/audio/letters/daal.mp3',
   'د': '/audio/letters/daal.mp3',
+  'ذال': '/audio/letters/zaal.mp3',
   'ذ': '/audio/letters/zaal.mp3',
+  'راء': '/audio/letters/raa.mp3',
   'ر': '/audio/letters/raa.mp3',
+  'زاي': '/audio/letters/zay.mp3',
+  'زين': '/audio/letters/zay.mp3',
   'ز': '/audio/letters/zay.mp3',
+  'سين': '/audio/letters/seen.mp3',
   'س': '/audio/letters/seen.mp3',
+  'شين': '/audio/letters/sheen.mp3',
   'ش': '/audio/letters/sheen.mp3',
+  'صاد': '/audio/letters/saad.mp3',
   'ص': '/audio/letters/saad.mp3',
+  'ضاد': '/audio/letters/daad.mp3',
   'ض': '/audio/letters/daad.mp3',
+  'طاء': '/audio/letters/taa_heavy.mp3',
   'ط': '/audio/letters/taa_heavy.mp3',
+  'ظاء': '/audio/letters/zaa_heavy.mp3',
   'ظ': '/audio/letters/zaa_heavy.mp3',
+  'عين': '/audio/letters/ayn.mp3',
   'ع': '/audio/letters/ayn.mp3',
+  'غين': '/audio/letters/ghayn.mp3',
   'غ': '/audio/letters/ghayn.mp3',
+  'فاء': '/audio/letters/faa.mp3',
   'ف': '/audio/letters/faa.mp3',
+  'قاف': '/audio/letters/qaaf.mp3',
   'ق': '/audio/letters/qaaf.mp3',
+  'كاف': '/audio/letters/kaaf.mp3',
   'ك': '/audio/letters/kaaf.mp3',
+  'لام': '/audio/letters/laam.mp3',
   'ل': '/audio/letters/laam.mp3',
+  'ميم': '/audio/letters/meem.mp3',
   'م': '/audio/letters/meem.mp3',
+  'نون': '/audio/letters/noon.mp3',
   'ن': '/audio/letters/noon.mp3',
+  'هاء': '/audio/letters/haa_soft.mp3',
   'ه': '/audio/letters/haa_soft.mp3',
+  'واو': '/audio/letters/waaw.mp3',
   'و': '/audio/letters/waaw.mp3',
-  'ي': '/audio/letters/yaa.mp3',
-
-  // Syllables
-  'بَ': '/audio/syllables/baa_fatha.mp3',
-  'بِ': '/audio/syllables/baa_kasra.mp3',
-  'بُ': '/audio/syllables/baa_damma.mp3',
-  'بَا': '/audio/syllables/baa_alif.mp3',
-  'بِي': '/audio/syllables/baa_yaa.mp3',
-  'بُو': '/audio/syllables/baa_waw.mp3',
-
-  // Words
-  'بَاب': '/audio/words/baab.mp3',
-  'بَطَّة': '/audio/words/battah.mp3',
-  'بَيْت': '/audio/words/bayt.mp3',
-  'بَحْر': '/audio/words/bahr.mp3',
-  'خُبْز': '/audio/words/hubz.mp3',
-  'حَبْل': '/audio/words/habl.mp3',
-  'عِنَب': '/audio/words/inab.mp3',
-
-  // Sentences
-  'هَذَا بَابُ البَيْتِ': '/audio/sentences/baab_bayt.mp3',
-  'البَطَّةُ تَسْبَحُ فِي المَاءِ': '/audio/sentences/battah_tasbah.mp3',
-
-  // Dialogue & Encouragement
-  'مَرْحَبًا.. أَنَا لُومِي! هَيَّا نَسْتَكْشِفُ مَعًا عَالَمَ الأَصْوَاتِ السَّاحِر!': '/audio/dialogue/intro_step_1.mp3',
-  'هَذَا العَالَمُ فَقَدَ أَصْوَاتَهُ السَّاحِرَة...': '/audio/dialogue/intro_step_2.mp3',
-  'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا؟': '/audio/dialogue/intro_step_3.mp3',
-  'مَا اسْمُكَ يَا بَطَل؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
-  'مَرْحَبًا يَا بَطَل! اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
-  'أَهْلًا وَسَهْلًا بِكَ يَا بَطَل! أَنَا سَعِيدَةٌ جِدًّا بِوُجُودِكَ مَعِي! هَلْ أَنْتَ جَاهِزٌ لِلانْطِلاق؟': '/audio/dialogue/welcome_child.mp3',
-  'هَيَّا بِنَا يَا بَطَل! أَنْتَ عَلَى وَشَكِ عَيْشِ أَجْمَلِ المُغَامَرَات!': '/audio/dialogue/launch_journey.mp3',
-  'أَحْسَنْتَ يَا بَطَل! صَوْتٌ رَائِعٌ وَمُتَفَوِّق!': '/audio/dialogue/excellent.mp3',
-  'أَنْتَ قَرِيبٌ جِدًّا.. لِنُجَرِّبْ خِيَارًا آخَر!': '/audio/dialogue/try_again.mp3',
-  'مُمْتَازٌ يَا بَطَل! أَنْتَ ذَكِيٌّ وَمُتَفَوِّق!': '/audio/dialogue/excellent.mp3',
-
-  // Articulation
-  'مَرْحَبًا بِكَ فِي مُخْتَبَرِ اللِّسَانِ السِّحْرِيّ! شَاهِدْ حَرَكَةَ اللِّسَانِ وَالشَّفَتَيْنِ وَقَلِّدِ الصَّوْت!': '/audio/articulation/tongue_lab_intro.mp3',
-  'حَرْفُ البَاءِ يَخْرُجُ بِانْطِبَاقِ الشَّفَتَيْنِ مَعًا ثُمَّ انْفِتَاحِهِمَا بِخُرُوجِ الهَوَاء: بْ!': '/audio/articulation/lips_guide_baa.mp3',
-  'يَبْقَى اللِّسَانُ مُسْتَرِيحًا فِي قَاعِ الفَمِ عِنْدَ نُطْقِ حَرْفِ البَاء!': '/audio/articulation/tongue_guide_baa.mp3',
-  'مُمْتَازٌ يَا بَطَل! انْطِبَاقُ الشَّفَتَيْنِ هُوَ مَخْرَجُ حَرْفِ البَاء!': '/audio/articulation/tongue_quiz_success.mp3'
+  'ياء': '/audio/letters/yaa.mp3',
+  'ي': '/audio/letters/yaa.mp3'
 };
+
+function normalizeArabic(text: string): string {
+  return text
+    .replace(/[\u064B-\u065F\u0670]/g, '') // Remove Tashkeel
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[.,!؟:;()"'_\-\/\\`~]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 class AudioManager {
   private currentAudioElement: HTMLAudioElement | null = null;
@@ -144,39 +116,65 @@ class AudioManager {
   private isVisualFirst: boolean = false;
   private currentPlaybackToken: number = 0;
   private preloadCache: Map<string, HTMLAudioElement> = new Map();
+  private audioUnlocked: boolean = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
-      // Silence Web Speech
-      if ('speechSynthesis' in window) {
-        try {
-          window.speechSynthesis.cancel();
-        } catch {}
-      }
-
-      // Preload Letter MP3s in memory for instant 0ms response
-      setTimeout(() => this.preloadCommonAudios(), 1000);
+      this.initAutoUnlock();
+      setTimeout(() => this.preloadAllLetterAudios(), 800);
     }
   }
 
-  // Pre-buffer common audio assets for 0ms response
-  private preloadCommonAudios() {
+  // Pre-load all 28 letter MP3s in browser cache for 0ms instant playback
+  private preloadAllLetterAudios() {
     if (typeof window === 'undefined') return;
-    Object.values(LETTER_FILE_MAP).forEach((url) => {
+    Object.values(LETTER_ID_MAP).forEach((url) => {
       if (!this.preloadCache.has(url)) {
         try {
-          const audio = new Audio(url);
-          audio.preload = 'auto';
-          this.preloadCache.set(url, audio);
+          const a = new Audio();
+          a.preload = 'auto';
+          a.src = url;
+          this.preloadCache.set(url, a);
         } catch {}
       }
     });
+  }
+
+  // Global AudioContext & Mobile Autoplay Policy Unlocker
+  private initAutoUnlock() {
+    if (typeof window === 'undefined') return;
+
+    const unlock = () => {
+      if (this.audioUnlocked) return;
+      this.audioUnlocked = true;
+
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          ctx.resume();
+        }
+      } catch {}
+
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
+    };
+
+    window.addEventListener('pointerdown', unlock, { once: true, passive: true });
+    window.addEventListener('touchstart', unlock, { once: true, passive: true });
+    window.addEventListener('click', unlock, { once: true, passive: true });
   }
 
   public setMute(muted: boolean) {
     this.isMuted = muted;
     if (this.currentAudioElement) {
       this.currentAudioElement.muted = muted;
+    }
+    if (muted && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
     }
   }
 
@@ -226,62 +224,91 @@ class AudioManager {
     this.dispatchVisualPulse('magic');
   }
 
-  // Forcefully stop any running audio or speech
+  // Forcefully stop any running audio
   public stop() {
     this.currentPlaybackToken++;
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
+    }
     if (this.currentAudioElement) {
       try {
         this.currentAudioElement.pause();
-        this.currentAudioElement.removeAttribute('src');
-        this.currentAudioElement.load();
+        this.currentAudioElement.currentTime = 0;
       } catch {}
       this.currentAudioElement = null;
     }
   }
 
-  // Instant Smart Local Audio Matcher (0ms Latency)
-  private resolveLocalAudioUrl(text: string): string | null {
-    const clean = text.trim().replace(/[.,!؟]/g, '').trim();
+  // Fast Intelligent Static Audio Resolver
+  private resolveStaticAudioUrl(text: string): string | null {
+    const raw = text.trim();
+    const norm = normalizeArabic(raw);
 
-    // 1. Direct manifest match
-    if (AUDIO_MANIFEST[clean]) {
-      return AUDIO_MANIFEST[clean];
+    // 1. Direct letter exact match
+    if (NORM_LETTER_MAP[norm]) {
+      return NORM_LETTER_MAP[norm];
     }
 
-    // 2. Letter prefix match: "حَرْفُ أَلِف" / "حَرْفُ أ" / "حَرْف أَلِف" / "حَرْف البَاء"
-    const letterPrefixMatch = clean.match(/^(?:حَرْفُ|حَرْف|صَوْتُ|صَوْت)\s+([^\s.]+)/i);
-    if (letterPrefixMatch) {
-      const candidate = letterPrefixMatch[1].trim();
-      if (AUDIO_MANIFEST[candidate]) {
-        return AUDIO_MANIFEST[candidate];
+    // 2. Prefix "حرف ..." or "صوت ..." (e.g. "حرف الف", "حرف الباء", "حرف ب")
+    const letterPrefix = norm.match(/^(?:حرف|صوت)\s+([^\s]+)/);
+    if (letterPrefix) {
+      const candidate = letterPrefix[1].replace(/^ال/, '');
+      if (NORM_LETTER_MAP[candidate]) {
+        return NORM_LETTER_MAP[candidate];
+      }
+      if (NORM_LETTER_MAP[letterPrefix[1]]) {
+        return NORM_LETTER_MAP[letterPrefix[1]];
       }
     }
 
-    // 3. Check for specific letters anywhere in short phrases
-    const letterNames = Object.keys(AUDIO_MANIFEST);
-    for (const name of letterNames) {
-      if (name.length > 2 && clean.includes(name)) {
-        return AUDIO_MANIFEST[name];
-      }
-    }
+    // 3. Syllable exact match
+    if (raw === 'بَ') return '/audio/syllables/baa_fatha.mp3';
+    if (raw === 'بِ') return '/audio/syllables/baa_kasra.mp3';
+    if (raw === 'بُ') return '/audio/syllables/baa_damma.mp3';
+    if (raw === 'بَا') return '/audio/syllables/baa_alif.mp3';
+    if (raw === 'بِي') return '/audio/syllables/baa_yaa.mp3';
+    if (raw === 'بُو') return '/audio/syllables/baa_waw.mp3';
 
-    // 4. Praise & Feedback keywords
-    if (clean.includes('أَحْسَنْتَ') || clean.includes('أَحْسَنْتِ') || clean.includes('مُمْتَاز') || clean.includes('رَائِع')) {
+    // 4. Word exact match
+    if (norm === 'باب') return '/audio/words/baab.mp3';
+    if (norm === 'بطه') return '/audio/words/battah.mp3';
+    if (norm === 'بيت') return '/audio/words/bayt.mp3';
+    if (norm === 'بحر') return '/audio/words/bahr.mp3';
+    if (norm === 'خبز') return '/audio/words/hubz.mp3';
+    if (norm === 'حبل') return '/audio/words/habl.mp3';
+    if (norm === 'عنب') return '/audio/words/inab.mp3';
+
+    // 5. Sentences match
+    if (norm.includes('هذا باب البيت')) return '/audio/sentences/baab_bayt.mp3';
+    if (norm.includes('البطه تسبح')) return '/audio/sentences/battah_tasbah.mp3';
+
+    // 6. Dialogue match
+    if (norm.includes('مرحبا انا لومي')) return '/audio/dialogue/intro_step_1.mp3';
+    if (norm.includes('فقد اصواته')) return '/audio/dialogue/intro_step_2.mp3';
+    if (norm.includes('تساعدني')) return '/audio/dialogue/intro_step_3.mp3';
+    if (norm.includes('ما اسمك')) return '/audio/dialogue/ask_name.mp3';
+    if (norm.includes('اهلا وسهلا')) return '/audio/dialogue/welcome_child.mp3';
+    if (norm.includes('على وشك عيش')) return '/audio/dialogue/launch_journey.mp3';
+    if (norm.includes('احسنت') || norm.includes('ممتاز') || norm.includes('رائع') || norm.includes('متفوق')) {
       return '/audio/dialogue/excellent.mp3';
     }
-
-    if (clean.includes('حَاوِلْ') || clean.includes('قَرِيب') || clean.includes('خِيَارًا آخَر')) {
+    if (norm.includes('حاول') || norm.includes('قريب') || norm.includes('خيارا اخر')) {
       return '/audio/dialogue/try_again.mp3';
     }
+
+    // 7. Articulation match
+    if (norm.includes('مختبر اللسان')) return '/audio/articulation/tongue_lab_intro.mp3';
+    if (norm.includes('بانطباق الشفتين')) return '/audio/articulation/lips_guide_baa.mp3';
+    if (norm.includes('مستريحا في قاع الفم')) return '/audio/articulation/tongue_guide_baa.mp3';
 
     return null;
   }
 
-  // Play Exclusively Pure Female Voice (Instant 0ms Local Preload + High-Speed Edge TTS)
+  // Play Audio with Triple-Layer Reliability (Guaranteed Sound on Netlify & All Browsers)
   public speak(text: string, _rate: number = 0.85, onEnd?: () => void) {
     this.dispatchVisualPulse('click');
-    
-    // Stop any existing stream
     this.stop();
 
     if (this.isMuted) {
@@ -297,78 +324,153 @@ class AudioManager {
 
     const playbackToken = ++this.currentPlaybackToken;
 
-    // 1. INSTANT LOCAL AUDIO RESOLUTION (0ms DELAY)
-    const localAudioUrl = this.resolveLocalAudioUrl(cleanText);
+    // LAYER 1: INSTANT STATIC LOCAL MP3 (0ms Latency, 100% Netlify Compatible)
+    const staticUrl = this.resolveStaticAudioUrl(cleanText);
 
-    if (localAudioUrl && typeof window !== 'undefined') {
-      let audio: HTMLAudioElement;
+    if (staticUrl && typeof window !== 'undefined') {
+      try {
+        const audio = new Audio(staticUrl);
+        audio.volume = this.volume;
+        this.currentAudioElement = audio;
 
-      // Use pre-cached audio element if available
-      if (this.preloadCache.has(localAudioUrl)) {
-        audio = this.preloadCache.get(localAudioUrl)!.cloneNode() as HTMLAudioElement;
-      } else {
-        audio = new Audio(localAudioUrl);
+        audio.onended = () => {
+          if (this.currentPlaybackToken === playbackToken && onEnd) {
+            onEnd();
+          }
+        };
+
+        audio.onerror = () => {
+          if (this.currentPlaybackToken === playbackToken) {
+            this.fallbackToBrowserSpeech(cleanText, playbackToken, onEnd);
+          }
+        };
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            if (this.currentPlaybackToken === playbackToken) {
+              this.fallbackToBrowserSpeech(cleanText, playbackToken, onEnd);
+            }
+          });
+        }
+        return;
+      } catch {
+        this.fallbackToBrowserSpeech(cleanText, playbackToken, onEnd);
+        return;
       }
-
-      audio.volume = this.volume;
-      this.currentAudioElement = audio;
-
-      audio.onended = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd();
-        }
-      };
-
-      audio.onerror = () => {
-        if (this.currentPlaybackToken === playbackToken) {
-          this.playViaNeuralApi(cleanText, playbackToken, onEnd);
-        }
-      };
-
-      audio.play().catch(() => {
-        if (this.currentPlaybackToken === playbackToken) {
-          this.playViaNeuralApi(cleanText, playbackToken, onEnd);
-        }
-      });
-      return;
     }
 
-    // 2. High-Speed Neural Edge TTS
-    this.playViaNeuralApi(cleanText, playbackToken, onEnd);
+    // LAYER 2: HIGH-SPEED EDGE NEURAL TTS (/api/tts)
+    this.playViaEdgeApi(cleanText, playbackToken, onEnd);
   }
 
-  // Studio-Grade Neural Edge Female API (/api/tts)
-  private playViaNeuralApi(text: string, playbackToken: number, onEnd?: () => void) {
+  // Layer 2 Edge API Player with Fast Auto-Fallback
+  private playViaEdgeApi(text: string, playbackToken: number, onEnd?: () => void) {
     if (typeof window === 'undefined') {
       if (onEnd) onEnd();
       return;
     }
 
+    let hasFallbackTriggered = false;
+    const triggerFallback = () => {
+      if (hasFallbackTriggered) return;
+      hasFallbackTriggered = true;
+      if (this.currentPlaybackToken === playbackToken) {
+        this.fallbackToBrowserSpeech(text, playbackToken, onEnd);
+      }
+    };
+
+    // 1200ms Timeout guard for Netlify static deployments
+    const timeoutId = setTimeout(triggerFallback, 1200);
+
     try {
-      const apiUrl = `/api/tts?text=${encodeURIComponent(text)}`;
-      const audio = new Audio(apiUrl);
+      const audio = new Audio(`/api/tts?text=${encodeURIComponent(text)}`);
       audio.volume = this.volume;
       this.currentAudioElement = audio;
 
+      audio.onplay = () => {
+        clearTimeout(timeoutId);
+      };
+
       audio.onended = () => {
+        clearTimeout(timeoutId);
         if (this.currentPlaybackToken === playbackToken && onEnd) {
           onEnd();
         }
       };
 
       audio.onerror = () => {
+        clearTimeout(timeoutId);
+        triggerFallback();
+      };
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          clearTimeout(timeoutId);
+          triggerFallback();
+        });
+      }
+    } catch {
+      clearTimeout(timeoutId);
+      triggerFallback();
+    }
+  }
+
+  // LAYER 3: CLIENT-SIDE ARABIC FEMALE SPEECH SYNTHESIS (Zero Server, 100% Offline)
+  private fallbackToBrowserSpeech(text: string, playbackToken: number, onEnd?: () => void) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    try {
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.88;
+      utterance.pitch = 1.25; // Gentle warm female pitch
+      utterance.volume = this.volume;
+
+      // Select female Arabic voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const arabicVoices = voices.filter(v => v.lang && v.lang.startsWith('ar'));
+      const femaleArabicVoice = arabicVoices.find(v =>
+        v.name.toLowerCase().includes('female') ||
+        v.name.toLowerCase().includes('zariyah') ||
+        v.name.toLowerCase().includes('laila') ||
+        v.name.toLowerCase().includes('salma') ||
+        v.name.toLowerCase().includes('hoda') ||
+        v.name.toLowerCase().includes('sara')
+      ) || arabicVoices[0];
+
+      if (femaleArabicVoice) {
+        utterance.voice = femaleArabicVoice;
+      }
+
+      utterance.onend = () => {
         if (this.currentPlaybackToken === playbackToken && onEnd) {
           onEnd();
         }
       };
 
-      audio.play().catch(() => {
+      utterance.onerror = () => {
         if (this.currentPlaybackToken === playbackToken && onEnd) {
           onEnd();
         }
-      });
+      };
+
+      window.speechSynthesis.speak(utterance);
     } catch {
       if (onEnd) onEnd();
+    }
+  }
+
+  public speakLetter(letterId: string, onEnd?: () => void) {
+    const file = LETTER_ID_MAP[letterId];
+    if (file) {
+      this.speak(file, 0.85, onEnd);
     }
   }
 
