@@ -411,29 +411,71 @@ class AudioManager {
       return EXACT_STATIC_AUDIO[stripped];
     }
 
-    // If text contains a direct address to the hero ('يا ' or child name), do NOT intercept with generic static audio.
-    // Instead, let the Saudi female neural voice synthesize the complete sentence so the child's exact name is spoken!
-    if (stripped.includes('يا ') || stripped.startsWith('يا') || stripped.includes('البطل') || stripped.includes('البَطَل')) {
-      return null;
+    // 1. Direct tailored matches for child names with custom recordings
+    if (stripped.includes('طلال')) {
+      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز') || stripped.includes('رائع') || stripped.includes('اجابة')) {
+        return '/audio/dialogue/cheer_talal.mp3';
+      }
+      if (stripped.includes('اهلا') || stripped.includes('أهلا') || stripped.includes('مرحبا') || stripped.includes('مَرْحَبًا') || stripped.includes('هيا') || stripped.includes('اختر')) {
+        return '/audio/dialogue/welcome_talal.mp3';
+      }
     }
 
-    // 1. Intro dialogue lines (exact generic lines)
+    if (stripped.includes('رنيم')) {
+      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز') || stripped.includes('رائع') || stripped.includes('اجابة')) {
+        return '/audio/dialogue/cheer_raneem.mp3';
+      }
+      if (stripped.includes('اهلا') || stripped.includes('أهلا') || stripped.includes('مرحبا') || stripped.includes('مَرْحَبًا') || stripped.includes('هيا') || stripped.includes('اختر')) {
+        return '/audio/dialogue/welcome_raneem.mp3';
+      }
+    }
+
+    // 2. Chained Offline Saudi Female Voice for all other registered child names
+    const nameFile = this.findNameAudioInText(stripped);
+    if (nameFile) {
+      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز') || stripped.includes('رائع') || stripped.includes('اجابة')) {
+        this.queueAudioSequence(['/audio/dialogue/excellent.mp3', nameFile]);
+        return '__QUEUED__';
+      }
+      if (stripped.includes('مبروك') || stripped.includes('مبارك') || stripped.includes('فتحت لك')) {
+        this.queueAudioSequence(['/audio/dialogue/open_next_stage.mp3', nameFile]);
+        return '__QUEUED__';
+      }
+      if (stripped.includes('حاول') || stripped.includes('حاولي') || stripped.includes('مرة اخرى')) {
+        this.queueAudioSequence(['/audio/dialogue/try_again.mp3', nameFile]);
+        return '__QUEUED__';
+      }
+      if (stripped.includes('المرحلة')) {
+        const stageMatch = stripped.match(/المرحلة\s*(\d)/);
+        const stageNum = stageMatch ? stageMatch[1] : null;
+        const stageFile = stageNum ? `/audio/stages/stage_${stageNum}.mp3` : '/audio/stages/listen_sound.mp3';
+        this.queueAudioSequence([stageFile, nameFile]);
+        return '__QUEUED__';
+      }
+      if (stripped.includes('اهلا') || stripped.includes('أهلا') || stripped.includes('مرحبا') || stripped.includes('مَرْحَبًا') || stripped.includes('اختر')) {
+        this.queueAudioSequence(['/audio/dialogue/welcome.mp3', nameFile]);
+        return '__QUEUED__';
+      }
+      return nameFile;
+    }
+
+    // 3. Intro dialogue lines (exact generic lines)
     if (stripped === 'انا لومي' || stripped === 'مرحبا انا لومي هيا نستكشف معا عالم الاصوات الساحر') {
       return '/audio/dialogue/intro_step_1.mp3';
     }
-    if (stripped.includes('فقد اصواته الساحرة') && !stripped.includes('يا')) {
+    if (stripped.includes('فقد اصواته الساحرة')) {
       return '/audio/dialogue/intro_step_2.mp3';
     }
-    if (stripped.includes('هل تساعدني في اعادتها') && !stripped.includes('يا')) {
+    if (stripped.includes('هل تساعدني في اعادتها')) {
       return '/audio/dialogue/intro_step_3.mp3';
     }
 
-    // 2. Ask name (exact generic prompt)
-    if (stripped === 'ما اسمك يا بطل' || stripped === 'ما اسمك يا بطل اكتب اسمك هنا لنبدا رحلتنا الساحرة') {
+    // 4. Ask name (exact generic prompt)
+    if (stripped.includes('ما اسمك') || stripped.includes('اكتب اسمك')) {
       return '/audio/dialogue/ask_name.mp3';
     }
 
-    // 3. Exact short static system prompts (only when no hero name is in the sentence)
+    // 5. Exact short static system prompts
     if (stripped === 'مبروك فتحت لك المرحلة التالية هيا ننطلق' || stripped === 'مبروك فتحت لك المرحلة التالية') {
       return '/audio/dialogue/open_next_stage.mp3';
     }
@@ -653,9 +695,12 @@ class AudioManager {
       }
       return;
     } catch (err) {
-      console.warn('[AudioManager] ClientEdgeTTS unavailable. Silent fail (no male voice allowed).', err);
-      if (this.currentPlaybackToken === playbackToken && onEnd) {
-        onEnd(); // Silent fail - NEVER use male speechSynthesis
+      console.warn('[AudioManager] ClientEdgeTTS synthesis exception. Playing offline female audio...', err);
+      if (this.currentPlaybackToken === playbackToken) {
+        this.queueAudioSequence(['/audio/dialogue/welcome.mp3', '/audio/names/batal.mp3']);
+        if (onEnd) {
+          setTimeout(onEnd, 1500);
+        }
       }
     }
   }
