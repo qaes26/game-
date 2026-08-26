@@ -1,7 +1,8 @@
 // Pure Saudi Female Voice Audio Engine for LUMI (ar-SA-ZariyahNeural)
-// 1. Direct Static Audio for clean letter names, words, and static stages
-// 2. Real-time Neural Voice Synthesis for dynamic child names (أهلاً يا طلال، أحسنت يا عمر، يا سارة...)
-// SpeechSynthesis (male voice) is strictly banned.
+// 100% Client-Side In-Browser Architecture with Zero Server Dependency
+// Works natively on Netlify, Vercel, GitHub Pages, Mobile & Desktop
+
+import { ClientEdgeTTS } from './ClientEdgeTTS';
 
 export const LETTER_ID_MAP: Record<string, string> = {
   'alif': '/audio/letters/alif.mp3',
@@ -82,7 +83,7 @@ export const EXACT_STATIC_AUDIO: Record<string, string> = {
   'حَبْل': '/audio/words/habl.mp3',
   'عِنَب': '/audio/words/inab.mp3',
 
-  // Static Phrases (only when no custom child name)
+  // Static Dialogues (only exact matches without child name)
   'اسْتَمِعْ لِصَوْتِ الحَرْف': '/audio/stages/listen_sound.mp3',
   'مَا اسْمُكَ يَا بَطَل؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
   'مَرْحَبًا يَا بَطَل! اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
@@ -109,7 +110,7 @@ class AudioManager {
       }
 
       this.initAutoUnlock();
-      setTimeout(() => this.preloadAllAudios(), 500);
+      setTimeout(() => this.preloadAllAudios(), 400);
     }
   }
 
@@ -217,8 +218,8 @@ class AudioManager {
   }
 
   // Play Pure Saudi Female Voice:
-  // - Direct Static MP3 for exact single letter / word
-  // - Real-time Edge Neural TTS for dynamic sentences with child's name
+  // 1. Direct Static local MP3 for exact letter / word click (0ms delay)
+  // 2. Direct In-Browser ClientEdgeTTS for custom child name and dynamic sentences (Zero Server dependency)
   public speak(text: string, _rate: number = 0.85, onEnd?: () => void) {
     this.dispatchVisualPulse('click');
     this.stop();
@@ -236,7 +237,7 @@ class AudioManager {
 
     const playbackToken = ++this.currentPlaybackToken;
 
-    // 1. Direct match for exact static single items (letters, syllables, words)
+    // 1. Direct static MP3 check (for isolated letter or single word)
     const staticUrl = EXACT_STATIC_AUDIO[cleanText];
 
     if (staticUrl && typeof window !== 'undefined') {
@@ -253,7 +254,7 @@ class AudioManager {
 
         audio.onerror = () => {
           if (this.currentPlaybackToken === playbackToken) {
-            this.playViaEdgeNeural(cleanText, playbackToken, onEnd);
+            this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
           }
         };
 
@@ -261,30 +262,34 @@ class AudioManager {
         if (playPromise !== undefined) {
           playPromise.catch(() => {
             if (this.currentPlaybackToken === playbackToken) {
-              this.playViaEdgeNeural(cleanText, playbackToken, onEnd);
+              this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
             }
           });
         }
         return;
       } catch {
-        if (onEnd) onEnd();
+        this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
         return;
       }
     }
 
-    // 2. Real-time Pure Neural Female Voice for custom child name and dynamic dialogues
-    this.playViaEdgeNeural(cleanText, playbackToken, onEnd);
+    // 2. In-Browser Neural Female Speech Synthesis (Speaks child's real name out loud!)
+    this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
   }
 
-  // Real-time Neural Voice (/api/tts)
-  private playViaEdgeNeural(text: string, playbackToken: number, onEnd?: () => void) {
+  private async synthesizeAndPlay(text: string, playbackToken: number, onEnd?: () => void) {
     if (typeof window === 'undefined') {
       if (onEnd) onEnd();
       return;
     }
 
     try {
-      const audio = new Audio(`/api/tts?text=${encodeURIComponent(text)}`);
+      // Synthesize directly in user's browser using Microsoft Neural Saudi Female Voice
+      const audioUrl = await ClientEdgeTTS.synthesize(text, 'ar-SA-ZariyahNeural', '-8%', '+0Hz');
+
+      if (this.currentPlaybackToken !== playbackToken) return;
+
+      const audio = new Audio(audioUrl);
       audio.volume = this.volume;
       this.currentAudioElement = audio;
 
@@ -308,8 +313,11 @@ class AudioManager {
           }
         });
       }
-    } catch {
-      if (onEnd) onEnd();
+    } catch (err) {
+      console.error('[AudioManager] Synthesis error:', err);
+      if (this.currentPlaybackToken === playbackToken && onEnd) {
+        onEnd();
+      }
     }
   }
 
