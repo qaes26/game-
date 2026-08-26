@@ -461,10 +461,48 @@ class AudioManager {
       return;
     }
 
-    // Step 2A: Try In-Browser Edge TTS (Saudi Neural Voice)
+    // Step 2A: Fetch from Azure Serverless TTS API (/api/tts)
+    try {
+      const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}&voice=ar-SA-ZariyahNeural`);
+      if (this.currentPlaybackToken !== playbackToken) return;
+
+      if (res.ok && res.headers.get('content-type')?.includes('audio')) {
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+
+        const audio = new Audio(blobUrl);
+        audio.volume = this.volume;
+        this.currentAudioElement = audio;
+
+        audio.onended = () => {
+          if (this.currentPlaybackToken === playbackToken && onEnd) {
+            onEnd();
+          }
+        };
+
+        audio.onerror = () => {
+          if (this.currentPlaybackToken === playbackToken) {
+            this.fallbackNativeSpeech(text, playbackToken, onEnd);
+          }
+        };
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            if (this.currentPlaybackToken === playbackToken) {
+              this.fallbackNativeSpeech(text, playbackToken, onEnd);
+            }
+          });
+        }
+        return;
+      }
+    } catch (err) {
+      console.warn('[AudioManager] /api/tts fetch error. Trying ClientEdgeTTS...', err);
+    }
+
+    // Step 2B: Client-side In-Browser Edge TTS (Saudi Female Voice)
     try {
       const audioUrl = await ClientEdgeTTS.synthesize(text, 'ar-SA-ZariyahNeural', '-8%', '+0Hz');
-
       if (this.currentPlaybackToken !== playbackToken) return;
 
       const audio = new Audio(audioUrl);
@@ -478,7 +516,6 @@ class AudioManager {
       };
 
       audio.onerror = () => {
-        console.warn('[AudioManager] Neural TTS blob error. Falling back to native SpeechSynthesis...');
         if (this.currentPlaybackToken === playbackToken) {
           this.fallbackNativeSpeech(text, playbackToken, onEnd);
         }
@@ -501,7 +538,7 @@ class AudioManager {
     }
   }
 
-  // Step 2B: Native Web Speech API Fallback (Guaranteed offline / in-browser)
+  // Step 2C: Native Web Speech API Fallback (Strictly Arabic Female Voice)
   private fallbackNativeSpeech(text: string, playbackToken: number, onEnd?: () => void) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
@@ -512,13 +549,19 @@ class AudioManager {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ar-SA';
-      utterance.rate = 0.9;
+      utterance.rate = 0.95;
+      utterance.pitch = 1.15; // Slightly higher feminine pitch
       utterance.volume = this.volume;
 
       const voices = window.speechSynthesis.getVoices();
-      const arabicVoice = voices.find((v) => v.lang.startsWith('ar') || v.name.includes('Arabic'));
-      if (arabicVoice) {
-        utterance.voice = arabicVoice;
+      // Strictly prioritize female voices
+      const arabicFemaleVoice = voices.find((v) =>
+        (v.lang.startsWith('ar') && (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Laila') || v.name.includes('Hoda') || v.name.includes('Fatima') || v.name.includes('Maryam'))) ||
+        (v.lang.startsWith('ar') && !v.name.includes('Male') && !v.name.includes('Naayf') && !v.name.includes('Tarik') && !v.name.includes('Hamed'))
+      );
+
+      if (arabicFemaleVoice) {
+        utterance.voice = arabicFemaleVoice;
       }
 
       utterance.onend = () => {
