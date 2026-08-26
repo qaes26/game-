@@ -12,20 +12,18 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnterApp }) => {
-  const [step, setStep] = useState<'goals' | 'design' | 'development' | 'credits'>('goals');
+  const [step, setStep] = useState<'goals' | 'credits'>('goals');
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [installProgress, setInstallProgress] = useState<number>(0);
 
   const stepLabels: Record<string, string> = {
-    goals: '1 / 4 — أَهْدَافُ البَرْنَامَج',
-    design: '2 / 4 — التَّصْمِيم',
-    development: '3 / 4 — التَّطْوِير',
-    credits: '4 / 4 — فَرِيقُ الإِعْدَاد'
+    goals: '1 / 2 — أَهْدَافُ البَرْنَامَج',
+    credits: '2 / 2 — فَرِيقُ الإِعْدَاد'
   };
 
-  const stepOrder: Array<'goals' | 'design' | 'development' | 'credits'> = ['goals', 'design', 'development', 'credits'];
+  const stepOrder: Array<'goals' | 'credits'> = ['goals', 'credits'];
   const currentIndex = stepOrder.indexOf(step);
 
   useEffect(() => {
@@ -254,142 +252,12 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
         )}
 
         {/* ========================================================================= */}
-        {/* STEP 2: DESIGN (التصميم) */}
-        {/* ========================================================================= */}
-        {step === 'design' && (
-          <div className="space-y-6 text-center animate-pop">
-            
-            <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-glow-yellow border-2 border-amber-400">
-              <img src="/icons/lumi_logo.png" alt="LUMI Logo" className="w-full h-full object-cover" />
-            </div>
-
-            <div className="space-y-1">
-              <h2 className="text-2xl md:text-3xl font-black text-amber-200">
-                التَّصْمِيم 🎨
-              </h2>
-              <p className="text-xs text-slate-400 font-bold">
-                تَصْمِيمٌ بَصَرِيٌّ مُبْتَكَرٌ مُصَمَّمٌ خِصِّيصًا لِلأَطْفَال
-              </p>
-            </div>
-
-            <div className="bg-[#0a0a0a] border-2 border-amber-400/40 rounded-3xl p-5 md:p-6 text-right space-y-4 shadow-2xl">
-              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
-                <Palette className="w-5 h-5 text-pink-400" />
-                <h2 className="text-base md:text-lg font-black text-amber-200">
-                  مَلامِحُ التَّصْمِيم
-                </h2>
-              </div>
-
-              <div className="space-y-3">
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">🌌</span>
-                  <div>
-                    <h3 className="text-xs font-black text-amber-300">عَوَالِمُ ثُلاثِيَّةُ الأَبْعَاد</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">8 عَوَالِمَ خَيَالِيَّةٍ مُتَنَوِّعَةٍ (وَادِي الحُرُوف، غَابَةُ المَقَاطِع، قَرْيَةُ الكَلِمَات، نَهْرُ الجُمَل...) بِتَصَامِيمَ جَذَّابَة.</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">👩‍🏫</span>
-                  <div>
-                    <h3 className="text-xs font-black text-cyan-300">شَخْصِيَّةُ لُومِي المُتَحَرِّكَة</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">مُعَلِّمَةٌ اِفْتِرَاضِيَّةٌ بِصَوْتٍ أُنْثَوِيٍّ نَقِيٍّ 100% تُرَافِقُ الطِّفْلَ خُطْوَةً بِخُطْوَة.</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">✨</span>
-                  <div>
-                    <h3 className="text-xs font-black text-emerald-300">تَأْثِيرَاتٌ بَصَرِيَّة</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">أَلْوَانٌ ذَهَبِيَّةٌ مَلَكِيَّة، تَأْثِيرَاتُ تَوَهُّجٍ وَنُجُومٍ مُتَلأْلِئَةٌ مُصَمَّمَةٌ لِجَذْبِ اِنْتِبَاهِ الأَطْفَال.</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">📱</span>
-                  <div>
-                    <h3 className="text-xs font-black text-purple-300">تَصْمِيمٌ مُتَجَاوِب</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">وَاجِهَةٌ مُتَكَيِّفَةٌ تَعْمَلُ بِسَلاسَةٍ عَلَى الهَاتِفِ وَالحَاسُوبِ وَالتَّابْلِت.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* STEP 3: DEVELOPMENT (التطوير) */}
-        {/* ========================================================================= */}
-        {step === 'development' && (
-          <div className="space-y-6 text-center animate-pop">
-            
-            <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-glow-yellow border-2 border-amber-400">
-              <img src="/icons/lumi_logo.png" alt="LUMI Logo" className="w-full h-full object-cover" />
-            </div>
-
-            <div className="space-y-1">
-              <h2 className="text-2xl md:text-3xl font-black text-amber-200">
-                التَّطْوِير 💻
-              </h2>
-              <p className="text-xs text-slate-400 font-bold">
-                تِقْنِيَّاتٌ حَدِيثَةٌ لِتَجْرِبَةٍ تَعْلِيمِيَّةٍ مُتَقَدِّمَة
-              </p>
-            </div>
-
-            <div className="bg-[#0a0a0a] border-2 border-amber-400/40 rounded-3xl p-5 md:p-6 text-right space-y-4 shadow-2xl">
-              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
-                <Code2 className="w-5 h-5 text-blue-400" />
-                <h2 className="text-base md:text-lg font-black text-amber-200">
-                  التِّقْنِيَّاتُ المُسْتَخْدَمَة
-                </h2>
-              </div>
-
-              <div className="space-y-3">
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">⚛️</span>
-                  <div>
-                    <h3 className="text-xs font-black text-amber-300">React + TypeScript + Vite</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">بُنْيَةٌ حَدِيثَةٌ وَسَرِيعَةٌ مَعَ أَمَانِ الأَنْوَاعِ البَرْمَجِيَّة.</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">🎤</span>
-                  <div>
-                    <h3 className="text-xs font-black text-cyan-300">مُحَرِّكُ صَوْتٍ أُنْثَوِيٍّ (Edge TTS)</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">صَوْتُ ar-SA-ZariyahNeural السُّعُودِيُّ الأُنْثَوِيُّ 100% بِدُونِ أَيِّ مَفَاتِيحَ أَوِ اشْتِرَاكَات.</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">🌐</span>
-                  <div>
-                    <h3 className="text-xs font-black text-emerald-300">تَطْبِيقُ ويب تَقَدُّمِيّ (PWA)</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">قَابِلٌ لِلتَّثْبِيتِ عَلَى الهَاتِفِ كَتَطْبِيقٍ أَصْلِيٍّ يَعْمَلُ بِدُونِ إِنْتَرْنِت.</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">🚀</span>
-                  <div>
-                    <h3 className="text-xs font-black text-purple-300">نَشْرٌ عَلَى Netlify</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">نَشْرٌ تِلْقَائِيٌّ مِنْ GitHub مَعَ دَعْمِ الـ CDN العَالَمِيّ.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* STEP 4: CREDITS SCREEN (شاشة سوداء لأسماء فريق العمل) */}
+        {/* STEP 2: CREDITS SCREEN (فريق الإعداد والتطوير) */}
         {/* ========================================================================= */}
         {step === 'credits' && (
           <div className="space-y-6 text-center animate-pop">
             
-            {/* Logo in Screen 4 */}
+            {/* Logo in Screen 2 */}
             <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-glow-yellow border-2 border-amber-400">
               <img src="/icons/lumi_logo.png" alt="LUMI Logo" className="w-full h-full object-cover" />
             </div>

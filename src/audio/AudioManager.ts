@@ -411,48 +411,43 @@ class AudioManager {
       return EXACT_STATIC_AUDIO[stripped];
     }
 
-    // 1. Intro dialogue lines
-    if (stripped.includes('انا لومي') || stripped.includes('أنا لومي') || stripped.includes('نستكشف معا')) {
+    // If text contains a direct address to the hero ('يا ' or child name), do NOT intercept with generic static audio.
+    // Instead, let the Saudi female neural voice synthesize the complete sentence so the child's exact name is spoken!
+    if (stripped.includes('يا ') || stripped.startsWith('يا') || stripped.includes('البطل') || stripped.includes('البَطَل')) {
+      return null;
+    }
+
+    // 1. Intro dialogue lines (exact generic lines)
+    if (stripped === 'انا لومي' || stripped === 'مرحبا انا لومي هيا نستكشف معا عالم الاصوات الساحر') {
       return '/audio/dialogue/intro_step_1.mp3';
     }
-    if (stripped.includes('فقد اصواته') || stripped.includes('فقد أصواته')) {
+    if (stripped.includes('فقد اصواته الساحرة') && !stripped.includes('يا')) {
       return '/audio/dialogue/intro_step_2.mp3';
     }
-    if (stripped.includes('هل تساعدني')) {
+    if (stripped.includes('هل تساعدني في اعادتها') && !stripped.includes('يا')) {
       return '/audio/dialogue/intro_step_3.mp3';
     }
 
-    // 2. Ask name / Welcome
-    if (stripped.includes('ما اسمك') || stripped.includes('اكتب اسمك')) {
+    // 2. Ask name (exact generic prompt)
+    if (stripped === 'ما اسمك يا بطل' || stripped === 'ما اسمك يا بطل اكتب اسمك هنا لنبدا رحلتنا الساحرة') {
       return '/audio/dialogue/ask_name.mp3';
     }
 
-    // 3. Child Name Greetings & Cheers
-    if (stripped.includes('طلال')) {
-      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز')) {
-        return '/audio/dialogue/cheer_talal.mp3';
-      }
-      return '/audio/dialogue/welcome_talal.mp3';
-    }
-    if (stripped.includes('رنيم')) {
-      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز')) {
-        return '/audio/dialogue/cheer_raneem.mp3';
-      }
-      return '/audio/dialogue/welcome_raneem.mp3';
-    }
-
-    // 4. Letter choice cheer / Stage unlocked
-    if (stripped.includes('اختيار رائع') || stripped.includes('هيا بنا ننطلق') || stripped.includes('ننطلق')) {
-      return '/audio/dialogue/letter_choice_cheer.mp3';
-    }
-    if (stripped.includes('فتحت لك المرحلة') || stripped.includes('مبروك') || stripped.includes('مبارك')) {
+    // 3. Exact short static system prompts (only when no hero name is in the sentence)
+    if (stripped === 'مبروك فتحت لك المرحلة التالية هيا ننطلق' || stripped === 'مبروك فتحت لك المرحلة التالية') {
       return '/audio/dialogue/open_next_stage.mp3';
     }
-    if (stripped.includes('المرحلة السابقة') || stripped.includes('السابقة اولا') || stripped.includes('السابقة أولا')) {
+    if (stripped === 'اكمل المرحلة السابقة اولا لفتح هذه المرحلة') {
       return '/audio/dialogue/complete_previous_first.mp3';
     }
+    if (stripped === 'حاول مرة اخرى انت قريب جدا' || stripped === 'حاول مرة اخرى') {
+      return '/audio/dialogue/try_again.mp3';
+    }
+    if (stripped === 'اختيار ساحر رائع هيا بنا نبدا المغامرة' || stripped === 'اختيار رائع هيا بنا ننطلق') {
+      return '/audio/dialogue/letter_choice_cheer.mp3';
+    }
 
-    // 5. Match phrases like "حَرْفُ البَاء.. ب" or "حرف الباء" or "حرف ب"
+    // 8. Match phrases like "حَرْفُ البَاء.. ب" or "حرف الباء" or "حرف ب"
     const letterMatch = stripped.match(/(?:حرف|صوت)\s+([^\s.]+)/i);
     if (letterMatch && letterMatch[1]) {
       const candidate = letterMatch[1].replace(/^(ال|ل)/, '');
@@ -465,6 +460,56 @@ class AudioManager {
     }
 
     return null;
+  }
+
+  // Name-to-audio-file mapping for all registered child names
+  private static readonly NAME_AUDIO_MAP: Record<string, string> = {
+    'طلال': '/audio/names/talal.mp3',
+    'رنيم': '/audio/names/raneem.mp3',
+    'فاطمة': '/audio/names/fatima.mp3',
+    'هبة': '/audio/names/heba.mp3',
+    'جنى': '/audio/names/jana.mp3',
+    'ميرا': '/audio/names/mira.mp3',
+    'ديمة': '/audio/names/deema.mp3',
+    'طيبة': '/audio/names/taiba.mp3',
+    'محمد': '/audio/names/mohammed.mp3',
+    'أحمد': '/audio/names/ahmed.mp3', 'احمد': '/audio/names/ahmed.mp3',
+    'سارة': '/audio/names/sara.mp3', 'ساره': '/audio/names/sara.mp3',
+    'علي': '/audio/names/ali.mp3',
+    'عمر': '/audio/names/omar.mp3',
+    'يوسف': '/audio/names/youssef.mp3',
+    'نور': '/audio/names/nour.mp3',
+    'مريم': '/audio/names/maryam.mp3',
+    'بطل': '/audio/names/batal.mp3', 'البطل': '/audio/names/batal.mp3',
+    'بطلة': '/audio/names/batala.mp3', 'البطلة': '/audio/names/batala.mp3',
+  };
+
+  // Find a child name in any Arabic text and return its audio file
+  private findNameAudioInText(strippedText: string): string | null {
+    for (const [name, file] of Object.entries(AudioManager.NAME_AUDIO_MAP)) {
+      if (strippedText.includes(name)) {
+        return file;
+      }
+    }
+    return null;
+  }
+
+  // Play multiple audio files sequentially (template + name)
+  private queueAudioSequence(urls: string[]) {
+    if (!urls.length || typeof window === 'undefined') return;
+    const token = ++this.currentPlaybackToken;
+
+    const playNext = (index: number) => {
+      if (index >= urls.length || this.currentPlaybackToken !== token) return;
+      const audio = new Audio(urls[index]);
+      audio.volume = this.volume;
+      this.currentAudioElement = audio;
+      audio.onended = () => playNext(index + 1);
+      audio.onerror = () => playNext(index + 1);
+      audio.play().catch(() => playNext(index + 1));
+    };
+
+    playNext(0);
   }
 
   // Main Speech Router:
