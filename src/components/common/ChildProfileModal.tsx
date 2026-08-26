@@ -26,8 +26,14 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   const handleSelectProfile = (profileId: string) => {
+    const prof = profiles.find(p => p.id === profileId);
     audioManager.playClick();
     switchProfile(profileId);
+    if (prof) {
+      setTimeout(() => {
+        audioManager.speak(`أَهْلًا يَا ${prof.name}! هَيَّا نُكْمِلُ رِحْلَتَنَا السَّاحِرَة!`);
+      }, 250);
+    }
     onClose();
   };
 
@@ -38,6 +44,9 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({ isOpen, on
 
     audioManager.playVictory();
     const newId = createProfile(cleanName, newChildAge, newChildAvatarEmoji);
+    setTimeout(() => {
+      audioManager.speak(`أَهْلًا بِكَ يَا ${cleanName}! مَرْحَبًا بِكَ فِي مَمْلَكَةِ الأَصْوَات!`);
+    }, 250);
     setIsCreatingNew(false);
     setNewChildName('');
     onClose();

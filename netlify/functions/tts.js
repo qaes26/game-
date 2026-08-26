@@ -1,12 +1,12 @@
-// Pure Edge-TTS Serverless TTS Handler for LUMI
-// Strictly Arabic Female Voices Only: ar-SA-ZariyahNeural (Primary) / ar-EG-SalmaNeural (Fallback)
-// Persona Tuning: Pitch +6%, Rate -5%
+// Netlify Serverless Function for LUMI Neural Text-to-Speech
+// ES Module format compatible with package.json "type": "module"
+// Voice: ar-SA-ZariyahNeural (Primary Pure Saudi Female Voice) / ar-JO-SanaNeural / ar-EG-SalmaNeural
 
-const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
-const https = require('https');
-const crypto = require('crypto');
+import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
+import https from 'https';
+import crypto from 'crypto';
 
-// In-Memory Hash Cache
+// In-Memory Buffer Cache across warm Lambda invocations
 const audioCache = new Map();
 const MAX_CACHE_ENTRIES = 500;
 
@@ -15,8 +15,8 @@ async function synthesizeWithEdgeTTS(text, voice = 'ar-SA-ZariyahNeural') {
   await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
 
   const { audioStream } = tts.toStream(text, {
-    pitch: '+6%',
-    rate: '-5%'
+    pitch: '+0Hz',
+    rate: '-4%'
   });
 
   return new Promise((resolve, reject) => {
@@ -44,13 +44,29 @@ function synthesizeWithGoogleFemaleFallback(text) {
   });
 }
 
-exports.handler = async function (event) {
+export const handler = async (event) => {
+  // Handle HTTP OPTIONS for CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS'
+      },
+      body: ''
+    };
+  }
+
   try {
     const rawText = event.queryStringParameters?.text;
     if (!rawText || !rawText.trim()) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({ error: 'Missing text parameter' })
       };
     }
@@ -59,12 +75,12 @@ exports.handler = async function (event) {
     const requestedVoice = event.queryStringParameters?.voice || 'ar-SA-ZariyahNeural';
 
     // Strictly enforce Arabic female voices only
-    const allowedVoices = ['ar-SA-ZariyahNeural', 'ar-EG-SalmaNeural'];
+    const allowedVoices = ['ar-SA-ZariyahNeural', 'ar-JO-SanaNeural', 'ar-EG-SalmaNeural'];
     const activeVoice = allowedVoices.includes(requestedVoice) ? requestedVoice : 'ar-SA-ZariyahNeural';
 
     const hash = crypto.createHash('md5').update(`${activeVoice}:${cleanText}`).digest('hex');
 
-    // 1. In-Memory Cache Hit (0ms)
+    // 1. In-Memory Warm Cache Hit (0ms)
     if (audioCache.has(hash)) {
       return {
         statusCode: 200,
@@ -81,32 +97,43 @@ exports.handler = async function (event) {
 
     let audioBuffer = null;
 
-    // 2. Primary Synthesis: ar-SA-ZariyahNeural (Saudi Female)
+    // 2. Primary Neural Female Voice Synthesis (ar-SA-ZariyahNeural)
     try {
       audioBuffer = await synthesizeWithEdgeTTS(cleanText, activeVoice);
     } catch (primaryErr) {
-      console.warn(`[EdgeTTS] Primary voice (${activeVoice}) failed:`, primaryErr.message);
-      // Secondary Fallback: ar-EG-SalmaNeural (Egyptian Female)
+      console.warn(`[EdgeTTS] Primary voice (${activeVoice}) error:`, primaryErr?.message || primaryErr);
+      
+      // Secondary Fallback: ar-JO-SanaNeural (Levant Female)
       try {
-        audioBuffer = await synthesizeWithEdgeTTS(cleanText, 'ar-EG-SalmaNeural');
+        audioBuffer = await synthesizeWithEdgeTTS(cleanText, 'ar-JO-SanaNeural');
       } catch (secondaryErr) {
-        console.warn('[EdgeTTS] Secondary voice (ar-EG-SalmaNeural) failed:', secondaryErr.message);
+        console.warn('[EdgeTTS] Secondary voice (ar-JO-SanaNeural) error:', secondaryErr?.message || secondaryErr);
+        
+        // Tertiary Fallback: ar-EG-SalmaNeural (Egyptian Female)
+        try {
+          audioBuffer = await synthesizeWithEdgeTTS(cleanText, 'ar-EG-SalmaNeural');
+        } catch (tertiaryErr) {
+          console.warn('[EdgeTTS] Tertiary voice (ar-EG-SalmaNeural) error:', tertiaryErr?.message || tertiaryErr);
+        }
       }
     }
 
-    // 3. High-Speed Fallback: Google Arabic Female Stream
+    // 3. Fallback: Google Arabic Female Stream
     if (!audioBuffer || audioBuffer.length === 0) {
       try {
         audioBuffer = await synthesizeWithGoogleFemaleFallback(cleanText);
       } catch (fallbackErr) {
-        console.error('[EdgeTTS] Fallback synthesis failed:', fallbackErr);
+        console.error('[EdgeTTS] All fallback synthesis failed:', fallbackErr);
       }
     }
 
     if (!audioBuffer || audioBuffer.length === 0) {
       return {
         statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({ error: 'Failed to synthesize female audio' })
       };
     }
@@ -131,11 +158,14 @@ exports.handler = async function (event) {
       isBase64Encoded: true
     };
   } catch (err) {
-    console.error('[EdgeTTS Handler Exception]:', err);
+    console.error('[EdgeTTS Lambda Exception]:', err);
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: err.message || 'TTS Synthesis Error' })
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({ error: err?.message || 'TTS Synthesis Error' })
     };
   }
 };
