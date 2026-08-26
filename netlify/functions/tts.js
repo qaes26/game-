@@ -1,94 +1,40 @@
-// Microsoft Azure Speech TTS Serverless Function for LUMI
-// Ultra-Low Latency Arabic Female Voice (ar-SA-ZariyahNeural / ar-EG-SalmaNeural)
+// Pure Edge-TTS Serverless TTS Handler for LUMI
+// Strictly Arabic Female Voices Only: ar-SA-ZariyahNeural (Primary) / ar-EG-SalmaNeural (Fallback)
+// Persona Tuning: Pitch +6%, Rate -5%
 
+const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
 const https = require('https');
 const crypto = require('crypto');
 
-// In-Memory Hash Cache for Instant Repeat Playback (0ms)
+// In-Memory Hash Cache
 const audioCache = new Map();
 const MAX_CACHE_ENTRIES = 500;
 
-function escapeXml(unsafe) {
-  return unsafe.replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case '\'': return '&apos;';
-      case '"': return '&quot;';
-      default: return c;
-    }
+async function synthesizeWithEdgeTTS(text, voice = 'ar-SA-ZariyahNeural') {
+  const tts = new MsEdgeTTS();
+  await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+
+  const { audioStream } = tts.toStream(text, {
+    pitch: '+6%',
+    rate: '-5%'
   });
-}
 
-function buildSSML(text, voice = 'ar-SA-ZariyahNeural') {
-  return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="ar-SA">
-  <voice name="${voice}">
-    <prosody rate="0.95" pitch="+6%">
-      ${escapeXml(text)}
-    </prosody>
-  </voice>
-</speak>`;
-}
-
-// Direct Azure Cognitive Services REST API Stream
-function callAzureSpeechRest(text, voice, key, region) {
   return new Promise((resolve, reject) => {
-    const ssml = buildSSML(text, voice);
-    const postData = Buffer.from(ssml, 'utf8');
-
-    const options = {
-      hostname: `${region}.tts.speech.microsoft.com`,
-      port: 443,
-      path: '/cognitiveservices/v1',
-      method: 'POST',
-      headers: {
-        'Ocp-Apim-Subscription-Key': key,
-        'Content-Type': 'application/ssml+xml',
-        'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3',
-        'User-Agent': 'LumiChildApp',
-        'Content-Length': postData.length
-      },
-      timeout: 6000
-    };
-
-    const req = https.request(options, (res) => {
-      if (res.statusCode !== 200) {
-        let errBody = '';
-        res.on('data', (d) => { errBody += d; });
-        res.on('end', () => {
-          reject(new Error(`Azure TTS returned HTTP ${res.statusCode}: ${errBody}`));
-        });
-        return;
-      }
-
-      const chunks = [];
-      res.on('data', (chunk) => chunks.push(chunk));
-      res.on('end', () => {
-        resolve(Buffer.concat(chunks));
-      });
-    });
-
-    req.on('error', (err) => reject(err));
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('Azure Speech API Timeout'));
-    });
-
-    req.write(postData);
-    req.end();
+    const chunks = [];
+    audioStream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+    audioStream.on('end', () => resolve(Buffer.concat(chunks)));
+    audioStream.on('error', (err) => reject(err));
   });
 }
 
-// Fallback: Google Translate Arabic Female Neural Stream (Zero API Key needed)
-function callGoogleTTSFallback(text) {
+function synthesizeWithGoogleFemaleFallback(text) {
   return new Promise((resolve, reject) => {
     const clean = encodeURIComponent(text);
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ar&client=tw-ob&q=${clean}`;
 
     https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
       if (res.statusCode !== 200) {
-        reject(new Error(`Google TTS status ${res.statusCode}`));
+        reject(new Error(`Fallback status ${res.statusCode}`));
         return;
       }
       const chunks = [];
@@ -100,10 +46,8 @@ function callGoogleTTSFallback(text) {
 
 exports.handler = async function (event) {
   try {
-    const text = event.queryStringParameters?.text;
-    const requestedVoice = event.queryStringParameters?.voice || 'ar-SA-ZariyahNeural';
-
-    if (!text || !text.trim()) {
+    const rawText = event.queryStringParameters?.text;
+    if (!rawText || !rawText.trim()) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -111,10 +55,16 @@ exports.handler = async function (event) {
       };
     }
 
-    const cleanText = text.trim();
-    const hash = crypto.createHash('md5').update(`${requestedVoice}:${cleanText}`).digest('hex');
+    const cleanText = decodeURIComponent(rawText).trim();
+    const requestedVoice = event.queryStringParameters?.voice || 'ar-SA-ZariyahNeural';
 
-    // 1. Check in-memory Cache (Instant Response)
+    // Strictly enforce Arabic female voices only
+    const allowedVoices = ['ar-SA-ZariyahNeural', 'ar-EG-SalmaNeural'];
+    const activeVoice = allowedVoices.includes(requestedVoice) ? requestedVoice : 'ar-SA-ZariyahNeural';
+
+    const hash = crypto.createHash('md5').update(`${activeVoice}:${cleanText}`).digest('hex');
+
+    // 1. In-Memory Cache Hit (0ms)
     if (audioCache.has(hash)) {
       return {
         statusCode: 200,
@@ -129,32 +79,27 @@ exports.handler = async function (event) {
       };
     }
 
-    const azureKey = process.env.AZURE_SPEECH_KEY || process.env.VITE_AZURE_SPEECH_KEY;
-    const azureRegion = process.env.AZURE_SPEECH_REGION || process.env.VITE_AZURE_SPEECH_REGION || 'eastus';
-
     let audioBuffer = null;
 
-    // 2. Try Primary Azure Speech REST API (if key is configured)
-    if (azureKey) {
+    // 2. Primary Synthesis: ar-SA-ZariyahNeural (Saudi Female)
+    try {
+      audioBuffer = await synthesizeWithEdgeTTS(cleanText, activeVoice);
+    } catch (primaryErr) {
+      console.warn(`[EdgeTTS] Primary voice (${activeVoice}) failed:`, primaryErr.message);
+      // Secondary Fallback: ar-EG-SalmaNeural (Egyptian Female)
       try {
-        audioBuffer = await callAzureSpeechRest(cleanText, requestedVoice, azureKey, azureRegion);
-      } catch (azureErr) {
-        console.warn('[Azure TTS Primary Error]:', azureErr.message);
-        // Try Secondary Voice Fallback (ar-EG-SalmaNeural)
-        try {
-          audioBuffer = await callAzureSpeechRest(cleanText, 'ar-EG-SalmaNeural', azureKey, azureRegion);
-        } catch (secondaryErr) {
-          console.warn('[Azure TTS Secondary Error]:', secondaryErr.message);
-        }
+        audioBuffer = await synthesizeWithEdgeTTS(cleanText, 'ar-EG-SalmaNeural');
+      } catch (secondaryErr) {
+        console.warn('[EdgeTTS] Secondary voice (ar-EG-SalmaNeural) failed:', secondaryErr.message);
       }
     }
 
-    // 3. Ultra-reliable High-Speed Fallback (Female Arabic Voice)
-    if (!audioBuffer) {
+    // 3. High-Speed Fallback: Google Arabic Female Stream
+    if (!audioBuffer || audioBuffer.length === 0) {
       try {
-        audioBuffer = await callGoogleTTSFallback(cleanText);
+        audioBuffer = await synthesizeWithGoogleFemaleFallback(cleanText);
       } catch (fallbackErr) {
-        console.error('[TTS Fallback Error]:', fallbackErr);
+        console.error('[EdgeTTS] Fallback synthesis failed:', fallbackErr);
       }
     }
 
@@ -162,18 +107,17 @@ exports.handler = async function (event) {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Failed to synthesize audio' })
+        body: JSON.stringify({ error: 'Failed to synthesize female audio' })
       };
     }
 
-    const base64Data = audioBuffer.toString('base64');
+    const base64Audio = audioBuffer.toString('base64');
 
-    // Cache result
     if (audioCache.size >= MAX_CACHE_ENTRIES) {
       const oldestKey = audioCache.keys().next().value;
       if (oldestKey) audioCache.delete(oldestKey);
     }
-    audioCache.set(hash, base64Data);
+    audioCache.set(hash, base64Audio);
 
     return {
       statusCode: 200,
@@ -183,15 +127,15 @@ exports.handler = async function (event) {
         'Access-Control-Allow-Origin': '*',
         'X-Cache': 'MISS'
       },
-      body: base64Data,
+      body: base64Audio,
       isBase64Encoded: true
     };
   } catch (err) {
-    console.error('[TTS Handler Exception]:', err);
+    console.error('[EdgeTTS Handler Exception]:', err);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: err.message || 'TTS Synthesis Failed' })
+      body: JSON.stringify({ error: err.message || 'TTS Synthesis Error' })
     };
   }
 };

@@ -268,14 +268,18 @@ class AudioService {
       utterance.volume = this.volume;
 
       const voices = window.speechSynthesis.getVoices();
-      const arabicFemaleVoice = voices.find((v) =>
-        (v.lang.startsWith('ar') && (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Laila'))) ||
-        v.lang.startsWith('ar')
+      const femaleVoice = voices.find((v) =>
+        v.lang.startsWith('ar') &&
+        (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Hoda') || v.name.includes('Maryam') || v.name.includes('Laila')) &&
+        !v.name.includes('Male') && !v.name.includes('Hamed') && !v.name.includes('Shakir')
       );
 
-      if (arabicFemaleVoice) {
-        utterance.voice = arabicFemaleVoice;
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
       }
+
+      utterance.pitch = femaleVoice ? 1.1 : 1.3;
+      utterance.rate = 0.95;
 
       utterance.onend = () => {
         if (this.playbackToken === token && onEnd) onEnd();

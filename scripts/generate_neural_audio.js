@@ -1,5 +1,5 @@
-// Standard Natural Arabic Letters & Dialogue Audio Generator
-// Voice: ar-SA-ZariyahNeural (Pure Saudi Female)
+// Standard Natural Arabic Letters & Dialogue Audio Generator (100% Offline Static Files)
+// Voice: ar-SA-ZariyahNeural (Pure Saudi Female Voice for LUMI)
 
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import fs from 'fs';
@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const AUDIO_DIR = path.join(__dirname, '..', 'public', 'audio');
 
-const dirs = ['letters', 'syllables', 'words', 'sentences', 'dialogue', 'articulation', 'stages'];
+const dirs = ['letters', 'syllables', 'words', 'sentences', 'dialogue', 'articulation', 'stages', 'names'];
 dirs.forEach(d => {
   const fullPath = path.join(AUDIO_DIR, d);
   if (!fs.existsSync(fullPath)) {
@@ -51,6 +51,28 @@ const cleanLetters = [
   { id: 'yaa', text: 'يَاء' }
 ];
 
+// Popular Arabic Names in Pure Female Voice
+const childNames = [
+  { id: 'talal', text: 'طَلَال' },
+  { id: 'raneem', text: 'رَنِيم' },
+  { id: 'fatima', text: 'فَاطِمَة' },
+  { id: 'heba', text: 'هِبَة' },
+  { id: 'jana', text: 'جَنَى' },
+  { id: 'mira', text: 'مِيرَا' },
+  { id: 'deema', text: 'دِيمَة' },
+  { id: 'taiba', text: 'طِيبَة' },
+  { id: 'mohammed', text: 'مُحَمَّد' },
+  { id: 'ahmed', text: 'أَحْمَد' },
+  { id: 'sara', text: 'سَارَة' },
+  { id: 'ali', text: 'عَلِي' },
+  { id: 'omar', text: 'عُمَر' },
+  { id: 'youssef', text: 'يُوسُف' },
+  { id: 'nour', text: 'نُور' },
+  { id: 'maryam', text: 'مَرْيَم' },
+  { id: 'batal', text: 'يَا بَطَل' },
+  { id: 'batala', text: 'يَا بَطَلَة' }
+];
+
 const staticAudios = [
   // Syllables
   { category: 'syllables', id: 'baa_fatha', text: 'بَ' },
@@ -73,7 +95,7 @@ const staticAudios = [
   { category: 'sentences', id: 'baab_bayt', text: 'هَذَا بَابُ البَيْتِ' },
   { category: 'sentences', id: 'battah_tasbah', text: 'البَطَّةُ تَسْبَحُ فِي المَاءِ' },
 
-  // Dialogue
+  // Dialogue & Greetings
   { category: 'dialogue', id: 'intro_step_1', text: 'مَرْحَبًا! أَنَا لُومِي.. هَيَّا نَسْتَكْشِفُ مَعًا عَالَمَ الأَصْوَاتِ السَّاحِر!' },
   { category: 'dialogue', id: 'intro_step_2', text: 'هَذَا العَالَمُ فَقَدَ أَصْوَاتَهُ السَّاحِرَة...' },
   { category: 'dialogue', id: 'intro_step_3', text: 'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا؟' },
@@ -81,6 +103,15 @@ const staticAudios = [
   { category: 'dialogue', id: 'launch_journey', text: 'هَيَّا بِنَا! أَنْتَ عَلَى وَشَكِ عَيْشِ أَجْمَلِ المُغَامَرَات!' },
   { category: 'dialogue', id: 'excellent', text: 'أَحْسَنْتَ! نُطْقٌ مَلَكِيٌّ رَائِعٌ وَمُتَفَوِّق!' },
   { category: 'dialogue', id: 'try_again', text: 'أَنْتَ قَرِيبٌ جِدًّا.. لِنُجَرِّبْ ثَانِيَةً!' },
+  { category: 'dialogue', id: 'welcome', text: 'مَرْحَبًا بِكَ فِي مَمْلَكَةِ الأَصْوَات!' },
+  { category: 'dialogue', id: 'welcome_child', text: 'مَرْحَبًا يَا بَطَل! هَيَّا نَبْدَأُ رِحْلَتَنَا السَّاحِرَة!' },
+  { category: 'dialogue', id: 'welcome_talal', text: 'أَهْلًا يَا طَلَال! هَيَّا نَبْدَأُ رِحْلَتَنَا السَّاحِرَة!' },
+  { category: 'dialogue', id: 'welcome_raneem', text: 'أَهْلًا يَا رَنِيم! هَيَّا نَبْدَأُ رِحْلَتَنَا السَّاحِرَة!' },
+  { category: 'dialogue', id: 'cheer_talal', text: 'أَحْسَنْتَ يَا طَلَال! نُطْقٌ مَلَكِيٌّ رَائِع!' },
+  { category: 'dialogue', id: 'cheer_raneem', text: 'أَحْسَنْتِ يَا رَنِيم! نُطْقٌ مَلَكِيٌّ رَائِع!' },
+  { category: 'dialogue', id: 'letter_choice_cheer', text: 'اخْتِيَارٌ سِحْرِيٌّ رَائِع! هَيَّا بِنَا نَبْدَأُ المُغَامَرَة!' },
+  { category: 'dialogue', id: 'open_next_stage', text: 'مَبْرُوك! فُتِحَتْ لَكَ المَرْحَلَةُ التَّالِيَة.. هَيَّا نَنْطَلِق!' },
+  { category: 'dialogue', id: 'complete_previous_first', text: 'أَكْمِلِ المَرْحَلَةَ السَّابِقَةَ أَوَّلًا لِفَتْحِ هَذِهِ المَرْحَلَة!' },
 
   // Stages
   { category: 'stages', id: 'stage_1', text: 'المَرْحَلَةُ الأُولَى: مَخْرَجُ وَصَوْتُ الحَرْفِ الصَّافِي!' },
@@ -102,7 +133,7 @@ const staticAudios = [
 ];
 
 async function generateCleanAudios() {
-  console.log('🎙️ Generating Clean Standard Arabic Letter Audio (ar-SA-ZariyahNeural)...');
+  console.log('🎙️ Generating Clean Standard Arabic Female Audio Files (ar-SA-ZariyahNeural)...');
   const tts = new MsEdgeTTS();
   await tts.setMetadata('ar-SA-ZariyahNeural', OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
 
@@ -111,50 +142,56 @@ async function generateCleanAudios() {
     const destPath = path.join(AUDIO_DIR, 'letters', `${ltr.id}.mp3`);
     try {
       console.log(`🔤 Letter: ${ltr.text} -> letters/${ltr.id}.mp3`);
-      const { audioStream } = tts.toStream(ltr.text, {
-        pitch: '+0Hz',
-        rate: '-8%'
-      });
-
+      const { audioStream } = tts.toStream(ltr.text, { pitch: '+0Hz', rate: '-8%' });
       const writeStream = fs.createWriteStream(destPath);
       audioStream.pipe(writeStream);
-
       await new Promise((resolve, reject) => {
         writeStream.on('finish', resolve);
         writeStream.on('error', reject);
       });
-
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 60));
     } catch (err) {
       console.error(`❌ Error on ${ltr.id}:`, err.message);
     }
   }
 
-  // 2. Generate static dialogues
-  for (const item of staticAudios) {
-    const destPath = path.join(AUDIO_DIR, item.category, `${item.id}.mp3`);
+  // 2. Generate child names
+  for (const nameObj of childNames) {
+    const destPath = path.join(AUDIO_DIR, 'names', `${nameObj.id}.mp3`);
     try {
-      console.log(`📢 ${item.category}/${item.id}.mp3`);
-      const { audioStream } = tts.toStream(item.text, {
-        pitch: '+0Hz',
-        rate: '-8%'
-      });
-
+      console.log(`👤 Name: ${nameObj.text} -> names/${nameObj.id}.mp3`);
+      const { audioStream } = tts.toStream(nameObj.text, { pitch: '+4Hz', rate: '-6%' });
       const writeStream = fs.createWriteStream(destPath);
       audioStream.pipe(writeStream);
-
       await new Promise((resolve, reject) => {
         writeStream.on('finish', resolve);
         writeStream.on('error', reject);
       });
+      await new Promise(r => setTimeout(r, 60));
+    } catch (err) {
+      console.error(`❌ Error on ${nameObj.id}:`, err.message);
+    }
+  }
 
-      await new Promise(r => setTimeout(r, 100));
+  // 3. Generate static dialogues
+  for (const item of staticAudios) {
+    const destPath = path.join(AUDIO_DIR, item.category, `${item.id}.mp3`);
+    try {
+      console.log(`📢 ${item.category}/${item.id}.mp3`);
+      const { audioStream } = tts.toStream(item.text, { pitch: '+2Hz', rate: '-6%' });
+      const writeStream = fs.createWriteStream(destPath);
+      audioStream.pipe(writeStream);
+      await new Promise((resolve, reject) => {
+        writeStream.on('finish', resolve);
+        writeStream.on('error', reject);
+      });
+      await new Promise(r => setTimeout(r, 60));
     } catch (err) {
       console.error(`❌ Error on ${item.id}:`, err.message);
     }
   }
 
-  console.log('✨ All Standard Clean Female Audio Files Generated!');
+  console.log('✨ All 100% Offline Female Audio Files Generated Successfully!');
 }
 
 generateCleanAudios();

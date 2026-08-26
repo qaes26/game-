@@ -11,8 +11,8 @@ function edgeTtsPlugin(): Plugin {
     await tts.setMetadata('ar-SA-ZariyahNeural', OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
     
     const { audioStream } = tts.toStream(text, {
-      pitch: '+6Hz',
-      rate: '-8%'
+      pitch: '+6%',
+      rate: '-5%'
     });
 
     return new Promise((resolve, reject) => {
