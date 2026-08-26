@@ -100,10 +100,10 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,mp3,json}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,json}'],
         runtimeCaching: [
           {
-            urlPattern: /\.(?:mp3|wav|ogg)$/i,
+            urlPattern: /\/audio\/.*\.(?:mp3|wav|ogg)$/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'lumi-audio-cache',
@@ -113,7 +113,8 @@ export default defineConfig({
               },
               cacheableResponse: {
                 statuses: [0, 200]
-              }
+              },
+              rangeRequests: true
             }
           },
           {
