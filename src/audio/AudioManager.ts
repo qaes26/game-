@@ -469,8 +469,8 @@ class AudioManager {
 
   // Main Speech Router:
   // 1. Instant Static MP3 (0ms latency)
-  // 2. ClientEdgeTTS (Microsoft Neural Saudi Female Voice directly in browser)
-  // 3. Native Web Speech API (window.speechSynthesis)
+  // 2. Edge-TTS API or Client WebSocket (Microsoft Neural Saudi Female Voice)
+  // ⛔ NO speechSynthesis fallback (prevents male voice)
   public speak(text: string, _rate: number = 0.85, onEnd?: () => void) {
     this.dispatchVisualPulse('click');
     this.ensureUnlocked();
@@ -558,16 +558,16 @@ class AudioManager {
         };
 
         audio.onerror = () => {
-          if (this.currentPlaybackToken === playbackToken) {
-            this.fallbackNativeSpeech(text, playbackToken, onEnd);
+          if (this.currentPlaybackToken === playbackToken && onEnd) {
+            onEnd(); // Silent fail - NEVER use male speechSynthesis
           }
         };
 
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            if (this.currentPlaybackToken === playbackToken) {
-              this.fallbackNativeSpeech(text, playbackToken, onEnd);
+            if (this.currentPlaybackToken === playbackToken && onEnd) {
+              onEnd(); // Silent fail - NEVER use male speechSynthesis
             }
           });
         }
@@ -593,82 +593,33 @@ class AudioManager {
       };
 
       audio.onerror = () => {
-        if (this.currentPlaybackToken === playbackToken) {
-          this.fallbackNativeSpeech(text, playbackToken, onEnd);
+        if (this.currentPlaybackToken === playbackToken && onEnd) {
+          onEnd(); // Silent fail - NEVER use male speechSynthesis
         }
       };
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          if (this.currentPlaybackToken === playbackToken) {
-            this.fallbackNativeSpeech(text, playbackToken, onEnd);
+          if (this.currentPlaybackToken === playbackToken && onEnd) {
+            onEnd(); // Silent fail - NEVER use male speechSynthesis
           }
         });
       }
       return;
     } catch (err) {
-      console.warn('[AudioManager] ClientEdgeTTS unavailable, switching to Native Web Speech:', err);
-      if (this.currentPlaybackToken === playbackToken) {
-        this.fallbackNativeSpeech(text, playbackToken, onEnd);
-      }
-    }
-  }
-
-  // Step 2C: Native Web Speech API Fallback (STRICTLY Female Voices - NO Male Voices Allowed)
-  private fallbackNativeSpeech(text: string, playbackToken: number, onEnd?: () => void) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
-      return;
-    }
-
-    try {
-      window.speechSynthesis.cancel();
-      const voices = window.speechSynthesis.getVoices();
-      
-      // Strict Female Voice Selector
-      const femaleVoice = voices.find((v) =>
-        v.lang.startsWith('ar') &&
-        (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Laila') || v.name.includes('Hoda') || v.name.includes('Fatima') || v.name.includes('Maryam') || v.name.includes('Zeina') || v.name.includes('Mageda')) &&
-        !v.name.includes('Male') && !v.name.includes('Naayf') && !v.name.includes('Tarik') && !v.name.includes('Hamed') && !v.name.includes('Shakir')
-      );
-
-      if (femaleVoice) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.voice = femaleVoice;
-        utterance.lang = 'ar-SA';
-        utterance.rate = 0.95;
-        utterance.pitch = 1.15;
-        utterance.volume = this.volume;
-
-        utterance.onend = () => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
-        };
-        utterance.onerror = () => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
-        };
-
-        window.speechSynthesis.speak(utterance);
-      } else {
-        // STRICT SAFETY RULE: Do NOT let a default male voice speak!
-        // Instead, play a pre-recorded pure female audio greeting or cheer template
-        const fallbackAudioUrl = '/audio/dialogue/excellent.mp3';
-        const fallbackAudio = new Audio(fallbackAudioUrl);
-        fallbackAudio.volume = this.volume;
-        fallbackAudio.onended = () => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
-        };
-        fallbackAudio.play().catch(() => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
-        });
-      }
-    } catch (e) {
-      console.warn('[AudioManager] SpeechSynthesis error:', e);
+      console.warn('[AudioManager] ClientEdgeTTS unavailable. Silent fail (no male voice allowed).', err);
       if (this.currentPlaybackToken === playbackToken && onEnd) {
-        onEnd();
+        onEnd(); // Silent fail - NEVER use male speechSynthesis
       }
     }
   }
+
+  // ⛔ SPEECH SYNTHESIS PERMANENTLY DISABLED
+  // window.speechSynthesis is NEVER used in this application.
+  // On Windows/Android, the default Arabic voice is male (Microsoft Naayf / Google Arabic Male).
+  // All audio must come from: pre-recorded static MP3 files OR edge-tts neural female synthesis.
+  // If both fail, the app stays SILENT rather than play a male voice.
 
   public speakLetter(letterId: string, onEnd?: () => void) {
     const file = LETTER_ID_MAP[letterId] || EXACT_STATIC_AUDIO[letterId];

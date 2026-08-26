@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowLeft, ArrowRight, Smartphone, Star, CheckCircle2, ShieldCheck, Download, Zap } from 'lucide-react';
+import { Sparkles, ArrowLeft, ArrowRight, Smartphone, Star, CheckCircle2, ShieldCheck, Download, Zap, Target, Palette, Code2, Users } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 
 interface ProjectIntroCreditsProps {
@@ -12,11 +12,21 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnterApp }) => {
-  const [step, setStep] = useState<'about' | 'credits'>('about');
+  const [step, setStep] = useState<'goals' | 'design' | 'development' | 'credits'>('goals');
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [installProgress, setInstallProgress] = useState<number>(0);
+
+  const stepLabels: Record<string, string> = {
+    goals: '1 / 4 — أَهْدَافُ البَرْنَامَج',
+    design: '2 / 4 — التَّصْمِيم',
+    development: '3 / 4 — التَّطْوِير',
+    credits: '4 / 4 — فَرِيقُ الإِعْدَاد'
+  };
+
+  const stepOrder: Array<'goals' | 'design' | 'development' | 'credits'> = ['goals', 'design', 'development', 'credits'];
+  const currentIndex = stepOrder.indexOf(step);
 
   useEffect(() => {
     if (
@@ -53,7 +63,6 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
     setIsInstalling(true);
     setInstallProgress(25);
 
-    // Simulate instant packaging & trigger native prompt
     setTimeout(() => setInstallProgress(60), 300);
     setTimeout(async () => {
       setInstallProgress(100);
@@ -63,15 +72,25 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
           const { outcome } = await deferredPrompt.userChoice;
           if (outcome === 'accepted') {
             setIsInstalled(true);
-            audioManager.speak('مُبَارَك! تَمَّ بَدْءُ تَثْبِيتِ تَطْبِيقِ لُومِي كَـ APK عَلَى هَاتِفِك!');
           }
         } catch {}
-      } else {
-        // Direct manifest install trigger
-        audioManager.speak('جَارٍ تَثْبِيتُ التَّطْبِيقِ عَلَى الشَّاشَةِ الرَّئِيسِيَّة!');
       }
       setTimeout(() => setIsInstalling(false), 800);
     }, 600);
+  };
+
+  const handleNext = () => {
+    audioManager.playClick();
+    if (currentIndex < stepOrder.length - 1) {
+      setStep(stepOrder[currentIndex + 1]);
+    }
+  };
+
+  const handlePrev = () => {
+    audioManager.playClick();
+    if (currentIndex > 0) {
+      setStep(stepOrder[currentIndex - 1]);
+    }
   };
 
   const teamMembers = [
@@ -91,7 +110,7 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
       <div className="fixed top-0 left-1/3 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Top Header Bar with Prominent Direct APK Install Button on Right */}
+      {/* Top Header Bar */}
       <header className="relative z-10 max-w-4xl mx-auto w-full flex items-center justify-between gap-3 border-b border-zinc-800/80 pb-4">
         
         {/* Right Side: Direct APK Install Button */}
@@ -122,7 +141,7 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
         {/* Left Side: Step Indicator */}
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-black text-amber-300 bg-amber-500/15 px-3 py-1 rounded-full border border-amber-400/30">
-            {step === 'about' ? '1 / 2 — التَّعْرِيفُ بِالمَشْرُوع' : '2 / 2 — فَرِيقُ الإِعْدَاد'}
+            {stepLabels[step]}
           </span>
         </div>
 
@@ -156,9 +175,9 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
       <main className="relative z-10 max-w-3xl mx-auto w-full my-auto py-6 space-y-6">
         
         {/* ========================================================================= */}
-        {/* STEP 1: ABOUT THE PROJECT & BENEFITS (شاشة سوداء تعريفية بالمشروع وفائدته) */}
+        {/* STEP 1: GOALS (أهداف البرنامج) */}
         {/* ========================================================================= */}
-        {step === 'about' && (
+        {step === 'goals' && (
           <div className="space-y-6 text-center animate-pop">
             
             {/* Custom High-Res 3D Official LUMI Logo */}
@@ -187,34 +206,29 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
               </p>
             </div>
 
-            {/* Project Overview Card */}
+            {/* Goals Card */}
             <div className="bg-[#0a0a0a] border-2 border-amber-400/40 rounded-3xl p-5 md:p-6 text-right space-y-4 shadow-2xl">
               <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
-                <Sparkles className="w-5 h-5 text-amber-400" />
+                <Target className="w-5 h-5 text-amber-400" />
                 <h2 className="text-base md:text-lg font-black text-amber-200">
-                  مَا هُوَ هَذَا المَشْرُوعُ وَمَا فَائِدَتُه؟
+                  أَهْدَافُ البَرْنَامَج
                 </h2>
               </div>
 
-              <p className="text-xs md:text-sm text-slate-300 font-bold leading-relaxed text-justify">
-                يُعَدُّ هَذَا التَّطْبِيقُ حَلًّا رَقْمِيًّا مُبْتَكَرًا يَهْدِفُ إِلَى مُسَاعَدَةِ الأَطْفَالِ فِي التَّغَلُّبِ عَلَى صُعُوبَاتِ النُّطْقِ، وَتَعْلِيمِهِمْ مَخَارِجَ الحُرُوفِ العَرَبِيَّةِ السَّلِيمَةِ مِنْ خِلالِ مَنْظُومَةٍ تَعْلِيمِيَّةٍ بَصَرِيَّةٍ وَسَمْعِيَّةٍ مُجَسَّمَةٍ تَجْعَلُ العِلاجَ النُّطْقِيَّ رِحْلَةً مُمْتِعَةً كَاللُّعْبَة.
-              </p>
-
-              {/* 4 Core Value Pillars */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              <div className="space-y-3">
                 <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">👅</span>
+                  <span className="text-2xl flex-shrink-0">🎯</span>
                   <div>
-                    <h3 className="text-xs font-black text-amber-300">تَشْرِيحُ اللِّسَانِ المُبَسَّط</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">رُؤْيَةُ حَرَكَةِ اللِّسَانِ وَنِقَاطِ اللَّمْسِ المَطْلُوبَةِ لِكُلِّ حَرْف.</p>
+                    <h3 className="text-xs font-black text-amber-300">تَصْحِيحُ مَخَارِجِ الحُرُوف</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">مُسَاعَدَةُ الأَطْفَالِ فِي التَّغَلُّبِ عَلَى صُعُوبَاتِ النُّطْقِ وَتَعْلِيمِهِمْ مَخَارِجَ الحُرُوفِ العَرَبِيَّةِ السَّلِيمَة.</p>
                   </div>
                 </div>
 
                 <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">👩‍🏫</span>
+                  <span className="text-2xl flex-shrink-0">👅</span>
                   <div>
-                    <h3 className="text-xs font-black text-cyan-300">المُعَلِّمَةُ سَارَة الاِفْتِرَاضِيَّة</h3>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">شَرْحٌ مَرْئِيٌّ وَصَوْتٌ أُنْثَوِيٌّ نَقِيٌّ 100% يُدَرِّبُ الطِّفْلَ خُطْوَةً بِخُطْوَة.</p>
+                    <h3 className="text-xs font-black text-cyan-300">تَشْرِيحُ اللِّسَانِ المُبَسَّط</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">رُؤْيَةُ حَرَكَةِ اللِّسَانِ وَنِقَاطِ اللَّمْسِ المَطْلُوبَةِ لِكُلِّ حَرْف.</p>
                   </div>
                 </div>
 
@@ -236,30 +250,146 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
               </div>
             </div>
 
-            {/* Next Step Button */}
-            <div className="pt-2">
-              <button
-                onClick={() => {
-                  audioManager.playClick();
-                  setStep('credits');
-                }}
-                className="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 rounded-2xl font-black text-base border-2 border-white shadow-glow-yellow active:scale-95 transition-all inline-flex items-center justify-center gap-2"
-              >
-                <span>التَّالِي — فَرِيقُ الإِعْدَادِ وَالتَّطْوِير</span>
-                <ArrowLeft className="w-5 h-5" />
-              </button>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* STEP 2: DESIGN (التصميم) */}
+        {/* ========================================================================= */}
+        {step === 'design' && (
+          <div className="space-y-6 text-center animate-pop">
+            
+            <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-glow-yellow border-2 border-amber-400">
+              <img src="/icons/lumi_logo.png" alt="LUMI Logo" className="w-full h-full object-cover" />
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-2xl md:text-3xl font-black text-amber-200">
+                التَّصْمِيم 🎨
+              </h2>
+              <p className="text-xs text-slate-400 font-bold">
+                تَصْمِيمٌ بَصَرِيٌّ مُبْتَكَرٌ مُصَمَّمٌ خِصِّيصًا لِلأَطْفَال
+              </p>
+            </div>
+
+            <div className="bg-[#0a0a0a] border-2 border-amber-400/40 rounded-3xl p-5 md:p-6 text-right space-y-4 shadow-2xl">
+              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+                <Palette className="w-5 h-5 text-pink-400" />
+                <h2 className="text-base md:text-lg font-black text-amber-200">
+                  مَلامِحُ التَّصْمِيم
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">🌌</span>
+                  <div>
+                    <h3 className="text-xs font-black text-amber-300">عَوَالِمُ ثُلاثِيَّةُ الأَبْعَاد</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">8 عَوَالِمَ خَيَالِيَّةٍ مُتَنَوِّعَةٍ (وَادِي الحُرُوف، غَابَةُ المَقَاطِع، قَرْيَةُ الكَلِمَات، نَهْرُ الجُمَل...) بِتَصَامِيمَ جَذَّابَة.</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">👩‍🏫</span>
+                  <div>
+                    <h3 className="text-xs font-black text-cyan-300">شَخْصِيَّةُ لُومِي المُتَحَرِّكَة</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">مُعَلِّمَةٌ اِفْتِرَاضِيَّةٌ بِصَوْتٍ أُنْثَوِيٍّ نَقِيٍّ 100% تُرَافِقُ الطِّفْلَ خُطْوَةً بِخُطْوَة.</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">✨</span>
+                  <div>
+                    <h3 className="text-xs font-black text-emerald-300">تَأْثِيرَاتٌ بَصَرِيَّة</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">أَلْوَانٌ ذَهَبِيَّةٌ مَلَكِيَّة، تَأْثِيرَاتُ تَوَهُّجٍ وَنُجُومٍ مُتَلأْلِئَةٌ مُصَمَّمَةٌ لِجَذْبِ اِنْتِبَاهِ الأَطْفَال.</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">📱</span>
+                  <div>
+                    <h3 className="text-xs font-black text-purple-300">تَصْمِيمٌ مُتَجَاوِب</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">وَاجِهَةٌ مُتَكَيِّفَةٌ تَعْمَلُ بِسَلاسَةٍ عَلَى الهَاتِفِ وَالحَاسُوبِ وَالتَّابْلِت.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* STEP 2: CREDITS SCREEN (شاشة سوداء لأسماء فريق العمل) */}
+        {/* STEP 3: DEVELOPMENT (التطوير) */}
+        {/* ========================================================================= */}
+        {step === 'development' && (
+          <div className="space-y-6 text-center animate-pop">
+            
+            <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-glow-yellow border-2 border-amber-400">
+              <img src="/icons/lumi_logo.png" alt="LUMI Logo" className="w-full h-full object-cover" />
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-2xl md:text-3xl font-black text-amber-200">
+                التَّطْوِير 💻
+              </h2>
+              <p className="text-xs text-slate-400 font-bold">
+                تِقْنِيَّاتٌ حَدِيثَةٌ لِتَجْرِبَةٍ تَعْلِيمِيَّةٍ مُتَقَدِّمَة
+              </p>
+            </div>
+
+            <div className="bg-[#0a0a0a] border-2 border-amber-400/40 rounded-3xl p-5 md:p-6 text-right space-y-4 shadow-2xl">
+              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+                <Code2 className="w-5 h-5 text-blue-400" />
+                <h2 className="text-base md:text-lg font-black text-amber-200">
+                  التِّقْنِيَّاتُ المُسْتَخْدَمَة
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">⚛️</span>
+                  <div>
+                    <h3 className="text-xs font-black text-amber-300">React + TypeScript + Vite</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">بُنْيَةٌ حَدِيثَةٌ وَسَرِيعَةٌ مَعَ أَمَانِ الأَنْوَاعِ البَرْمَجِيَّة.</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">🎤</span>
+                  <div>
+                    <h3 className="text-xs font-black text-cyan-300">مُحَرِّكُ صَوْتٍ أُنْثَوِيٍّ (Edge TTS)</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">صَوْتُ ar-SA-ZariyahNeural السُّعُودِيُّ الأُنْثَوِيُّ 100% بِدُونِ أَيِّ مَفَاتِيحَ أَوِ اشْتِرَاكَات.</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">🌐</span>
+                  <div>
+                    <h3 className="text-xs font-black text-emerald-300">تَطْبِيقُ ويب تَقَدُّمِيّ (PWA)</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">قَابِلٌ لِلتَّثْبِيتِ عَلَى الهَاتِفِ كَتَطْبِيقٍ أَصْلِيٍّ يَعْمَلُ بِدُونِ إِنْتَرْنِت.</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111111] p-3.5 rounded-2xl border border-zinc-800 flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0">🚀</span>
+                  <div>
+                    <h3 className="text-xs font-black text-purple-300">نَشْرٌ عَلَى Netlify</h3>
+                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">نَشْرٌ تِلْقَائِيٌّ مِنْ GitHub مَعَ دَعْمِ الـ CDN العَالَمِيّ.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* STEP 4: CREDITS SCREEN (شاشة سوداء لأسماء فريق العمل) */}
         {/* ========================================================================= */}
         {step === 'credits' && (
           <div className="space-y-6 text-center animate-pop">
             
-            {/* Logo in Screen 2 */}
+            {/* Logo in Screen 4 */}
             <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-glow-yellow border-2 border-amber-400">
               <img src="/icons/lumi_logo.png" alt="LUMI Logo" className="w-full h-full object-cover" />
             </div>
@@ -303,32 +433,45 @@ export const ProjectIntroCredits: React.FC<ProjectIntroCreditsProps> = ({ onEnte
 
             </div>
 
-            {/* Actions: Back & Start App */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              <button
-                onClick={() => {
-                  audioManager.playClick();
-                  setStep('about');
-                }}
-                className="w-full sm:w-auto px-6 py-3.5 bg-[#141414] hover:bg-[#222222] text-slate-300 font-black text-sm rounded-2xl border border-zinc-700 active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <ArrowRight className="w-4 h-4" />
-                <span>الرُّجُوعُ لِلتَّعْرِيف</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  audioManager.playVictory();
-                  onEnterApp();
-                }}
-                className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 rounded-2xl font-black text-base border-2 border-white shadow-glow-yellow active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <span>الدُّخُولُ إِلَى التَّطْبِيقِ وَبَدْءُ الرِّحْلَة 🚀</span>
-              </button>
-            </div>
-
           </div>
         )}
+
+        {/* ========================================================================= */}
+        {/* Navigation Buttons (Shared across all steps) */}
+        {/* ========================================================================= */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          {/* Back Button */}
+          {currentIndex > 0 && (
+            <button
+              onClick={handlePrev}
+              className="w-full sm:w-auto px-6 py-3.5 bg-[#141414] hover:bg-[#222222] text-slate-300 font-black text-sm rounded-2xl border border-zinc-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowRight className="w-4 h-4" />
+              <span>السَّابِق</span>
+            </button>
+          )}
+
+          {/* Next / Enter App Button */}
+          {currentIndex < stepOrder.length - 1 ? (
+            <button
+              onClick={handleNext}
+              className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 rounded-2xl font-black text-base border-2 border-white shadow-glow-yellow active:scale-95 transition-all inline-flex items-center justify-center gap-2"
+            >
+              <span>التَّالِي</span>
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                audioManager.playVictory();
+                onEnterApp();
+              }}
+              className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 rounded-2xl font-black text-base border-2 border-white shadow-glow-yellow active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <span>الدُّخُولُ إِلَى التَّطْبِيقِ وَبَدْءُ الرِّحْلَة 🚀</span>
+            </button>
+          )}
+        </div>
 
       </main>
 

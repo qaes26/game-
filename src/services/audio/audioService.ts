@@ -211,9 +211,10 @@ class AudioService {
       console.warn('[AudioService] Azure TTS API fetch failed, falling back...', apiErr);
     }
 
-    // 4. Tier 4: Native In-Browser Arabic Female Speech Synthesis Fallback
-    if (this.playbackToken === currentToken) {
-      this.fallbackSpeechSynthesis(cleanText, currentToken, onEnd);
+    // ⛔ speechSynthesis DISABLED - would play male voice on Windows/Android
+    // Silent fail instead of male voice
+    if (this.playbackToken === currentToken && onEnd) {
+      onEnd();
     }
   }
 
@@ -254,46 +255,8 @@ class AudioService {
     }
   }
 
-  private fallbackSpeechSynthesis(text: string, token: number, onEnd?: () => void) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      if (this.playbackToken === token && onEnd) onEnd();
-      return;
-    }
-
-    try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 0.95;
-      utterance.volume = this.volume;
-
-      const voices = window.speechSynthesis.getVoices();
-      const femaleVoice = voices.find((v) =>
-        v.lang.startsWith('ar') &&
-        (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Hoda') || v.name.includes('Maryam') || v.name.includes('Laila')) &&
-        !v.name.includes('Male') && !v.name.includes('Hamed') && !v.name.includes('Shakir')
-      );
-
-      if (femaleVoice) {
-        utterance.voice = femaleVoice;
-      }
-
-      utterance.pitch = femaleVoice ? 1.1 : 1.3;
-      utterance.rate = 0.95;
-
-      utterance.onend = () => {
-        if (this.playbackToken === token && onEnd) onEnd();
-      };
-
-      utterance.onerror = () => {
-        if (this.playbackToken === token && onEnd) onEnd();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    } catch {
-      if (this.playbackToken === token && onEnd) onEnd();
-    }
-  }
+  // ⛔ SPEECH SYNTHESIS PERMANENTLY DISABLED
+  // window.speechSynthesis is NEVER used - on Windows/Android it defaults to male voice.
 }
 
 export const audioService = new AudioService();
