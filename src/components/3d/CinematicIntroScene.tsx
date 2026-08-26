@@ -12,14 +12,20 @@ export const CinematicIntroScene: React.FC<CinematicIntroSceneProps> = ({ onStar
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const dialogueLines = [
-    'مَرْحَبًا.. أَنَا لُومِي! هَيَّا نَسْتَكْشِفُ مَعًا عَوَالِمَ الأَصْوَاتِ السَّاحِرَة!',
-    'هَذَا العَالَمُ الأَسْطُورِيُّ فَقَدَ أَصْوَاتَهُ البَرَّاقَة...',
-    'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا لِنَبْدَأَ رِحْلَتَنَا المَلَكِيَّة؟'
+    'مَرْحَبًا.. أَنَا لُومِي! هَيَّا نَسْتَكْشِفُ مَعًا عَالَمَ الأَصْوَاتِ السَّاحِر!',
+    'هَذَا العَالَمُ فَقَدَ أَصْوَاتَهُ السَّاحِرَة...',
+    'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا؟'
+  ];
+
+  const dialogueAudioKeys = [
+    '/audio/dialogue/intro_step_1.mp3',
+    '/audio/dialogue/intro_step_2.mp3',
+    '/audio/dialogue/intro_step_3.mp3'
   ];
 
   useEffect(() => {
     setIsSpeaking(true);
-    audioManager.speak(dialogueLines[dialogueStep], 0.85, () => setIsSpeaking(false));
+    audioManager.speak(dialogueAudioKeys[dialogueStep], 0.85, () => setIsSpeaking(false));
   }, [dialogueStep]);
 
   const handleNextDialogue = () => {
@@ -69,7 +75,7 @@ export const CinematicIntroScene: React.FC<CinematicIntroSceneProps> = ({ onStar
           onClick={() => {
             setIsSpeaking(true);
             audioManager.playVictory();
-            audioManager.speak(dialogueLines[dialogueStep], 0.85, () => setIsSpeaking(false));
+            audioManager.speak(dialogueAudioKeys[dialogueStep], 0.85, () => setIsSpeaking(false));
           }}
           title="انقر على لومي للتحدث!"
         >

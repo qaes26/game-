@@ -411,7 +411,48 @@ class AudioManager {
       return EXACT_STATIC_AUDIO[stripped];
     }
 
-    // Match phrases like "حَرْفُ البَاء.. ب" or "حرف الباء" or "حرف ب"
+    // 1. Intro dialogue lines
+    if (stripped.includes('انا لومي') || stripped.includes('أنا لومي') || stripped.includes('نستكشف معا')) {
+      return '/audio/dialogue/intro_step_1.mp3';
+    }
+    if (stripped.includes('فقد اصواته') || stripped.includes('فقد أصواته')) {
+      return '/audio/dialogue/intro_step_2.mp3';
+    }
+    if (stripped.includes('هل تساعدني')) {
+      return '/audio/dialogue/intro_step_3.mp3';
+    }
+
+    // 2. Ask name / Welcome
+    if (stripped.includes('ما اسمك') || stripped.includes('اكتب اسمك')) {
+      return '/audio/dialogue/ask_name.mp3';
+    }
+
+    // 3. Child Name Greetings & Cheers
+    if (stripped.includes('طلال')) {
+      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز')) {
+        return '/audio/dialogue/cheer_talal.mp3';
+      }
+      return '/audio/dialogue/welcome_talal.mp3';
+    }
+    if (stripped.includes('رنيم')) {
+      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز')) {
+        return '/audio/dialogue/cheer_raneem.mp3';
+      }
+      return '/audio/dialogue/welcome_raneem.mp3';
+    }
+
+    // 4. Letter choice cheer / Stage unlocked
+    if (stripped.includes('اختيار رائع') || stripped.includes('هيا بنا ننطلق') || stripped.includes('ننطلق')) {
+      return '/audio/dialogue/letter_choice_cheer.mp3';
+    }
+    if (stripped.includes('فتحت لك المرحلة') || stripped.includes('مبروك') || stripped.includes('مبارك')) {
+      return '/audio/dialogue/open_next_stage.mp3';
+    }
+    if (stripped.includes('المرحلة السابقة') || stripped.includes('السابقة اولا') || stripped.includes('السابقة أولا')) {
+      return '/audio/dialogue/complete_previous_first.mp3';
+    }
+
+    // 5. Match phrases like "حَرْفُ البَاء.. ب" or "حرف الباء" or "حرف ب"
     const letterMatch = stripped.match(/(?:حرف|صوت)\s+([^\s.]+)/i);
     if (letterMatch && letterMatch[1]) {
       const candidate = letterMatch[1].replace(/^(ال|ل)/, '');
@@ -448,7 +489,7 @@ class AudioManager {
 
     const playbackToken = ++this.currentPlaybackToken;
 
-    // 1. Check for Static MP3
+    // 1. Check for Static MP3 (0ms Latency)
     const staticUrl = this.resolveStaticAudio(cleanText);
 
     if (staticUrl && typeof window !== 'undefined') {
@@ -464,7 +505,7 @@ class AudioManager {
         };
 
         audio.onerror = (e) => {
-          console.warn(`[AudioManager] Static audio failed for '${staticUrl}'. Falling back to TTS...`, e);
+          console.warn(`[AudioManager] Static audio failed for '${staticUrl}'. Falling back...`, e);
           if (this.currentPlaybackToken === playbackToken) {
             this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
           }
@@ -473,7 +514,7 @@ class AudioManager {
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch((err) => {
-            console.warn(`[AudioManager] Autoplay blocked or decode issue on '${staticUrl}'. Falling back...`, err);
+            console.warn(`[AudioManager] Autoplay caught on '${staticUrl}'. Falling back...`, err);
             if (this.currentPlaybackToken === playbackToken) {
               this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
             }
@@ -487,7 +528,7 @@ class AudioManager {
       }
     }
 
-    // 2. Dynamic Text: Synthesize via Neural TTS
+    // 2. Dynamic Text: Synthesize via Neural Female TTS
     this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
   }
 
@@ -497,7 +538,7 @@ class AudioManager {
       return;
     }
 
-    // Step 2A: Fetch from Azure Serverless TTS API (/api/tts)
+    // Step 2A: Fetch from Serverless Edge-TTS API (/api/tts)
     try {
       const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}&voice=ar-SA-ZariyahNeural`);
       if (this.currentPlaybackToken !== playbackToken) return;
@@ -538,7 +579,7 @@ class AudioManager {
 
     // Step 2B: Client-side In-Browser Edge TTS (Saudi Female Voice)
     try {
-      const audioUrl = await ClientEdgeTTS.synthesize(text, 'ar-SA-ZariyahNeural', '-8%', '+0Hz');
+      const audioUrl = await ClientEdgeTTS.synthesize(text, 'ar-SA-ZariyahNeural', '-5%', '+6%');
       if (this.currentPlaybackToken !== playbackToken) return;
 
       const audio = new Audio(audioUrl);
@@ -574,7 +615,7 @@ class AudioManager {
     }
   }
 
-  // Step 2C: Native Web Speech API Fallback (Strictly Arabic Female Voice)
+  // Step 2C: Native Web Speech API Fallback (STRICTLY Female Voices - NO Male Voices Allowed)
   private fallbackNativeSpeech(text: string, playbackToken: number, onEnd?: () => void) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
@@ -583,36 +624,44 @@ class AudioManager {
 
     try {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 0.95;
-      utterance.pitch = 1.15; // Slightly higher feminine pitch
-      utterance.volume = this.volume;
-
       const voices = window.speechSynthesis.getVoices();
-      // Strictly prioritize female voices
-      const arabicFemaleVoice = voices.find((v) =>
-        (v.lang.startsWith('ar') && (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Laila') || v.name.includes('Hoda') || v.name.includes('Fatima') || v.name.includes('Maryam'))) ||
-        (v.lang.startsWith('ar') && !v.name.includes('Male') && !v.name.includes('Naayf') && !v.name.includes('Tarik') && !v.name.includes('Hamed'))
+      
+      // Strict Female Voice Selector
+      const femaleVoice = voices.find((v) =>
+        v.lang.startsWith('ar') &&
+        (v.name.includes('Female') || v.name.includes('Zariyah') || v.name.includes('Salma') || v.name.includes('Laila') || v.name.includes('Hoda') || v.name.includes('Fatima') || v.name.includes('Maryam') || v.name.includes('Zeina') || v.name.includes('Mageda')) &&
+        !v.name.includes('Male') && !v.name.includes('Naayf') && !v.name.includes('Tarik') && !v.name.includes('Hamed') && !v.name.includes('Shakir')
       );
 
-      if (arabicFemaleVoice) {
-        utterance.voice = arabicFemaleVoice;
+      if (femaleVoice) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = femaleVoice;
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.95;
+        utterance.pitch = 1.15;
+        utterance.volume = this.volume;
+
+        utterance.onend = () => {
+          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
+        };
+        utterance.onerror = () => {
+          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        // STRICT SAFETY RULE: Do NOT let a default male voice speak!
+        // Instead, play a pre-recorded pure female audio greeting or cheer template
+        const fallbackAudioUrl = '/audio/dialogue/excellent.mp3';
+        const fallbackAudio = new Audio(fallbackAudioUrl);
+        fallbackAudio.volume = this.volume;
+        fallbackAudio.onended = () => {
+          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
+        };
+        fallbackAudio.play().catch(() => {
+          if (this.currentPlaybackToken === playbackToken && onEnd) onEnd();
+        });
       }
-
-      utterance.onend = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd();
-        }
-      };
-
-      utterance.onerror = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd();
-        }
-      };
-
-      window.speechSynthesis.speak(utterance);
     } catch (e) {
       console.warn('[AudioManager] SpeechSynthesis error:', e);
       if (this.currentPlaybackToken === playbackToken && onEnd) {
