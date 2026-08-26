@@ -141,6 +141,9 @@ class AudioManager {
           const ctx = new AudioCtx();
           ctx.resume();
         }
+        // Trick browser into unlocking HTML audio element
+        const emptyAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+        emptyAudio.play().catch(() => {});
       } catch {}
 
       window.removeEventListener('pointerdown', unlock);
@@ -238,7 +241,8 @@ class AudioManager {
     const playbackToken = ++this.currentPlaybackToken;
 
     // 1. Direct static MP3 check (for isolated letter or single word)
-    const staticUrl = EXACT_STATIC_AUDIO[cleanText];
+    const isUrl = cleanText.startsWith('/') || cleanText.startsWith('http');
+    const staticUrl = isUrl ? cleanText : EXACT_STATIC_AUDIO[cleanText];
 
     if (staticUrl && typeof window !== 'undefined') {
       try {

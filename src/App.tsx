@@ -84,7 +84,7 @@ const AppContent: React.FC = () => {
     return (
       <CinematicOnboarding
         onComplete={() => {
-          setCurrentPage('hub');
+          setCurrentPage('letters');
         }}
       />
     );
