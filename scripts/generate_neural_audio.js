@@ -1,6 +1,5 @@
-// Studio-Grade Phonetic Speech Therapy Generator for LUMI
-// Ultra-Accurate Classical Arabic Articulation with Clear Makharij
-// Microsoft Neural Voice: ar-SA-ZariyahNeural with SSML Prosody and Phonetic Tuning
+// Standard Natural Arabic Letters & Dialogue Audio Generator
+// Voice: ar-SA-ZariyahNeural (Pure Saudi Female)
 
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import fs from 'fs';
@@ -20,47 +19,46 @@ dirs.forEach(d => {
   }
 });
 
-// Precision Phonetic Letter Mapping for Speech Therapy
-// Combining letter name + isolated pure sound (fatha & sukoon) with clear prosody
-const phoneticLetters = [
-  { id: 'alif', text: 'أَلِف... أَ... أْ... أَلِف' },
-  { id: 'baa', text: 'بَاء... بَ... بْ... بَاء' },
-  { id: 'taa', text: 'تَاء... تَ... تْ... تَاء' },
-  { id: 'thaa', text: 'ثَاء... ثَ... ثْ... ثَاء' },
-  { id: 'jeem', text: 'جِيم... جَ... جْ... جِيم' },
-  { id: 'haa', text: 'حَاء... حَ... حْ... حَاء' },
-  { id: 'khaa', text: 'خَاء... خَ... خْ... خَاء' },
-  { id: 'daal', text: 'دَال... دَ... دْ... دَال' },
-  { id: 'zaal', text: 'ذَال... ذَ... ذْ... ذَال' },
-  { id: 'raa', text: 'رَاء... رَ... رْ... رَاء' },
-  { id: 'zay', text: 'زَاي... زَ... زْ... زَاي' },
-  { id: 'seen', text: 'سِين... سَ... سْ... سِين' },
-  { id: 'sheen', text: 'شِين... شَ... شْ... شِين' },
-  { id: 'saad', text: 'صَاد... صَ... صْ... صَاد' },
-  { id: 'daad', text: 'ضَاد... ضَ... ضْ... ضَاد' },
-  { id: 'taa_heavy', text: 'طَاء... طَ... طْ... طَاء' },
-  { id: 'zaa_heavy', text: 'ظَاء... ظَ... ظْ... ظَاء' },
-  { id: 'ayn', text: 'عَيْن... عَ... عْ... عَيْن' },
-  { id: 'ghayn', text: 'غَيْن... غَ... غْ... غَيْن' },
-  { id: 'faa', text: 'فَاء... فَ... فْ... فَاء' },
-  { id: 'qaaf', text: 'قَاف... قَ... قْ... قَاف' },
-  { id: 'kaaf', text: 'كَاف... كَ... كْ... كَاف' },
-  { id: 'laam', text: 'لاَم... لَ... لْ... لاَم' },
-  { id: 'meem', text: 'مِيم... مَ... مْ... مِيم' },
-  { id: 'noon', text: 'نُون... نَ... نْ... نُون' },
-  { id: 'haa_soft', text: 'هَاء... هَ... هْ... هَاء' },
-  { id: 'waaw', text: 'وَاو... وَ... وْ... وَاو' },
-  { id: 'yaa', text: 'يَاء... يَ... يْ... يَاء' }
+// 28 Clean Natural Standard Arabic Letter Names
+const cleanLetters = [
+  { id: 'alif', text: 'أَلِف' },
+  { id: 'baa', text: 'بَاء' },
+  { id: 'taa', text: 'تَاء' },
+  { id: 'thaa', text: 'ثَاء' },
+  { id: 'jeem', text: 'جِيم' },
+  { id: 'haa', text: 'حَاء' },
+  { id: 'khaa', text: 'خَاء' },
+  { id: 'daal', text: 'دَال' },
+  { id: 'zaal', text: 'ذَال' },
+  { id: 'raa', text: 'رَاء' },
+  { id: 'zay', text: 'زَاي' },
+  { id: 'seen', text: 'سِين' },
+  { id: 'sheen', text: 'شِين' },
+  { id: 'saad', text: 'صَاد' },
+  { id: 'daad', text: 'ضَاد' },
+  { id: 'taa_heavy', text: 'طَاء' },
+  { id: 'zaa_heavy', text: 'ظَاء' },
+  { id: 'ayn', text: 'عَيْن' },
+  { id: 'ghayn', text: 'غَيْن' },
+  { id: 'faa', text: 'فَاء' },
+  { id: 'qaaf', text: 'قَاف' },
+  { id: 'kaaf', text: 'كَاف' },
+  { id: 'laam', text: 'لاَم' },
+  { id: 'meem', text: 'مِيم' },
+  { id: 'noon', text: 'نُون' },
+  { id: 'haa_soft', text: 'هَاء' },
+  { id: 'waaw', text: 'وَاو' },
+  { id: 'yaa', text: 'يَاء' }
 ];
 
-const generalAudios = [
+const staticAudios = [
   // Syllables
-  { category: 'syllables', id: 'baa_fatha', text: 'بَ... بَ... فَتْحَة' },
-  { category: 'syllables', id: 'baa_kasra', text: 'بِ... بِ... كَسْرَة' },
-  { category: 'syllables', id: 'baa_damma', text: 'بُ... بُ... ضَمَّة' },
-  { category: 'syllables', id: 'baa_alif', text: 'بَا... مَدُّ الأَلِف' },
-  { category: 'syllables', id: 'baa_yaa', text: 'بِي... مَدُّ اليَاء' },
-  { category: 'syllables', id: 'baa_waw', text: 'بُو... مَدُّ الوَاو' },
+  { category: 'syllables', id: 'baa_fatha', text: 'بَ' },
+  { category: 'syllables', id: 'baa_kasra', text: 'بِ' },
+  { category: 'syllables', id: 'baa_damma', text: 'بُ' },
+  { category: 'syllables', id: 'baa_alif', text: 'بَا' },
+  { category: 'syllables', id: 'baa_yaa', text: 'بِي' },
+  { category: 'syllables', id: 'baa_waw', text: 'بُو' },
 
   // Words
   { category: 'words', id: 'baab', text: 'بَاب' },
@@ -75,16 +73,14 @@ const generalAudios = [
   { category: 'sentences', id: 'baab_bayt', text: 'هَذَا بَابُ البَيْتِ' },
   { category: 'sentences', id: 'battah_tasbah', text: 'البَطَّةُ تَسْبَحُ فِي المَاءِ' },
 
-  // Dialogue & Encouragement
+  // Dialogue
   { category: 'dialogue', id: 'intro_step_1', text: 'مَرْحَبًا! أَنَا لُومِي.. هَيَّا نَسْتَكْشِفُ مَعًا عَالَمَ الأَصْوَاتِ السَّاحِر!' },
   { category: 'dialogue', id: 'intro_step_2', text: 'هَذَا العَالَمُ فَقَدَ أَصْوَاتَهُ السَّاحِرَة...' },
-  { category: 'dialogue', id: 'intro_step_3', text: 'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا يَا بَطَل؟' },
+  { category: 'dialogue', id: 'intro_step_3', text: 'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا؟' },
   { category: 'dialogue', id: 'ask_name', text: 'مَا اسْمُكَ يَا بَطَل؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!' },
-  { category: 'dialogue', id: 'welcome_child', text: 'أَهْلًا وَسَهْلًا بِكَ يَا بَطَل! أَنَا سَعِيدَةٌ جِدًّا بِوُجُودِكَ مَعِي! هَلْ أَنْتَ جَاهِزٌ لِلانْطِلاق؟' },
-  { category: 'dialogue', id: 'launch_journey', text: 'هَيَّا بِنَا يَا بَطَل! أَنْتَ عَلَى وَشَكِ عَيْشِ أَجْمَلِ المُغَامَرَات!' },
-  { category: 'dialogue', id: 'excellent', text: 'أَحْسَنْتَ يَا بَطَل! نُطْقٌ مَلَكِيٌّ رَائِعٌ وَمُتَفَوِّق!' },
-  { category: 'dialogue', id: 'try_again', text: 'أَنْتَ قَرِيبٌ جِدًّا.. اسْتَمِعْ جَيِّدًا وَلِنُجَرِّبْ ثَانِيَةً!' },
-  { category: 'dialogue', id: 'choose_letter', text: 'اخْتَرْ حَرْفَكَ السِّحْرِيَّ الَّذِي تُرِيدُ أَنْ نَبْدَأَ بِهِ مُغَامَرَتَنَا!' },
+  { category: 'dialogue', id: 'launch_journey', text: 'هَيَّا بِنَا! أَنْتَ عَلَى وَشَكِ عَيْشِ أَجْمَلِ المُغَامَرَات!' },
+  { category: 'dialogue', id: 'excellent', text: 'أَحْسَنْتَ! نُطْقٌ مَلَكِيٌّ رَائِعٌ وَمُتَفَوِّق!' },
+  { category: 'dialogue', id: 'try_again', text: 'أَنْتَ قَرِيبٌ جِدًّا.. لِنُجَرِّبْ ثَانِيَةً!' },
 
   // Stages
   { category: 'stages', id: 'stage_1', text: 'المَرْحَلَةُ الأُولَى: مَخْرَجُ وَصَوْتُ الحَرْفِ الصَّافِي!' },
@@ -96,28 +92,28 @@ const generalAudios = [
   { category: 'stages', id: 'stage_7', text: 'المَرْحَلَةُ السَّابِعَة: نُطْقُ وَبِنَاءُ الجُمَلِ المُفِيدَة!' },
   { category: 'stages', id: 'stage_8', text: 'المَرْحَلَةُ الثَّامِنَة: التَّحَدِّي الخِتَامِيُّ وَالتَّتْوِيجُ المَلَكِيّ!' },
   { category: 'stages', id: 'next_stage', text: 'مُبَارَكٌ يَا بَطَل! فُتِحَتْ لَكَ المَرْحَلَةُ التَّالِيَة.. هَيَّا نَنْطَلِق!' },
-  { category: 'stages', id: 'listen_sound', text: 'اسْتَمِعْ لِصَوْتِ وَمَخْرَجِ الحَرْفِ يَا بَطَل!' },
+  { category: 'stages', id: 'listen_sound', text: 'اسْتَمِعْ لِصَوْتِ الحَرْف!' },
 
-  // Articulation & Tongue Training
+  // Articulation
   { category: 'articulation', id: 'lips_guide_baa', text: 'حَرْفُ البَاءِ يَخْرُجُ بِانْطِبَاقِ الشَّفَتَيْنِ مَعًا ثُمَّ انْفِتَاحِهِمَا بِخُرُوجِ الهَوَاء: بْ!' },
   { category: 'articulation', id: 'tongue_guide_baa', text: 'يَبْقَى اللِّسَانُ مُسْتَرِيحًا فِي قَاعِ الفَمِ عِنْدَ نُطْقِ حَرْفِ البَاء!' },
   { category: 'articulation', id: 'tongue_lab_intro', text: 'مَرْحَبًا بِكَ فِي مُخْتَبَرِ اللِّسَانِ السِّحْرِيّ! شَاهِدْ حَرَكَةَ اللِّسَانِ وَالشَّفَتَيْنِ وَقَلِّدِ الصَّوْت!' },
   { category: 'articulation', id: 'tongue_quiz_success', text: 'مُمْتَازٌ يَا بَطَل! انْطِبَاقُ الشَّفَتَيْنِ هُوَ مَخْرَجُ حَرْفِ البَاء!' }
 ];
 
-async function generateAccuratePhonetics() {
-  console.log('🎙️ Generating Accurate Speech Therapy Audio Files (ar-SA-ZariyahNeural)...');
+async function generateCleanAudios() {
+  console.log('🎙️ Generating Clean Standard Arabic Letter Audio (ar-SA-ZariyahNeural)...');
   const tts = new MsEdgeTTS();
   await tts.setMetadata('ar-SA-ZariyahNeural', OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
 
-  // 1. Generate 28 Precision Phonetic Letters
-  for (const ltr of phoneticLetters) {
+  // 1. Generate clean 28 letters
+  for (const ltr of cleanLetters) {
     const destPath = path.join(AUDIO_DIR, 'letters', `${ltr.id}.mp3`);
     try {
-      console.log(`🔤 [Letter Phonetics]: ${ltr.text} -> letters/${ltr.id}.mp3`);
+      console.log(`🔤 Letter: ${ltr.text} -> letters/${ltr.id}.mp3`);
       const { audioStream } = tts.toStream(ltr.text, {
         pitch: '+0Hz',
-        rate: '-14%' // Slow, highly deliberate pronunciation for speech therapy
+        rate: '-8%'
       });
 
       const writeStream = fs.createWriteStream(destPath);
@@ -128,20 +124,20 @@ async function generateAccuratePhonetics() {
         writeStream.on('error', reject);
       });
 
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 100));
     } catch (err) {
       console.error(`❌ Error on ${ltr.id}:`, err.message);
     }
   }
 
-  // 2. Generate General Dialogue & Stages
-  for (const item of generalAudios) {
+  // 2. Generate static dialogues
+  for (const item of staticAudios) {
     const destPath = path.join(AUDIO_DIR, item.category, `${item.id}.mp3`);
     try {
-      console.log(`📢 [${item.category}]: ${item.text}`);
+      console.log(`📢 ${item.category}/${item.id}.mp3`);
       const { audioStream } = tts.toStream(item.text, {
         pitch: '+0Hz',
-        rate: '-10%'
+        rate: '-8%'
       });
 
       const writeStream = fs.createWriteStream(destPath);
@@ -158,7 +154,7 @@ async function generateAccuratePhonetics() {
     }
   }
 
-  console.log('✨ All Phonetically Accurate Female Audio Files Generated!');
+  console.log('✨ All Standard Clean Female Audio Files Generated!');
 }
 
-generateAccuratePhonetics();
+generateCleanAudios();
