@@ -144,7 +144,7 @@ export const MobileStagePlayer: React.FC<MobileStagePlayerProps> = ({
 
     const cheer = customCheer || `أَحْسَنْتَ يَا ${childName || 'البَطَل'}! إِجَابَةٌ مَلَكِيَّةٌ رَائِعَة! 🌟`;
     setFeedbackText(cheer);
-    audioManager.speak(cheer);
+    // LumiGuideBanner will automatically speak the updated feedbackText
 
     addStars(1);
     addCoins(10);
@@ -165,7 +165,7 @@ export const MobileStagePlayer: React.FC<MobileStagePlayerProps> = ({
     audioManager.playClick();
     const retryCheer = `حَاوِلْ مَرَّةً أُخْرَى يَا ${childName || 'البَطَل'}.. أَنْتَ قَرِيبٌ جِدًّا! 💪`;
     setFeedbackText(retryCheer);
-    audioManager.speak(retryCheer);
+    // LumiGuideBanner will automatically speak the updated feedbackText
   };
 
   // Next Stage navigation

@@ -70,8 +70,11 @@ export const LumiGuideBanner: React.FC<LumiGuideBannerProps> = ({
       >
         <div className="relative">
           <LumiMascot
-            state={isPlaying ? 'listening' : (emotion === 'happy' ? 'idle' : 'success')}
-            size="md"
+            state={isPlaying ? 'talking' : 'idle'}
+            emotion={emotion}
+            size={size}
+            message={message}
+            autoSpeak={false}
           />
           {/* Glowing Ring around Lumi */}
           <div

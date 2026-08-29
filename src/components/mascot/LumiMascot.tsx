@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Volume2, Sparkles } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 
-export type MascotState = 'idle' | 'listening' | 'success' | 'retry';
+export type MascotState = 'idle' | 'listening' | 'success' | 'retry' | 'talking';
 
 interface LumiMascotProps {
   state?: MascotState;
@@ -10,13 +10,15 @@ interface LumiMascotProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   message?: string;
+  autoSpeak?: boolean;
 }
 
 export const LumiMascot: React.FC<LumiMascotProps> = ({ 
   state = 'idle', 
   className = '',
   size = 'md',
-  message
+  message,
+  autoSpeak = true
 }) => {
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
@@ -27,11 +29,12 @@ export const LumiMascot: React.FC<LumiMascotProps> = ({
   };
 
   useEffect(() => {
-    if (message) {
+    if (message && autoSpeak) {
       const timer = setTimeout(() => handleSpeak(), 350);
       return () => clearTimeout(timer);
     }
-  }, [message]);
+  }, [message, autoSpeak]);
+
   const sizeClasses = {
     sm: 'w-16 h-16',
     md: 'w-24 h-24',
