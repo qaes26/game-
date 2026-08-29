@@ -1,41 +1,49 @@
 import React, { useState } from 'react';
-import { ArrowRight, Sparkles, Volume2, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
 
-export const ValleyOfLettersWorld: React.FC<{ onBack: () => void; onSelectLetter: (id: string) => void }> = ({
-  onBack,
-  onSelectLetter
-}) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
-  const [foundLetters, setFoundLetters] = useState<string[]>([]);
-  const [bloomingFlowers, setBloomingFlowers] = useState<number>(0);
+import { ARABIC_LETTERS } from '../../data/letters';
 
-  const lettersInValley = [
-    { char: 'ب', id: 'baa', x: 20, y: 30, color: 'text-rose-600' },
-    { char: 'ت', id: 'taa', x: 75, y: 25, color: 'text-emerald-600' },
-    { char: 'م', id: 'meem', x: 45, y: 60, color: 'text-amber-600' },
-    { char: 'ن', id: 'noon', x: 80, y: 70, color: 'text-sky-600' },
-    { char: 'أ', id: 'alif', x: 15, y: 75, color: 'text-purple-600' }
+export const ValleyOfLettersWorld: React.FC<{
+  onBack: () => void;
+  onSelectLetter?: (letterId: string) => void;
+}> = ({ onBack, onSelectLetter }) => {
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
+
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  
+  const allSyllables = [
+    ...letterData.syllables.short.map(s => s.syl),
+    ...letterData.syllables.long.map(s => s.syl)
   ];
 
-  const handleSpotLetter = (char: string, id: string) => {
-    if (foundLetters.includes(char)) {
-      audioManager.speak(char);
-      return;
-    }
+  const lettersInValley = [
+    { id: '1', char: allSyllables[0] || letterData.char, x: 20, y: 35, color: 'text-amber-500' },
+    { id: '2', char: allSyllables[1] || letterData.char, x: 45, y: 25, color: 'text-sky-500' },
+    { id: '3', char: allSyllables[2] || letterData.char, x: 70, y: 35, color: 'text-emerald-500' },
+    { id: '4', char: allSyllables[3] || letterData.char, x: 30, y: 65, color: 'text-rose-500' },
+    { id: '5', char: allSyllables[4] || letterData.char, x: 55, y: 55, color: 'text-purple-500' },
+    { id: '6', char: allSyllables[5] || letterData.char, x: 80, y: 65, color: 'text-cyan-500' }
+  ];
 
+  const [foundLetters, setFoundLetters] = useState<string[]>([]);
+
+  const handleSpotLetter = (char: string, letterId: string) => {
     audioManager.playBloom();
     audioManager.speak(char);
-    const newFound = [...foundLetters, char];
-    setFoundLetters(newFound);
-    setBloomingFlowers(prev => prev + 1);
-    addStars(1);
-    addCoins(5);
 
-    if (newFound.length === lettersInValley.length) {
-      triggerVictoryCelebration();
+    if (!foundLetters.includes(char)) {
+      const newFound = [...foundLetters, char];
+      setFoundLetters(newFound);
+      addStars(1);
+      addCoins(5);
+
+      if (newFound.length === lettersInValley.length) {
+        triggerVictoryCelebration();
+        audioManager.speak(`مُمْتَازٌ يَا ${childName || 'البَطَل'}! اكْتَشَفْتَ جَمِيعَ حُرُوفِ الوَادِي السَّاحِر!`);
+      }
     }
   };
 
@@ -56,18 +64,27 @@ export const ValleyOfLettersWorld: React.FC<{ onBack: () => void; onSelectLetter
           </button>
           <div>
             <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-              <span>🌿 وَادِي الحُرُوفِ الخَضْرَاء</span>
+              <span>🏞️ وَادِي الحُرُوفِ السَّاحِر</span>
             </h1>
             <p className="text-xs md:text-sm text-slate-600 font-bold">
-              ابْحَثْ عَنِ الحُرُوفِ المُخَبَّأَةِ فِي المَرْعَى لِتُزْهِرَ الأَزْهَارُ البَرَّاقَة!
+              ابْحَثْ عَنِ الحُرُوفِ الطَّافِيَةِ فِي الوَادِي وَانْقُرْ عَلَيْهَا لِسَمَاعِ صَوْتِهَا!
             </p>
           </div>
         </div>
 
-        <div className="bg-emerald-100 text-emerald-900 px-4 py-1.5 rounded-2xl font-black text-xs md:text-sm border border-emerald-300">
-          🌸 أَزْهَارٌ مُفَتَّحَة: {bloomingFlowers} / 5
+        <div className="flex items-center gap-2 bg-emerald-100 px-4 py-2 rounded-2xl border-2 border-emerald-300">
+          <Sparkles className="w-5 h-5 text-emerald-600" />
+          <span className="font-black text-emerald-900 text-sm">{foundLetters.length} / {lettersInValley.length}</span>
         </div>
       </div>
+
+      {/* Lumi Guide Banner */}
+      <LumiGuideBanner
+        message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'} فِي وَادِي الحُرُوفِ السَّاحِر! انْقُرْ عَلَى الأَحْجَارِ الطَّافِيَةِ لِتَسْتَمِعَ لِصَوْتِ الحُرُوفِ وَتَجْعَلَ الوَادِيَ يُزْهِر!` }
+        shortHint="انْقُرْ عَلَى الحُرُوف"
+        autoSpeak={true}
+        emotion="happy"
+      />
 
       {/* Interactive Living Valley Canvas Scene */}
       <div className="relative w-full h-[480px] rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-b from-sky-300 via-emerald-200 to-green-300">
@@ -83,7 +100,7 @@ export const ValleyOfLettersWorld: React.FC<{ onBack: () => void; onSelectLetter
         </svg>
 
         {/* Blooming Flowers in Valley */}
-        {Array.from({ length: bloomingFlowers * 3 }).map((_, i) => (
+        {Array.from({ length: foundLetters.length * 3 }).map((_, i) => (
           <div
             key={i}
             className="absolute text-3xl animate-pop pointer-events-none"
@@ -121,15 +138,6 @@ export const ValleyOfLettersWorld: React.FC<{ onBack: () => void; onSelectLetter
             </button>
           );
         })}
-
-        {/* Floating Mascot in Valley */}
-        <div className="absolute bottom-6 right-6">
-          <LumiMascot
-            message="انْقُرْ عَلَى الحُرُوفِ لِتَكْتَشِفَ صَوْتَهَا وَتَجْعَلَ الوَادِيَ يُزْهِر!"
-            emotion="happy"
-            size="md"
-          />
-        </div>
       </div>
 
       {/* Action Footer */}
@@ -143,12 +151,7 @@ export const ValleyOfLettersWorld: React.FC<{ onBack: () => void; onSelectLetter
           ))}
         </div>
 
-        <button
-          onClick={() => onSelectLetter('baa')}
-          className="game-btn px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-black text-xs md:text-sm"
-        >
-          <span>انْطَلِقْ لِرِحْلَةِ حَرْفِ البَاءِ 🚀</span>
-        </button>
+        {/* Local letter selection removed as per global letter feature */}
       </div>
 
     </div>

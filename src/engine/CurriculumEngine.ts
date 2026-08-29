@@ -18,6 +18,9 @@ export interface StageDefinition {
   stageType: StageType;
   titleAr: string;
   objectiveAr: string;
+  explanationAr: string;
+  howToPlayAr: string;
+  shortTipAr: string;
   landmark3D: string;
   allowedActivityTypes: Array<
     | 'sound_listening'
@@ -36,65 +39,89 @@ export const STAGE_CURRICULUM_DEFINITIONS: StageDefinition[] = [
   {
     stageNumber: 1,
     stageType: 'sound_production',
-    titleAr: 'مخرج وصوت الحرف',
-    objectiveAr: 'إتقان نطق مخرج الحرف الصافي مع حركة الشفتين واللسان',
-    landmark3D: 'منصة الصدى البلورية',
-    allowedActivityTypes: ['pronunciation', 'sound_listening']
+    titleAr: 'البذرة المضيئة',
+    objectiveAr: 'التعرف على شكل الحرف والصور المرتبطة به كبذرة نور',
+    explanationAr: 'تعال نكتشف بذرة النور الجديدة ونشاهد شكلها الجميل!',
+    howToPlayAr: 'اضغط على زر الاستماع لسماع صوت الحرف، ثم انقر على الفقاعات التي تحتوي الحرف المطلوب فقط!',
+    shortTipAr: 'اكتشف البذرة المضيئة!',
+    landmark3D: 'منصة بذور النور',
+    allowedActivityTypes: ['sound_listening', 'pronunciation']
   },
   {
     stageNumber: 2,
-    stageType: 'short_vowels',
-    titleAr: 'المقاطع القصيرة (الحركات)',
-    objectiveAr: 'نطق وتمييز المقاطع القصيرة: الفتحة (بَ) والكسرة (بِ) والضمة (بُ)',
-    landmark3D: 'برج الحركات المتوهج',
-    allowedActivityTypes: ['vowel_discrimination', 'sound_listening', 'pronunciation']
+    stageType: 'sound_production',
+    titleAr: 'قطرات الصوت',
+    objectiveAr: 'نطق صوت الحرف لتسقي به البذرة وتنمو',
+    explanationAr: 'اسقِ البذرة بصوتك العالي ليسمعها لومي وتكبر!',
+    howToPlayAr: 'شاهد حركة الشفتين واللسان التفاعلية، وجرب النطق أمام مرآة لومي السحرية!',
+    shortTipAr: 'اسقِ البذرة بصوتك!',
+    landmark3D: 'ينبوع الأصوات',
+    allowedActivityTypes: ['pronunciation', 'sound_listening']
   },
   {
     stageNumber: 3,
-    stageType: 'long_syllables',
-    titleAr: 'المقاطع الطويلة (المدود)',
-    objectiveAr: 'نطق وتمييز المدود الطويلة: مد الألف (بَا) ومد الياء (بِي) ومد الواو (بُو)',
-    landmark3D: 'بوابة غابة المقاطع',
-    allowedActivityTypes: ['syllable_construction', 'sound_listening', 'pronunciation']
+    stageType: 'short_vowels',
+    titleAr: 'براعم النغمات',
+    objectiveAr: 'تمييز الحركات القصيرة الثلاث لتفتيح براعم النور',
+    explanationAr: 'البذرة تكبر بثلاث حركات.. هيا نعزف نغماتها معاً!',
+    howToPlayAr: 'استمع للمقطع الصوتي القصير، واختر الحركة المطابقة من بين الحركات الثلاث المعروضة!',
+    shortTipAr: 'اعزف نغمات البراعم!',
+    landmark3D: 'حديقة البراعم المضيئة',
+    allowedActivityTypes: ['vowel_discrimination', 'sound_listening', 'pronunciation']
   },
   {
     stageNumber: 4,
-    stageType: 'words_construction',
-    titleAr: 'تركيب الكلمات من المقاطع',
-    objectiveAr: 'دمج المقاطع لتكوين كلمات حقيقية ونطقها بطلاقة',
-    landmark3D: 'ساحة تركيب الكلمات',
-    allowedActivityTypes: ['word_building', 'sound_listening', 'pronunciation']
+    stageType: 'long_syllables',
+    titleAr: 'غصون تمتد',
+    objectiveAr: 'المقاطع الممدودة لتمديد غصون شجرة النور',
+    explanationAr: 'اسحب الصوت طويييلاً لتمتد غصون الشجرة الرائعة!',
+    howToPlayAr: 'اسمع صوت المد الطويل، وحدد المقطع الصحيح الذي يطيل غصون شجرتنا!',
+    shortTipAr: 'مد الصوت لتمتد الغصون!',
+    landmark3D: 'غابة الأغصان الطويلة',
+    allowedActivityTypes: ['syllable_construction', 'sound_listening', 'pronunciation']
   },
   {
     stageNumber: 5,
     stageType: 'words_positions',
-    titleAr: 'الكلمات في مواضعها',
-    objectiveAr: 'نطق وفهم الكلمات في أول ووسط وآخر الموضع',
-    landmark3D: 'معالم قرية الكلمات',
+    titleAr: 'ثمار الكلمات',
+    objectiveAr: 'الكلمات حسب موقع الحرف فيها كأزهار وثمار',
+    explanationAr: 'الشجرة أثمرت! أين يختبئ حرفنا داخل هذه الثمرة؟',
+    howToPlayAr: 'استمع للكلمة التي ينطقها لومي، ثم اختر البطاقة المصورة المطابقة لتجمع الثمار!',
+    shortTipAr: 'اجمع ثمار الكلمات!',
+    landmark3D: 'بستان ثمار الحروف',
     allowedActivityTypes: ['word_image_match', 'sound_listening', 'pronunciation']
   },
   {
     stageNumber: 6,
     stageType: 'sound_position',
-    titleAr: 'موقع الصوت في الكلمة',
-    objectiveAr: 'تحديد موقع الحرف داخل الكلمة سمعيًا وبصريًا',
-    landmark3D: 'قمة جبل التمييز',
+    titleAr: 'النحلة الباحثة',
+    objectiveAr: 'تحدي تحديد موقع الصوت داخل الكلمة مع النحلة المضيئة',
+    explanationAr: 'لومي خبّأ الحرف بين الزهور.. ساعد النحلة في العثور عليه!',
+    howToPlayAr: 'انظر للكلمة واضغط على مكان الزهرة المناسبة (الأولى، الوسطى، أو الأخيرة) التي يقف فيها الحرف!',
+    shortTipAr: 'ساعد النحلة في البحث!',
+    landmark3D: 'مروج النحل المضيء',
     allowedActivityTypes: ['position_identification', 'sound_listening']
   },
   {
     stageNumber: 7,
-    stageType: 'sentences_context',
-    titleAr: 'نطق الجمل المفيدة',
-    objectiveAr: 'نطق وتركيب الجمل التامة وفهم معناها واستخدام الكلمات بسلاسة',
-    landmark3D: 'شلال الجمل المضيء',
-    allowedActivityTypes: ['sentence_completion', 'sound_listening', 'pronunciation']
+    stageType: 'words_construction',
+    titleAr: 'غابة الحكايات',
+    objectiveAr: 'الجمل والمعاني لتكوين حكايات من الثمار',
+    explanationAr: 'لنجمع ثمارنا المضيئة ونبني بها حكاية صغيرة مفيدة!',
+    howToPlayAr: 'اضغط على الحروف بالترتيب الهجائي الصحيح لتبني كلمتك المضيئة، ويمكنك النقر على أي حرف لإلغائه!',
+    shortTipAr: 'ابنِ حكاية من الثمار!',
+    landmark3D: 'غابة الحكايات السحرية',
+    allowedActivityTypes: ['word_building', 'sound_listening', 'pronunciation']
   },
   {
     stageNumber: 8,
     stageType: 'integrated_challenge',
-    titleAr: 'التحدي النهائي والإتقان',
-    objectiveAr: 'بوابة لومي الكبرى لاختبار الإتقان الشامل وتتويج بطل الحرف',
-    landmark3D: 'بوابة لومي الكبرى',
+    titleAr: 'الشجرة المتوهجة',
+    objectiveAr: 'التحدي النهائي والاحتفال باكتمال شجرة الحرف المضيئة',
+    explanationAr: 'رائع! شجرة حرفنا تضيء الغابة كلها الآن بفضلك!',
+    howToPlayAr: 'أجب عن التحديات الممتعة، واحتفل باكتمال الشجرة المتوهجة ونموها الكامل!',
+    shortTipAr: 'أنر الغابة بالشجرة المتوهجة!',
+    landmark3D: 'مزار الشجرة المتوهجة الكبرى',
     allowedActivityTypes: ['adaptive_gate_trial']
   }
 ];

@@ -1,252 +1,21 @@
-// Pure Saudi Female Voice Audio Engine for LUMI (ar-SA-ZariyahNeural)
-// 100% Client-Side In-Browser Architecture with Zero Server Dependency
-// Works natively on Netlify, Vercel, GitHub Pages, Mobile & Desktop
+// Pure Saudi Female Voice Audio Engine for LUMI
+// 100% Pre-recorded Static Audio Architecture (Priority 1) with Dynamic Live TTS Fallback (Priority 2)
+// Works offline natively on PWA, Netlify, Mobile & Desktop
 
 import { ClientEdgeTTS } from './ClientEdgeTTS';
+import {
+  resolveStaticAudioPath,
+  stripTashkeel,
+  stripEmojis,
+  MASTER_AUDIO_MANIFEST,
+  LETTER_AUDIO_MAP
+} from './audioManifest';
 
-// 1. Exact map of letter IDs to audio files
-export const LETTER_ID_MAP: Record<string, string> = {
-  'alif': '/audio/letters/alif.mp3',
-  'baa': '/audio/letters/baa.mp3',
-  'taa': '/audio/letters/taa.mp3',
-  'thaa': '/audio/letters/thaa.mp3',
-  'jeem': '/audio/letters/jeem.mp3',
-  'haa': '/audio/letters/haa.mp3',
-  'khaa': '/audio/letters/khaa.mp3',
-  'daal': '/audio/letters/daal.mp3',
-  'zaal': '/audio/letters/zaal.mp3',
-  'raa': '/audio/letters/raa.mp3',
-  'zay': '/audio/letters/zay.mp3',
-  'seen': '/audio/letters/seen.mp3',
-  'sheen': '/audio/letters/sheen.mp3',
-  'saad': '/audio/letters/saad.mp3',
-  'daad': '/audio/letters/daad.mp3',
-  'taa_heavy': '/audio/letters/taa_heavy.mp3',
-  'zaa_heavy': '/audio/letters/zaa_heavy.mp3',
-  'ayn': '/audio/letters/ayn.mp3',
-  'ghayn': '/audio/letters/ghayn.mp3',
-  'faa': '/audio/letters/faa.mp3',
-  'qaaf': '/audio/letters/qaaf.mp3',
-  'kaaf': '/audio/letters/kaaf.mp3',
-  'laam': '/audio/letters/laam.mp3',
-  'meem': '/audio/letters/meem.mp3',
-  'noon': '/audio/letters/noon.mp3',
-  'haa_soft': '/audio/letters/haa_soft.mp3',
-  'waaw': '/audio/letters/waaw.mp3',
-  'yaa': '/audio/letters/yaa.mp3'
-};
+export const LETTER_ID_MAP: Record<string, string> = LETTER_AUDIO_MAP;
+export { stripTashkeel, stripEmojis, LETTER_AUDIO_MAP };
+export const EXACT_STATIC_AUDIO = MASTER_AUDIO_MANIFEST;
 
-// Helper: Strip Arabic diacritics (tashkeel)
-export function stripTashkeel(text: string): string {
-  return text
-    .replace(/[\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')
-    .trim();
-}
-
-// 2. Comprehensive Static Audio Dictionary (Includes Letters, Syllables, Words, Sentences, Stages, Dialogues)
-export const EXACT_STATIC_AUDIO: Record<string, string> = {
-  // Letters by Arabic Name (with and without tashkeel)
-  'أَلِف': '/audio/letters/alif.mp3', 'الف': '/audio/letters/alif.mp3', 'ألف': '/audio/letters/alif.mp3', 'إلف': '/audio/letters/alif.mp3',
-  'بَاء': '/audio/letters/baa.mp3', 'باء': '/audio/letters/baa.mp3',
-  'تَاء': '/audio/letters/taa.mp3', 'تاء': '/audio/letters/taa.mp3',
-  'ثَاء': '/audio/letters/thaa.mp3', 'ثاء': '/audio/letters/thaa.mp3',
-  'جِيم': '/audio/letters/jeem.mp3', 'جيم': '/audio/letters/jeem.mp3',
-  'حَاء': '/audio/letters/haa.mp3', 'حاء': '/audio/letters/haa.mp3',
-  'خَاء': '/audio/letters/khaa.mp3', 'خاء': '/audio/letters/khaa.mp3',
-  'دَال': '/audio/letters/daal.mp3', 'دال': '/audio/letters/daal.mp3',
-  'ذَال': '/audio/letters/zaal.mp3', 'ذال': '/audio/letters/zaal.mp3',
-  'رَاء': '/audio/letters/raa.mp3', 'راء': '/audio/letters/raa.mp3',
-  'زَاي': '/audio/letters/zay.mp3', 'زاي': '/audio/letters/zay.mp3',
-  'سِين': '/audio/letters/seen.mp3', 'سين': '/audio/letters/seen.mp3',
-  'شِين': '/audio/letters/sheen.mp3', 'شين': '/audio/letters/sheen.mp3',
-  'صَاد': '/audio/letters/saad.mp3', 'صاد': '/audio/letters/saad.mp3',
-  'ضَاد': '/audio/letters/daad.mp3', 'ضاد': '/audio/letters/daad.mp3',
-  'طَاء': '/audio/letters/taa_heavy.mp3', 'طاء': '/audio/letters/taa_heavy.mp3',
-  'ظَاء': '/audio/letters/zaa_heavy.mp3', 'ظاء': '/audio/letters/zaa_heavy.mp3',
-  'عَيْن': '/audio/letters/ayn.mp3', 'عين': '/audio/letters/ayn.mp3',
-  'غَيْن': '/audio/letters/ghayn.mp3', 'غين': '/audio/letters/ghayn.mp3',
-  'فَاء': '/audio/letters/faa.mp3', 'فاء': '/audio/letters/faa.mp3',
-  'قَاف': '/audio/letters/qaaf.mp3', 'قاف': '/audio/letters/qaaf.mp3',
-  'كَاف': '/audio/letters/kaaf.mp3', 'كاف': '/audio/letters/kaaf.mp3',
-  'لاَم': '/audio/letters/laam.mp3', 'لام': '/audio/letters/laam.mp3',
-  'مِيم': '/audio/letters/meem.mp3', 'ميم': '/audio/letters/meem.mp3',
-  'نُون': '/audio/letters/noon.mp3', 'نون': '/audio/letters/noon.mp3',
-  'هَاء': '/audio/letters/haa_soft.mp3', 'هاء': '/audio/letters/haa_soft.mp3',
-  'وَاو': '/audio/letters/waaw.mp3', 'واو': '/audio/letters/waaw.mp3',
-  'يَاء': '/audio/letters/yaa.mp3', 'ياء': '/audio/letters/yaa.mp3',
-
-  // Letters by Single Character
-  'ا': '/audio/letters/alif.mp3', 'أ': '/audio/letters/alif.mp3', 'إ': '/audio/letters/alif.mp3', 'آ': '/audio/letters/alif.mp3', 'ء': '/audio/letters/alif.mp3',
-  'ب': '/audio/letters/baa.mp3',
-  'ت': '/audio/letters/taa.mp3',
-  'ث': '/audio/letters/thaa.mp3',
-  'ج': '/audio/letters/jeem.mp3',
-  'ح': '/audio/letters/haa.mp3',
-  'خ': '/audio/letters/khaa.mp3',
-  'د': '/audio/letters/daal.mp3',
-  'ذ': '/audio/letters/zaal.mp3',
-  'ر': '/audio/letters/raa.mp3',
-  'ز': '/audio/letters/zay.mp3',
-  'س': '/audio/letters/seen.mp3',
-  'ش': '/audio/letters/sheen.mp3',
-  'ص': '/audio/letters/saad.mp3',
-  'ض': '/audio/letters/daad.mp3',
-  'ط': '/audio/letters/taa_heavy.mp3',
-  'ظ': '/audio/letters/zaa_heavy.mp3',
-  'ع': '/audio/letters/ayn.mp3',
-  'غ': '/audio/letters/ghayn.mp3',
-  'ف': '/audio/letters/faa.mp3',
-  'ق': '/audio/letters/qaaf.mp3',
-  'ك': '/audio/letters/kaaf.mp3',
-  'ل': '/audio/letters/laam.mp3',
-  'م': '/audio/letters/meem.mp3',
-  'ن': '/audio/letters/noon.mp3',
-  'ه': '/audio/letters/haa_soft.mp3', 'ة': '/audio/letters/haa_soft.mp3',
-  'و': '/audio/letters/waaw.mp3',
-  'ي': '/audio/letters/yaa.mp3', 'ى': '/audio/letters/yaa.mp3',
-
-  // Letters by ID key
-  'alif': '/audio/letters/alif.mp3',
-  'baa': '/audio/letters/baa.mp3',
-  'taa': '/audio/letters/taa.mp3',
-  'thaa': '/audio/letters/thaa.mp3',
-  'jeem': '/audio/letters/jeem.mp3',
-  'haa': '/audio/letters/haa.mp3',
-  'khaa': '/audio/letters/khaa.mp3',
-  'daal': '/audio/letters/daal.mp3',
-  'zaal': '/audio/letters/zaal.mp3',
-  'raa': '/audio/letters/raa.mp3',
-  'zay': '/audio/letters/zay.mp3',
-  'seen': '/audio/letters/seen.mp3',
-  'sheen': '/audio/letters/sheen.mp3',
-  'saad': '/audio/letters/saad.mp3',
-  'daad': '/audio/letters/daad.mp3',
-  'taa_heavy': '/audio/letters/taa_heavy.mp3',
-  'zaa_heavy': '/audio/letters/zaa_heavy.mp3',
-  'ayn': '/audio/letters/ayn.mp3',
-  'ghayn': '/audio/letters/ghayn.mp3',
-  'faa': '/audio/letters/faa.mp3',
-  'qaaf': '/audio/letters/qaaf.mp3',
-  'kaaf': '/audio/letters/kaaf.mp3',
-  'laam': '/audio/letters/laam.mp3',
-  'meem': '/audio/letters/meem.mp3',
-  'noon': '/audio/letters/noon.mp3',
-  'haa_soft': '/audio/letters/haa_soft.mp3',
-  'waaw': '/audio/letters/waaw.mp3',
-  'yaa': '/audio/letters/yaa.mp3',
-
-  // Syllables
-  'بَ': '/audio/syllables/baa_fatha.mp3',
-  'بِ': '/audio/syllables/baa_kasra.mp3',
-  'بُ': '/audio/syllables/baa_damma.mp3',
-  'بَا': '/audio/syllables/baa_alif.mp3',
-  'بِي': '/audio/syllables/baa_yaa.mp3',
-  'بُو': '/audio/syllables/baa_waw.mp3',
-  'baa_fatha': '/audio/syllables/baa_fatha.mp3',
-  'baa_kasra': '/audio/syllables/baa_kasra.mp3',
-  'baa_damma': '/audio/syllables/baa_damma.mp3',
-  'baa_alif': '/audio/syllables/baa_alif.mp3',
-  'baa_yaa': '/audio/syllables/baa_yaa.mp3',
-  'baa_waw': '/audio/syllables/baa_waw.mp3',
-
-  // Words
-  'بَاب': '/audio/words/baab.mp3', 'باب': '/audio/words/baab.mp3', 'baab': '/audio/words/baab.mp3',
-  'بَطَّة': '/audio/words/battah.mp3', 'بطة': '/audio/words/battah.mp3', 'battah': '/audio/words/battah.mp3',
-  'بَيْت': '/audio/words/bayt.mp3', 'بيت': '/audio/words/bayt.mp3', 'bayt': '/audio/words/bayt.mp3',
-  'بَحْر': '/audio/words/bahr.mp3', 'بحر': '/audio/words/bahr.mp3', 'bahr': '/audio/words/bahr.mp3',
-  'خُبْز': '/audio/words/hubz.mp3', 'خبز': '/audio/words/hubz.mp3', 'hubz': '/audio/words/hubz.mp3',
-  'حَبْل': '/audio/words/habl.mp3', 'حبل': '/audio/words/habl.mp3', 'habl': '/audio/words/habl.mp3',
-  'عِنَب': '/audio/words/inab.mp3', 'عنب': '/audio/words/inab.mp3', 'inab': '/audio/words/inab.mp3',
-
-  // Sentences
-  'هَذَا بَابُ البَيْتِ': '/audio/sentences/baab_bayt.mp3',
-  'هذا باب البيت': '/audio/sentences/baab_bayt.mp3',
-  'baab_bayt': '/audio/sentences/baab_bayt.mp3',
-  'البَطَّةُ تَسْبَحُ فِي البَحْرِ': '/audio/sentences/battah_tasbah.mp3',
-  'البطة تسبح في البحر': '/audio/sentences/battah_tasbah.mp3',
-  'battah_tasbah': '/audio/sentences/battah_tasbah.mp3',
-
-  // Stages
-  'stage_1': '/audio/stages/stage_1.mp3',
-  'stage_2': '/audio/stages/stage_2.mp3',
-  'stage_3': '/audio/stages/stage_3.mp3',
-  'stage_4': '/audio/stages/stage_4.mp3',
-  'stage_5': '/audio/stages/stage_5.mp3',
-  'stage_6': '/audio/stages/stage_6.mp3',
-  'stage_7': '/audio/stages/stage_7.mp3',
-  'stage_8': '/audio/stages/stage_8.mp3',
-  'listen_sound': '/audio/stages/listen_sound.mp3',
-  'اسْتَمِعْ لِصَوْتِ الحَرْف': '/audio/stages/listen_sound.mp3',
-  'استمع لصوت الحرف': '/audio/stages/listen_sound.mp3',
-  'next_stage': '/audio/stages/next_stage.mp3',
-
-  // Names (100% Offline Pure Saudi Female Voice)
-  'طلال': '/audio/names/talal.mp3', 'طَلَال': '/audio/names/talal.mp3', 'talal': '/audio/names/talal.mp3',
-  'رنيم': '/audio/names/raneem.mp3', 'رَنِيم': '/audio/names/raneem.mp3', 'raneem': '/audio/names/raneem.mp3',
-  'فاطمة': '/audio/names/fatima.mp3', 'فَاطِمَة': '/audio/names/fatima.mp3', 'fatima': '/audio/names/fatima.mp3',
-  'هبة': '/audio/names/heba.mp3', 'هِبَة': '/audio/names/heba.mp3', 'heba': '/audio/names/heba.mp3',
-  'جنى': '/audio/names/jana.mp3', 'جَنَى': '/audio/names/jana.mp3', 'jana': '/audio/names/jana.mp3',
-  'ميرا': '/audio/names/mira.mp3', 'مِيرَا': '/audio/names/mira.mp3', 'mira': '/audio/names/mira.mp3',
-  'ديمة': '/audio/names/deema.mp3', 'دِيمَة': '/audio/names/deema.mp3', 'deema': '/audio/names/deema.mp3',
-  'طيبة': '/audio/names/taiba.mp3', 'طِيبَة': '/audio/names/taiba.mp3', 'taiba': '/audio/names/taiba.mp3',
-  'محمد': '/audio/names/mohammed.mp3', 'مُحَمَّد': '/audio/names/mohammed.mp3', 'mohammed': '/audio/names/mohammed.mp3',
-  'أحمد': '/audio/names/ahmed.mp3', 'أَحْمَد': '/audio/names/ahmed.mp3', 'ahmed': '/audio/names/ahmed.mp3',
-  'سارة': '/audio/names/sara.mp3', 'سَارَة': '/audio/names/sara.mp3', 'sara': '/audio/names/sara.mp3',
-  'علي': '/audio/names/ali.mp3', 'عَلِي': '/audio/names/ali.mp3', 'ali': '/audio/names/ali.mp3',
-  'عمر': '/audio/names/omar.mp3', 'عُمَر': '/audio/names/omar.mp3', 'omar': '/audio/names/omar.mp3',
-  'يوسف': '/audio/names/youssef.mp3', 'يُوسُف': '/audio/names/youssef.mp3', 'youssef': '/audio/names/youssef.mp3',
-  'نور': '/audio/names/nour.mp3', 'نُور': '/audio/names/nour.mp3', 'nour': '/audio/names/nour.mp3',
-  'مريم': '/audio/names/maryam.mp3', 'مَرْيَم': '/audio/names/maryam.mp3', 'maryam': '/audio/names/maryam.mp3',
-  'بطل': '/audio/names/batal.mp3', 'يَا بَطَل': '/audio/names/batal.mp3', 'يا بطل': '/audio/names/batal.mp3', 'batal': '/audio/names/batal.mp3',
-  'بطلة': '/audio/names/batala.mp3', 'يَا بَطَلَة': '/audio/names/batala.mp3', 'يا بطلة': '/audio/names/batala.mp3', 'batala': '/audio/names/batala.mp3',
-
-  // Dialogues & Tailored Greetings
-  'ask_name': '/audio/dialogue/ask_name.mp3',
-  'مَا اسْمُكَ يَا بَطَل؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
-  'مَرْحَبًا يَا بَطَل! اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
-  'مرحبا يا بطل! اكتب اسمك هنا لنبدأ رحلتنا الساحرة!': '/audio/dialogue/ask_name.mp3',
-  'choose_letter': '/audio/dialogue/choose_letter.mp3',
-  'excellent': '/audio/dialogue/excellent.mp3',
-  'help_me': '/audio/dialogue/help_me.mp3',
-  'intro_step_1': '/audio/dialogue/intro_step_1.mp3',
-  'مَرْحَبًا.. أَنَا لُومِي! هَيَّا نَسْتَكْشِفُ مَعًا عَالَمَ الأَصْوَاتِ السَّاحِر!': '/audio/dialogue/intro_step_1.mp3',
-  'مرحبا.. أنا لومي! هيا نستكشف معا عالم الأصوات الساحر!': '/audio/dialogue/intro_step_1.mp3',
-  'intro_step_2': '/audio/dialogue/intro_step_2.mp3',
-  'هَذَا العَالَمُ فَقَدَ أَصْوَاتَهُ السَّاحِرَة...': '/audio/dialogue/intro_step_2.mp3',
-  'هذا العالم فقد أصواته الساحرة...': '/audio/dialogue/intro_step_2.mp3',
-  'intro_step_3': '/audio/dialogue/intro_step_3.mp3',
-  'هَلْ تُسَاعِدُنِي فِي إِعَادَتِهَا مَعًا؟': '/audio/dialogue/intro_step_3.mp3',
-  'هل تساعدني في إعادتها معا؟': '/audio/dialogue/intro_step_3.mp3',
-  'launch_journey': '/audio/dialogue/launch_journey.mp3',
-  'lost_sounds': '/audio/dialogue/lost_sounds.mp3',
-  'try_again': '/audio/dialogue/try_again.mp3',
-  'welcome': '/audio/dialogue/welcome.mp3',
-  'welcome_child': '/audio/dialogue/welcome_child.mp3',
-  'welcome_talal': '/audio/dialogue/welcome_talal.mp3',
-  'أَهْلًا يَا طَلَال! هَيَّا نَبْدَأُ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/welcome_talal.mp3',
-  'أهلا يا طلال! هيا نبدأ رحلتنا الساحرة!': '/audio/dialogue/welcome_talal.mp3',
-  'welcome_raneem': '/audio/dialogue/welcome_raneem.mp3',
-  'أَهْلًا يَا رَنِيم! هَيَّا نَبْدَأُ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/welcome_raneem.mp3',
-  'أهلا يا رنيم! هيا نبدأ رحلتنا الساحرة!': '/audio/dialogue/welcome_raneem.mp3',
-  'cheer_talal': '/audio/dialogue/cheer_talal.mp3',
-  'أَحْسَنْتَ يَا طَلَال! نُطْقٌ مَلَكِيٌّ رَائِع!': '/audio/dialogue/cheer_talal.mp3',
-  'cheer_raneem': '/audio/dialogue/cheer_raneem.mp3',
-  'أَحْسَنْتِ يَا رَنِيم! نُطْقٌ مَلَكِيٌّ رَائِع!': '/audio/dialogue/cheer_raneem.mp3',
-  'letter_choice_cheer': '/audio/dialogue/letter_choice_cheer.mp3',
-  'اخْتِيَارٌ سِحْرِيٌّ رَائِع! هَيَّا بِنَا نَبْدَأُ المُغَامَرَة!': '/audio/dialogue/letter_choice_cheer.mp3',
-  'open_next_stage': '/audio/dialogue/open_next_stage.mp3',
-  'مَبْرُوك! فُتِحَتْ لَكَ المَرْحَلَةُ التَّالِيَة.. هَيَّا نَنْطَلِق!': '/audio/dialogue/open_next_stage.mp3',
-  'complete_previous_first': '/audio/dialogue/complete_previous_first.mp3',
-  'أَكْمِلِ المَرْحَلَةَ السَّابِقَةَ أَوَّلًا لِفَتْحِ هَذِهِ المَرْحَلَة!': '/audio/dialogue/complete_previous_first.mp3',
-
-  // Articulation Guides
-  'tongue_guide_baa': '/audio/articulation/tongue_guide_baa.mp3',
-  'lips_guide_baa': '/audio/articulation/lips_guide_baa.mp3',
-  'tongue_lab_intro': '/audio/articulation/tongue_lab_intro.mp3',
-  'tongue_quiz_success': '/audio/articulation/tongue_quiz_success.mp3'
-};
-
-class AudioManager {
+export class AudioManager {
   private currentAudioElement: HTMLAudioElement | null = null;
   private isMuted: boolean = false;
   private volume: number = 1.0;
@@ -266,7 +35,7 @@ class AudioManager {
   // Preload letters for instantaneous click-to-sound
   private preloadAllAudios() {
     if (typeof window === 'undefined') return;
-    Object.values(LETTER_ID_MAP).forEach((url) => {
+    Object.values(LETTER_AUDIO_MAP).forEach((url: string) => {
       if (!this.preloadCache.has(url)) {
         try {
           const a = new Audio();
@@ -356,10 +125,94 @@ class AudioManager {
 
   public playClick() {
     this.dispatchVisualPulse('click');
+    if (this.isMuted || typeof window === 'undefined') return;
+    try {
+      if (!this.audioContext) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.audioContext = new AudioCtx();
+      }
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      if (this.audioContext) {
+        const ctx = this.audioContext;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.06);
+        gain.gain.setValueAtTime(0.12 * this.volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.07);
+      }
+    } catch {}
+  }
+
+  public playPop() {
+    this.dispatchVisualPulse('click');
+    if (this.isMuted || typeof window === 'undefined') return;
+    try {
+      if (!this.audioContext) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.audioContext = new AudioCtx();
+      }
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      if (this.audioContext) {
+        const ctx = this.audioContext;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.2 * this.volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.11);
+      }
+    } catch {}
+  }
+
+  public playSuccess() {
+    this.dispatchVisualPulse('success');
+    if (this.isMuted || typeof window === 'undefined') return;
+    try {
+      if (!this.audioContext) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.audioContext = new AudioCtx();
+      }
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      if (this.audioContext) {
+        const ctx = this.audioContext;
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          const start = ctx.currentTime + idx * 0.08;
+          gain.gain.setValueAtTime(0, start);
+          gain.gain.linearRampToValueAtTime(0.2 * this.volume, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 0.36);
+        });
+      }
+    } catch {}
   }
 
   public playVictory() {
-    this.dispatchVisualPulse('success');
+    this.playSuccess();
   }
 
   public playStar() {
@@ -368,21 +221,22 @@ class AudioManager {
 
   public playPortal() {
     this.dispatchVisualPulse('portal');
+    this.playPop();
   }
 
   public playBloom() {
     this.dispatchVisualPulse('magic');
+    this.playSuccess();
+  }
+
+  public playEncouragement() {
+    this.dispatchVisualPulse('click');
+    this.speak('حَاوِلْ مَرَّةً أُخْرَى يَا بَطَل!');
   }
 
   public stop() {
     this.currentPlaybackToken++;
-    if (this.currentAudioElement) {
-      try {
-        this.currentAudioElement.pause();
-        this.currentAudioElement.currentTime = 0;
-      } catch {}
-      this.currentAudioElement = null;
-    }
+    this.stopCurrentAudioOnly();
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
@@ -390,204 +244,127 @@ class AudioManager {
     }
   }
 
-  // Resolve arbitrary prompt to exact static audio path if applicable
-  private resolveStaticAudio(text: string): string | null {
-    const clean = text.trim();
-    if (!clean) return null;
-
-    // Direct path or URL
-    if (clean.startsWith('/') || clean.startsWith('http')) {
-      return clean;
+  private stopCurrentAudioOnly() {
+    if (this.currentAudioElement) {
+      try {
+        this.currentAudioElement.pause();
+        this.currentAudioElement.currentTime = 0;
+        this.currentAudioElement.onended = null;
+        this.currentAudioElement.onerror = null;
+        this.currentAudioElement.src = '';
+        this.currentAudioElement.load();
+      } catch {}
+      this.currentAudioElement = null;
     }
-
-    // Direct dictionary match
-    if (EXACT_STATIC_AUDIO[clean]) {
-      return EXACT_STATIC_AUDIO[clean];
-    }
-
-    // Stripped tashkeel match
-    const stripped = stripTashkeel(clean);
-    if (EXACT_STATIC_AUDIO[stripped]) {
-      return EXACT_STATIC_AUDIO[stripped];
-    }
-
-    // 1. Direct tailored matches for child names with custom recordings
-    if (stripped.includes('طلال')) {
-      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز') || stripped.includes('رائع') || stripped.includes('اجابة')) {
-        return '/audio/dialogue/cheer_talal.mp3';
-      }
-      if (stripped.includes('اهلا') || stripped.includes('أهلا') || stripped.includes('مرحبا') || stripped.includes('مَرْحَبًا') || stripped.includes('هيا') || stripped.includes('اختر')) {
-        return '/audio/dialogue/welcome_talal.mp3';
-      }
-    }
-
-    if (stripped.includes('رنيم')) {
-      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز') || stripped.includes('رائع') || stripped.includes('اجابة')) {
-        return '/audio/dialogue/cheer_raneem.mp3';
-      }
-      if (stripped.includes('اهلا') || stripped.includes('أهلا') || stripped.includes('مرحبا') || stripped.includes('مَرْحَبًا') || stripped.includes('هيا') || stripped.includes('اختر')) {
-        return '/audio/dialogue/welcome_raneem.mp3';
-      }
-    }
-
-    // 2. Chained Offline Saudi Female Voice for all other registered child names
-    const nameFile = this.findNameAudioInText(stripped);
-    if (nameFile) {
-      if (stripped.includes('احسنت') || stripped.includes('أحسنت') || stripped.includes('ممتاز') || stripped.includes('رائع') || stripped.includes('اجابة')) {
-        this.queueAudioSequence(['/audio/dialogue/excellent.mp3', nameFile]);
-        return '__QUEUED__';
-      }
-      if (stripped.includes('مبروك') || stripped.includes('مبارك') || stripped.includes('فتحت لك')) {
-        this.queueAudioSequence(['/audio/dialogue/open_next_stage.mp3', nameFile]);
-        return '__QUEUED__';
-      }
-      if (stripped.includes('حاول') || stripped.includes('حاولي') || stripped.includes('مرة اخرى')) {
-        this.queueAudioSequence(['/audio/dialogue/try_again.mp3', nameFile]);
-        return '__QUEUED__';
-      }
-      if (stripped.includes('المرحلة')) {
-        const stageMatch = stripped.match(/المرحلة\s*(\d)/);
-        const stageNum = stageMatch ? stageMatch[1] : null;
-        const stageFile = stageNum ? `/audio/stages/stage_${stageNum}.mp3` : '/audio/stages/listen_sound.mp3';
-        this.queueAudioSequence([stageFile, nameFile]);
-        return '__QUEUED__';
-      }
-      if (stripped.includes('اهلا') || stripped.includes('أهلا') || stripped.includes('مرحبا') || stripped.includes('مَرْحَبًا') || stripped.includes('اختر')) {
-        this.queueAudioSequence(['/audio/dialogue/welcome.mp3', nameFile]);
-        return '__QUEUED__';
-      }
-      return nameFile;
-    }
-
-    // 3. Intro dialogue lines (exact generic lines)
-    if (stripped === 'انا لومي' || stripped === 'مرحبا انا لومي هيا نستكشف معا عالم الاصوات الساحر') {
-      return '/audio/dialogue/intro_step_1.mp3';
-    }
-    if (stripped.includes('فقد اصواته الساحرة')) {
-      return '/audio/dialogue/intro_step_2.mp3';
-    }
-    if (stripped.includes('هل تساعدني في اعادتها')) {
-      return '/audio/dialogue/intro_step_3.mp3';
-    }
-
-    // 4. Ask name (exact generic prompt)
-    if (stripped.includes('ما اسمك') || stripped.includes('اكتب اسمك')) {
-      return '/audio/dialogue/ask_name.mp3';
-    }
-
-    // 5. Exact short static system prompts
-    if (stripped === 'مبروك فتحت لك المرحلة التالية هيا ننطلق' || stripped === 'مبروك فتحت لك المرحلة التالية') {
-      return '/audio/dialogue/open_next_stage.mp3';
-    }
-    if (stripped === 'اكمل المرحلة السابقة اولا لفتح هذه المرحلة') {
-      return '/audio/dialogue/complete_previous_first.mp3';
-    }
-    if (stripped === 'حاول مرة اخرى انت قريب جدا' || stripped === 'حاول مرة اخرى') {
-      return '/audio/dialogue/try_again.mp3';
-    }
-    if (stripped === 'اختيار ساحر رائع هيا بنا نبدا المغامرة' || stripped === 'اختيار رائع هيا بنا ننطلق') {
-      return '/audio/dialogue/letter_choice_cheer.mp3';
-    }
-
-    // 8. Match phrases like "حَرْفُ البَاء.. ب" or "حرف الباء" or "حرف ب"
-    const letterMatch = stripped.match(/(?:حرف|صوت)\s+([^\s.]+)/i);
-    if (letterMatch && letterMatch[1]) {
-      const candidate = letterMatch[1].replace(/^(ال|ل)/, '');
-      if (EXACT_STATIC_AUDIO[candidate]) {
-        return EXACT_STATIC_AUDIO[candidate];
-      }
-      if (EXACT_STATIC_AUDIO['ال' + candidate]) {
-        return EXACT_STATIC_AUDIO['ال' + candidate];
-      }
-    }
-
-    return null;
   }
 
-  // Name-to-audio-file mapping for all registered child names
-  private static readonly NAME_AUDIO_MAP: Record<string, string> = {
-    'طلال': '/audio/names/talal.mp3',
-    'رنيم': '/audio/names/raneem.mp3',
-    'فاطمة': '/audio/names/fatima.mp3',
-    'هبة': '/audio/names/heba.mp3',
-    'جنى': '/audio/names/jana.mp3',
-    'ميرا': '/audio/names/mira.mp3',
-    'ديمة': '/audio/names/deema.mp3',
-    'طيبة': '/audio/names/taiba.mp3',
-    'محمد': '/audio/names/mohammed.mp3',
-    'أحمد': '/audio/names/ahmed.mp3', 'احمد': '/audio/names/ahmed.mp3',
-    'سارة': '/audio/names/sara.mp3', 'ساره': '/audio/names/sara.mp3',
-    'علي': '/audio/names/ali.mp3',
-    'عمر': '/audio/names/omar.mp3',
-    'يوسف': '/audio/names/youssef.mp3',
-    'نور': '/audio/names/nour.mp3',
-    'مريم': '/audio/names/maryam.mp3',
-    'زيد': '/audio/names/zaid.mp3',
-    'خالد': '/audio/names/khaled.mp3',
-    'ليان': '/audio/names/layan.mp3',
-    'حمزة': '/audio/names/hamza.mp3', 'حمزه': '/audio/names/hamza.mp3',
-    'جود': '/audio/names/joud.mp3',
-    'كرم': '/audio/names/karam.mp3',
-    'ريان': '/audio/names/rayan.mp3',
-    'سلمى': '/audio/names/salma.mp3',
-    'آدم': '/audio/names/adam.mp3', 'ادم': '/audio/names/adam.mp3',
-    'إبراهيم': '/audio/names/ibrahim.mp3', 'ابراهيم': '/audio/names/ibrahim.mp3',
-    'حسن': '/audio/names/hassan.mp3',
-    'حسين': '/audio/names/hussein.mp3',
-    'يارا': '/audio/names/yara.mp3',
-    'ليلى': '/audio/names/leila.mp3',
-    'طارق': '/audio/names/tariq.mp3',
-    'وسيم': '/audio/names/waseem.mp3',
-    'وسام': '/audio/names/wissam.mp3',
-    'عبدالله': '/audio/names/abdullah.mp3', 'عبد الله': '/audio/names/abdullah.mp3',
-    'عبدالرحمن': '/audio/names/abdulrahman.mp3', 'عبد الرحمن': '/audio/names/abdulrahman.mp3',
-    'ملك': '/audio/names/malak.mp3',
-    'ريم': '/audio/names/reem.mp3',
-    'هدى': '/audio/names/huda.mp3',
-    'فرح': '/audio/names/farah.mp3',
-    'سالم': '/audio/names/salem.mp3',
-    'سعد': '/audio/names/saad.mp3',
-    'مجد': '/audio/names/majd.mp3',
-    'فيصل': '/audio/names/faisal.mp3',
-    'خليل': '/audio/names/khalil.mp3',
-    'زياد': '/audio/names/ziad.mp3',
-    'عمرو': '/audio/names/amr.mp3',
-    'أنس': '/audio/names/anas.mp3', 'انس': '/audio/names/anas.mp3',
-    'قيس': '/audio/names/qais.mp3',
-    'بطل': '/audio/names/batal.mp3', 'البطل': '/audio/names/batal.mp3',
-    'بطلة': '/audio/names/batala.mp3', 'البطلة': '/audio/names/batala.mp3',
-  };
-
-  // Find a child name in any Arabic text and return its audio file
-  private findNameAudioInText(strippedText: string): string | null {
-    for (const [name, file] of Object.entries(AudioManager.NAME_AUDIO_MAP)) {
-      if (strippedText.includes(name)) {
-        return file;
-      }
-    }
-    return null;
+  // Resolve arbitrary prompt to exact static audio path or sequence of paths (0ms offline priority)
+  private resolveStaticAudio(text: string): string | string[] | null {
+    return resolveStaticAudioPath(text);
   }
 
-  // Play multiple audio files sequentially (template + name)
-  private queueAudioSequence(urls: string[]) {
-    if (!urls.length || typeof window === 'undefined') return;
-    const token = ++this.currentPlaybackToken;
+  // Play a single audio source with full cancellation token guard
+  private playAudioSource(src: string, playbackToken: number, onEnd?: () => void) {
+    if (this.currentPlaybackToken !== playbackToken || typeof window === 'undefined') {
+      if (onEnd) onEnd();
+      return;
+    }
 
-    const playNext = (index: number) => {
-      if (index >= urls.length || this.currentPlaybackToken !== token) return;
-      const audio = new Audio(urls[index]);
+    this.stopCurrentAudioOnly();
+
+    try {
+      const audio = new Audio(src);
       audio.volume = this.volume;
       this.currentAudioElement = audio;
-      audio.onended = () => playNext(index + 1);
-      audio.onerror = () => playNext(index + 1);
-      audio.play().catch(() => playNext(index + 1));
+
+      audio.onended = () => {
+        if (this.currentPlaybackToken === playbackToken) {
+          this.currentAudioElement = null;
+          if (onEnd) onEnd();
+        }
+      };
+
+      audio.onerror = (e) => {
+        console.warn(`[AudioManager] Playback error on source: ${src}`, e);
+        if (this.currentPlaybackToken === playbackToken) {
+          this.currentAudioElement = null;
+          if (onEnd) onEnd();
+        }
+      };
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn(`[AudioManager] play() catch for: ${src}`, err);
+          if (this.currentPlaybackToken === playbackToken) {
+            this.currentAudioElement = null;
+            if (onEnd) onEnd();
+          }
+        });
+      }
+    } catch (err) {
+      console.warn(`[AudioManager] playAudioSource exception on: ${src}`, err);
+      if (onEnd) onEnd();
+    }
+  }
+
+  // Play multiple audio files sequentially with full cancellation support
+  private playAudioSequence(urls: string[], playbackToken: number, onEnd?: () => void) {
+    if (!urls.length || typeof window === 'undefined') {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    const playNext = (index: number) => {
+      if (this.currentPlaybackToken !== playbackToken) {
+        return;
+      }
+      if (index >= urls.length) {
+        this.currentAudioElement = null;
+        if (onEnd) onEnd();
+        return;
+      }
+
+      this.stopCurrentAudioOnly();
+
+      const url = urls[index];
+      try {
+        const audio = new Audio(url);
+        audio.volume = this.volume;
+        this.currentAudioElement = audio;
+
+        audio.onended = () => {
+          if (this.currentPlaybackToken === playbackToken) {
+            playNext(index + 1);
+          }
+        };
+
+        audio.onerror = () => {
+          if (this.currentPlaybackToken === playbackToken) {
+            playNext(index + 1);
+          }
+        };
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            if (this.currentPlaybackToken === playbackToken) {
+              playNext(index + 1);
+            }
+          });
+        }
+      } catch {
+        if (this.currentPlaybackToken === playbackToken) {
+          playNext(index + 1);
+        }
+      }
     };
 
     playNext(0);
   }
 
   // Main Speech Router:
-  // 1. Instant Static MP3 (0ms latency)
+  // 1. Instant Static MP3 or Sequence (0ms latency)
   // 2. Edge-TTS API or Client WebSocket (Microsoft Neural Saudi Female Voice)
   // ⛔ NO speechSynthesis fallback (prevents male voice)
   public speak(text: string, _rate: number = 0.85, onEnd?: () => void) {
@@ -600,7 +377,7 @@ class AudioManager {
       return;
     }
 
-    const cleanText = text.trim();
+    const cleanText = stripEmojis(text);
     if (!cleanText) {
       if (onEnd) onEnd();
       return;
@@ -608,49 +385,29 @@ class AudioManager {
 
     const playbackToken = ++this.currentPlaybackToken;
 
-    // 1. Check for Static MP3 (0ms Latency)
-    const staticUrl = this.resolveStaticAudio(cleanText);
+    // 1. Check for Static MP3 or Sequence
+    const staticResolution = this.resolveStaticAudio(cleanText);
 
-    if (staticUrl && typeof window !== 'undefined') {
-      try {
-        const audio = new Audio(staticUrl);
-        audio.volume = this.volume;
-        this.currentAudioElement = audio;
-
-        audio.onended = () => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) {
-            onEnd();
-          }
-        };
-
-        audio.onerror = (e) => {
-          console.warn(`[AudioManager] Static audio failed for '${staticUrl}'. Falling back...`, e);
-          if (this.currentPlaybackToken === playbackToken) {
-            this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
-          }
-        };
-
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((err) => {
-            console.warn(`[AudioManager] Autoplay caught on '${staticUrl}'. Falling back...`, err);
-            if (this.currentPlaybackToken === playbackToken) {
-              this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
-            }
-          });
-        }
+    if (staticResolution && typeof window !== 'undefined') {
+      if (Array.isArray(staticResolution)) {
+        this.playAudioSequence(staticResolution, playbackToken, onEnd);
         return;
-      } catch (err) {
-        console.warn(`[AudioManager] Audio constructor error on '${staticUrl}'. Falling back...`, err);
-        this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
+      } else if (typeof staticResolution === 'string') {
+        this.playAudioSource(staticResolution, playbackToken, onEnd);
         return;
       }
     }
 
-    // 2. Dynamic Text: Synthesize via Neural Female TTS
+    // 2. Dynamic Text: Synthesize via Neural Female TTS (Fallback only for uncached custom text)
     this.synthesizeAndPlay(cleanText, playbackToken, onEnd);
   }
 
+  /**
+   * ⚠️ DYNAMIC FALLBACK SYNTHESIS (احتياطي مؤقت للنصوص الديناميكية فقط)
+   * This is strictly a secondary fallback used ONLY when arbitrary, unmapped user input
+   * (e.g. a child typing an unregistered custom name) cannot be found in the pre-recorded audio manifest.
+   * Uses Microsoft Edge Neural Female Voice with resilient timeout protection and fail-safes.
+   */
   private async synthesizeAndPlay(text: string, playbackToken: number, onEnd?: () => void) {
     if (typeof window === 'undefined') {
       if (onEnd) onEnd();
@@ -664,32 +421,10 @@ class AudioManager {
 
       if (res.ok && res.headers.get('content-type')?.includes('audio')) {
         const blob = await res.blob();
+        if (this.currentPlaybackToken !== playbackToken) return;
+
         const blobUrl = URL.createObjectURL(blob);
-
-        const audio = new Audio(blobUrl);
-        audio.volume = this.volume;
-        this.currentAudioElement = audio;
-
-        audio.onended = () => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) {
-            onEnd();
-          }
-        };
-
-        audio.onerror = () => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) {
-            onEnd(); // Silent fail - NEVER use male speechSynthesis
-          }
-        };
-
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            if (this.currentPlaybackToken === playbackToken && onEnd) {
-              onEnd(); // Silent fail - NEVER use male speechSynthesis
-            }
-          });
-        }
+        this.playAudioSource(blobUrl, playbackToken, onEnd);
         return;
       }
     } catch (err) {
@@ -698,41 +433,15 @@ class AudioManager {
 
     // Step 2B: Client-side In-Browser Edge TTS (Saudi Female Voice)
     try {
-      const audioUrl = await ClientEdgeTTS.synthesize(text, 'ar-SA-ZariyahNeural', '-5%', '+6%');
+      const audioUrl = await ClientEdgeTTS.synthesize(text, 'ar-SA-ZariyahNeural', '-4%', '+0Hz');
       if (this.currentPlaybackToken !== playbackToken) return;
 
-      const audio = new Audio(audioUrl);
-      audio.volume = this.volume;
-      this.currentAudioElement = audio;
-
-      audio.onended = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd();
-        }
-      };
-
-      audio.onerror = () => {
-        if (this.currentPlaybackToken === playbackToken && onEnd) {
-          onEnd(); // Silent fail - NEVER use male speechSynthesis
-        }
-      };
-
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          if (this.currentPlaybackToken === playbackToken && onEnd) {
-            onEnd(); // Silent fail - NEVER use male speechSynthesis
-          }
-        });
-      }
+      this.playAudioSource(audioUrl, playbackToken, onEnd);
       return;
     } catch (err) {
       console.warn('[AudioManager] ClientEdgeTTS synthesis exception. Playing offline female audio...', err);
       if (this.currentPlaybackToken === playbackToken) {
-        this.queueAudioSequence(['/audio/dialogue/welcome.mp3', '/audio/names/batal.mp3']);
-        if (onEnd) {
-          setTimeout(onEnd, 1500);
-        }
+        this.playAudioSequence(['/audio/dialogue/welcome.mp3', '/audio/names/batal.mp3'], playbackToken, onEnd);
       }
     }
   }

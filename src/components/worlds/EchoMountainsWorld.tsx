@@ -2,15 +2,24 @@ import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Volume2, Mic, Activity } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const EchoMountainsWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
+
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  
+  const shortOptions = letterData.syllables.short.map(s => s.syl);
+  const longOptions = letterData.syllables.long.map(s => s.syl);
+  const wordOptions = letterData.words.slice(0, 3).map(w => w.word);
+  if (wordOptions.length < 3) wordOptions.push('جَبَل', 'صَدَى');
 
   const echoQuestions = [
-    { target: 'بَ', options: ['بَ', 'بِ', 'بُ'], audio: 'بَ', hint: 'صوت الباء بالفتحة' },
-    { target: 'بُو', options: ['بَا', 'بُو', 'بِي'], audio: 'بُو', hint: 'صوت الباء بالضمة الطويلة' },
-    { target: 'بَاب', options: ['بَاب', 'نَاب', 'تَاب'], audio: 'بَاب', hint: 'كلمة تبدأ وتختم بالباء' }
+    { target: shortOptions[0], options: shortOptions, audio: shortOptions[0], hint: `صَوْتُ ال${letterData.nameAr} القَصِير` },
+    { target: longOptions[1] || longOptions[0], options: longOptions, audio: longOptions[1] || longOptions[0], hint: `صَوْتُ ال${letterData.nameAr} الطَّوِيل` },
+    { target: wordOptions[0], options: wordOptions, audio: wordOptions[0], hint: `كَلِمَةٌ فِيهَا حَرْفُ ال${letterData.nameAr}` }
   ];
 
   const [currentIdx, setCurrentIdx] = useState<number>(0);
@@ -36,6 +45,8 @@ export const EchoMountainsWorld: React.FC<{ onBack: () => void }> = ({ onBack })
           triggerVictoryCelebration();
         }
       }, 1000);
+    } else {
+      audioManager.playEncouragement();
     }
   };
 
@@ -72,6 +83,14 @@ export const EchoMountainsWorld: React.FC<{ onBack: () => void }> = ({ onBack })
           <span>إِطْلاقُ صَدَى الكَهْف 🔊</span>
         </button>
       </div>
+
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'} فِي جِبَالِ الصَّدَى! اسْتَمِعْ لِصَدَى الصَّوْتِ المُنْبَعِثِ مِنَ الكَهْفِ وَاخْتَرِ الحَرْفَ أَوِ المَقْطَعَ المُطَابِق!` }
+        shortHint="اسْتَمِعْ لِلصَّدَى وَاخْتَر"
+        autoSpeak={true}
+        emotion="listening"
+      />
 
       {/* Echo Cave Canvas */}
       <div className="relative w-full min-h-[440px] rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 p-6 flex flex-col justify-between text-white">
@@ -111,15 +130,6 @@ export const EchoMountainsWorld: React.FC<{ onBack: () => void }> = ({ onBack })
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Mascot */}
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="كُهُوفُ الصَّدَى تُسَاعِدُكَ عَلَى التَّمْيِيزِ بَيْنَ الأَصْوَاتِ بِوُضُوح!"
-            emotion="listening"
-            size="md"
-          />
         </div>
 
       </div>

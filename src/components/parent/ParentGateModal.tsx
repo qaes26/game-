@@ -13,11 +13,20 @@ export const ParentGateModal: React.FC<ParentGateModalProps> = ({
   onClose,
   onSuccess
 }) => {
-  const [num1] = useState(Math.floor(Math.random() * 8) + 3);
-  const [num2] = useState(Math.floor(Math.random() * 8) + 2);
+  const [num1, setNum1] = useState(5);
+  const [num2, setNum2] = useState(3);
   const [answer, setAnswer] = useState<string>('');
   const [error, setError] = useState<boolean>(false);
   const [selectedRole, setSelectedRole] = useState<'parent' | 'therapist'>('parent');
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setNum1(Math.floor(Math.random() * 8) + 3);
+      setNum2(Math.floor(Math.random() * 8) + 2);
+      setAnswer('');
+      setError(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

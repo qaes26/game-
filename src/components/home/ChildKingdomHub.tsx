@@ -3,20 +3,20 @@ import { Map, BookOpen, Sparkles, Compass, Gamepad2, Star, Volume2, User, Users,
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
 import { ARABIC_LETTERS } from '../../data/letters';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
 import { ChildProfileModal } from '../common/ChildProfileModal';
 import { PWAInstallButton } from '../common/PWAInstallButton';
 import { MandatoryLetterPickerModal } from '../common/MandatoryLetterPickerModal';
 
 interface ChildKingdomHubProps {
-  onNavigate: (section: 'stages' | 'letters' | 'mirror' | 'worlds' | 'games') => void;
+  onNavigate: (section: 'stages' | 'letters' | 'worlds' | 'games' | 'ai_lab') => void;
 }
 
 export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) => {
   const { childName, stars, coins, selectedLetterId, setSelectedLetterId } = useGame();
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const [isLetterPickerOpen, setIsLetterPickerOpen] = useState<boolean>(false);
-  const [pendingTargetSection, setPendingTargetSection] = useState<'stages' | 'letters' | 'mirror' | 'worlds' | 'games' | null>(null);
+  const [pendingTargetSection, setPendingTargetSection] = useState<'stages' | 'letters' | 'worlds' | 'games' | 'ai_lab' | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
   const currentLetter = ARABIC_LETTERS.find((l) => l.id === selectedLetterId) || ARABIC_LETTERS[1];
 
@@ -31,7 +31,19 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       borderColor: 'border-cyan-400',
       glowColor: 'shadow-[0_0_35px_rgba(14,165,233,0.4)]',
       voiceText: `طَرِيقُ المَرَاحِلِ السِّحْرِيّ يَا ${childName || 'البَطَل'}.. اخْتَرْ حَرْفَكَ لِتَبْدَأَ المَرَاحِلَ الثَّمَانِيَة!`,
-      requiresLetterPick: true
+      requiresLetterPick: false
+    },
+    {
+      id: 'ai_lab' as const,
+      title: 'مُخْتَبَرُ النُّطْقِ بِالذَّكَاءِ الاصْطِنَاعِيّ',
+      subtitle: 'انْطِقْ وَدَعِ الذَّكَاءَ الاصْطِنَاعِيَّ يُقَيِّمْكَ وَيُصَحِّح',
+      icon: '🤖',
+      badge: 'تَقْيِيمٌ وَتَصْحِيحٌ ذَكِيّ ⚡',
+      bgGradient: 'from-[#0f766e] via-[#0d9488] to-[#14b8a6]',
+      borderColor: 'border-teal-300',
+      glowColor: 'shadow-[0_0_35px_rgba(20,184,166,0.5)]',
+      voiceText: `مُخْتَبَرُ النُّطْقِ بِالذَّكَاءِ الاصْطِنَاعِيّ يَا ${childName || 'البَطَل'}.. انْطِقِ الكَلِمَةَ لِيُقَيِّمَكَ الذَّكَاءُ الاصْطِنَاعِيُّ فَوْرًا!`,
+      requiresLetterPick: false
     },
     {
       id: 'letters' as const,
@@ -46,39 +58,27 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       requiresLetterPick: false
     },
     {
-      id: 'mirror' as const,
-      title: 'مُخْتَبَرُ اللِّسَانِ وَالمِرْآة',
-      subtitle: 'شَاهِدْ حَرَكَةَ اللِّسَانِ وَالمَخَارِج',
-      icon: '👅',
-      badge: 'تَشْرِيحٌ وَاقِعِيٌّ 3D ✨',
-      bgGradient: 'from-[#831843] via-[#be185d] to-[#f43f5e]',
-      borderColor: 'border-pink-400',
-      glowColor: 'shadow-[0_0_35px_rgba(244,63,94,0.4)]',
-      voiceText: `مُخْتَبَرُ اللِّسَانِ وَالمِرْآةِ يَا ${childName || 'البَطَل'}.. تَعَلَّمْ كَيْفَ يَتَحَرَّكُ اللِّسَانُ لِنُطْقِ الحَرْف!`,
-      requiresLetterPick: true
-    },
-    {
       id: 'worlds' as const,
-      title: 'عَوَالِمُ الأَصْوَاتِ وَالفَضَاء',
-      subtitle: '8 عَوَالِمَ وَكَوَاكِبَ سَاحِرَة',
-      icon: '🪐',
-      badge: '8 عَوَالِمَ وَكَوَاكِب 🚀',
+      title: 'العَوَالِمُ الثَّلاثَةُ السَّاحِرَة',
+      subtitle: 'وَادِي الحُرُوف، غَابَةُ المَقَاطِع، قَرْيَةُ الكَلِمَات',
+      icon: '🌍',
+      badge: '3 عَوَالِمَ بَصَرِيَّة 🏞️',
       bgGradient: 'from-[#3b0764] via-[#6b21a8] to-[#9333ea]',
       borderColor: 'border-purple-400',
       glowColor: 'shadow-[0_0_35px_rgba(147,51,234,0.4)]',
-      voiceText: `خَرِيطَةُ العَوَالِمِ وَالفَضَاءِ يَا ${childName || 'البَطَل'}.. ثَمَانِيَةُ عَوَالِمَ كَوْنِيَّةٍ سَاحِرَة!`,
+      voiceText: `العَوَالِمُ الثَّلاثَةُ السَّاحِرَةُ يَا ${childName || 'البَطَل'}.. وَادِي الحُرُوفِ وَغَابَةُ المَقَاطِعِ وَقَرْيَةُ الكَلِمَات!`,
       requiresLetterPick: false
     },
     {
       id: 'games' as const,
-      title: 'مَرْكَزُ الأَلْعَابِ التَّفَاعُلِيَّة',
-      subtitle: '7 أَلْعَابٍ لِتَحَدِّيَاتِ النُّطْقِ وَالمَرَح',
+      title: 'قَلْعَةُ الأَلْعَابِ الثَّلاث',
+      subtitle: 'فَقَاعَاتُ الحُرُوف، قِطَارُ المَقَاطِع، صَيْدُ الكَلِمَات',
       icon: '🎮',
-      badge: '7 أَلْعَابٍ مُشَوِّقَة 🎯',
+      badge: '3 أَلْعَابٍ مُشَوِّقَة 🎯',
       bgGradient: 'from-[#7c2d12] via-[#c2410c] to-[#f97316]',
       borderColor: 'border-amber-400',
       glowColor: 'shadow-[0_0_35px_rgba(249,115,22,0.4)]',
-      voiceText: `مَرْكَزُ الأَلْعَابِ وَالتَّحَدِّيَاتِ يَا ${childName || 'البَطَل'}.. سَبْعُ أَلْعَابٍ مُمْتِعَةٍ لِصَيْدِ الحُرُوفِ وَالكَلِمَات!`,
+      voiceText: `قَلْعَةُ الأَلْعَابِ الثَّلاثِ يَا ${childName || 'البَطَل'}.. أَلْعَابٌ مُمْتِعَةٌ لِصَيْدِ الحُرُوفِ وَالمَقَاطِعِ وَالكَلِمَات!`,
       requiresLetterPick: false
     }
   ];
@@ -86,23 +86,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
   const handleTileClick = (sec: typeof hubSections[0]) => {
     audioManager.playPortal();
     audioManager.speak(sec.voiceText);
-
-    if (sec.requiresLetterPick) {
-      setPendingTargetSection(sec.id);
-      setIsLetterPickerOpen(true);
-    } else {
-      onNavigate(sec.id);
-    }
-  };
-
-  const handleLetterPicked = (letterId: string) => {
-    setIsLetterPickerOpen(false);
-    if (pendingTargetSection) {
-      onNavigate(pendingTargetSection);
-      setPendingTargetSection(null);
-    } else {
-      onNavigate('stages');
-    }
+    onNavigate(sec.id);
   };
 
   return (
@@ -139,20 +123,14 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
         {/* Selected Letter Quick Switcher & Stats */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           
-          {/* Active Target Letter Badge */}
-          <button
-            onClick={() => {
-              audioManager.playClick();
-              setPendingTargetSection('stages');
-              setIsLetterPickerOpen(true);
-            }}
-            className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-2xl border border-white font-black text-xs sm:text-sm shadow-glow-yellow active:scale-95 transition-all"
-            title="انقر لتغيير الحرف الحالي"
+          {/* Active Target Letter Static Badge */}
+          <div
+            className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-2xl border border-white font-black text-xs sm:text-sm shadow-glow-yellow"
+            title="الحرف الحالي"
           >
             <span className="hidden xs:inline text-[11px]">الحَرْف:</span>
             <span className="text-sm sm:text-base font-black">({currentLetter.char})</span>
-            <span className="text-[10px] opacity-80">🔄</span>
-          </button>
+          </div>
 
           <PWAInstallButton />
 
@@ -172,16 +150,13 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       {/* Main Grid: Big Interactive Square Tiles for Kids & Phone Layout */}
       <main className="max-w-4xl mx-auto w-full my-auto py-3 sm:py-5 space-y-4 sm:space-y-6">
         
-        {/* Kingdom Welcome Banner */}
-        <div className="text-center space-y-1 sm:space-y-2">
-          <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-cyan-500/20 backdrop-blur-md px-3.5 py-1 rounded-full border border-amber-400/50 text-xs sm:text-sm font-black text-amber-200 shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-spin-slow" />
-            <span>مَمْلَكَةُ لُومِي للأَصْوَات — أَهْلًا يَا {childName || 'البَطَل'}! 👑</span>
-          </div>
-          <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-white leading-tight">
-            أَيْنَ تُرِيدُ أَنْ تَلْعَبَ وَتَتَعَلَّمَ الآن؟ 🚀
-          </h1>
-        </div>
+        {/* Lumi Voice Guide Banner */}
+        <LumiGuideBanner
+          message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'}! أَنَا لُومِي.. اخْتَرْ طَرِيقَ المَرَاحِلِ لِتَتَدَرَّبَ، أَوْ مَرْصَدَ الحُرُوفِ لِتَسْتَكْشِف، أَوْ مُخْتَبَرَ اللِّسَانِ لِتُشَاهِدَ النُّطْق!`}
+          shortHint="اخْتَرْ أَيَّ قِسْمٍ لِنَبْدَأ"
+          autoSpeak={true}
+          emotion="happy"
+        />
 
         {/* Large Square Cards Grid - Mobile Friendly & Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
@@ -225,15 +200,6 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
           ))}
         </div>
 
-        {/* Mascot Greeting with Dynamic Hero Name */}
-        <div className="flex justify-center pt-1">
-          <LumiMascot
-            message={`أَهْلًا بِكَ يَا ${childName || 'البَطَل'}! انْقُرْ عَلَى أَيِّ مُرَبَّعٍ كَبِيرٍ لِنَبْدَأَ اللَّعِبَ وَالنُّطْقَ مَعًا!`}
-            emotion="happy"
-            size="sm"
-          />
-        </div>
-
       </main>
 
       {/* Footer Branding */}
@@ -241,19 +207,11 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
         <span>LUMI — مَمْلَكَةُ الأَصْوَاتِ وَمَخَارِجِ الحُرُوف</span>
       </footer>
 
-      {/* Mandatory Letter Picker Modal */}
-      <MandatoryLetterPickerModal
-        isOpen={isLetterPickerOpen}
-        onClose={() => setIsLetterPickerOpen(false)}
-        onSelectLetter={handleLetterPicked}
-      />
-
       {/* Multi-Child Profile Switcher Modal */}
       <ChildProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
       />
-
     </div>
   );
 };

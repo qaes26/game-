@@ -3,8 +3,8 @@ import { ArrowRight, Volume2, Sparkles, Star, Crown, CheckCircle2 } from 'lucide
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
 import { ARABIC_LETTERS } from '../../data/letters';
-import { AnimatedArticulationTeacher } from './AnimatedArticulationTeacher';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { ChildFriendlyMouthGuide } from './ChildFriendlyMouthGuide';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
 
 interface InteractiveTongueLabProps {
   onBack: () => void;
@@ -58,6 +58,14 @@ export const InteractiveTongueLab: React.FC<InteractiveTongueLabProps> = ({ onBa
       {/* Main Content Arena */}
       <main className="relative z-10 max-w-5xl mx-auto w-full my-auto space-y-5 py-4">
         
+        {/* Lumi Voice Guide Banner */}
+        <LumiGuideBanner
+          message={`مُخْتَبَرُ النُّطْقِ وَالمِرْآةِ يَا ${childName || 'البَطَل'}! شَاهِدِ المُعَلِّمَةَ سَارَة كَيْفَ يَتَحَرَّكُ اللِّسَانُ وَالشَّفَتَانِ لِنُطْقِ حَرْفِ (${currentLetter.char})، وَافْتَحِ المِرْآةَ لِتُجَرِّبَ بِنَفْسِك!` }
+          shortHint="شَاهِدْ وَقَلِّدِ النُّطْق"
+          autoSpeak={true}
+          emotion="happy"
+        />
+
         {/* 28 Letters Horizontal Bar */}
         <div className="bg-[#0b1638]/80 backdrop-blur-md p-3 rounded-2xl border border-blue-900">
           <div className="flex items-center justify-between mb-1 px-1 text-xs font-black text-cyan-300">
@@ -85,19 +93,10 @@ export const InteractiveTongueLab: React.FC<InteractiveTongueLabProps> = ({ onBa
           </div>
         </div>
 
-        {/* Animated Female Articulation Teacher Video & Anatomy Studio */}
-        <AnimatedArticulationTeacher
+        {/* Kid Friendly Mouth Guide (Simplified) */}
+        <ChildFriendlyMouthGuide
           letter={currentLetter}
         />
-
-        {/* Accompanying Lumi Mascot */}
-        <div className="flex justify-center pt-2">
-          <LumiMascot
-            message={`أَهْلًا يَا ${childName || 'البَطَل'}! شَاهِدِ المُعَلِّمَةَ سَارَة وَقَلِّدْ حَرَكَةَ الشَّفَتَيْنِ وَاللِّسَانِ أَمَامَ المِرْآةِ لِتَنْطِقَ حَرْفَ (${currentLetter.char}) كَالمُحْتَرِفِين!` }
-            emotion="happy"
-            size="sm"
-          />
-        </div>
 
       </main>
 

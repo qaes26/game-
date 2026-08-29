@@ -1,4 +1,5 @@
 // Web Audio API Synthesizer & Speech Synthesis Engine for City of Sounds
+import { audioManager } from '../../audio/AudioManager';
 
 class SoundManager {
   private ctx: AudioContext | null = null;
@@ -279,11 +280,7 @@ class SoundManager {
 
   // 9. Natural Arabic Speech Synthesizer (Delegated strictly to pure Female AudioManager)
   public speak(text: string, rate: number = 0.85, onEnd?: () => void) {
-    import('../../audio/AudioManager').then(({ audioManager }) => {
-      audioManager.speak(text, rate, onEnd);
-    }).catch(() => {
-      if (onEnd) onEnd();
-    });
+    audioManager.speak(text, rate, onEnd);
   }
 }
 

@@ -24,7 +24,7 @@ export class ClientEdgeTTS {
   public static async synthesize(
     text: string,
     voice: string = 'ar-SA-ZariyahNeural',
-    rate: string = '-8%',
+    rate: string = '-4%',
     pitch: string = '+0Hz'
   ): Promise<string> {
     const cleanText = text.trim();

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameProvider, useGame } from './context/GameContext';
+import { audioManager } from './audio/AudioManager';
 import { ProjectIntroCredits } from './components/splash/ProjectIntroCredits';
 import { CinematicIntroScene } from './components/3d/CinematicIntroScene';
 import { CinematicOnboarding } from './components/onboarding/CinematicOnboarding';
@@ -8,8 +9,8 @@ import { MobileStageMap } from './components/mobile/MobileStageMap';
 import { MobileStagePlayer } from './components/mobile/MobileStagePlayer';
 import { CleanLetterSelect } from './components/pages/CleanLetterSelect';
 import { WorldMap3D } from './components/3d/WorldMap3D';
-import { InteractiveTongueLab } from './components/articulation/InteractiveTongueLab';
 import { MiniGamesHub } from './components/minigames/MiniGamesHub';
+import { AIPronunciationLab } from './components/ai/AIPronunciationLab';
 import { ValleyOfLettersWorld } from './components/worlds/ValleyOfLettersWorld';
 import { SyllablesForestWorld } from './components/worlds/SyllablesForestWorld';
 import { WordsVillageWorld } from './components/worlds/WordsVillageWorld';
@@ -29,7 +30,7 @@ type PageRoute =
   | 'letters'
   | 'worlds'
   | 'games'
-  | 'mirror'
+  | 'ai_lab'
   | 'valley_of_letters'
   | 'syllables_forest'
   | 'words_village'
@@ -44,6 +45,11 @@ const AppContent: React.FC = () => {
   
   const [currentPage, setCurrentPage] = useState<PageRoute>('splash_intro');
   const [currentStageNumber, setCurrentStageNumber] = useState<number>(1);
+
+  // Stop any lingering speech when changing routes
+  useEffect(() => {
+    audioManager.stop();
+  }, [currentPage]);
 
   const handleSelectLetter = (letterId: string) => {
     setSelectedLetterId(letterId);
@@ -197,8 +203,8 @@ const AppContent: React.FC = () => {
         />
       )}
 
-      {currentPage === 'mirror' && (
-        <InteractiveTongueLab
+      {currentPage === 'ai_lab' && (
+        <AIPronunciationLab
           onBack={() => setCurrentPage('hub')}
         />
       )}

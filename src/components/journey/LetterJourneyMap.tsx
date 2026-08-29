@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Volume2, Mic, CheckCircle2, Star, Trophy, Sparkles, ChevronLeft, Award } from 'lucide-react';
 import lettersData from '../../data/letters.json';
 import syllablesData from '../../data/syllables.json';
@@ -7,7 +7,7 @@ import sentencesData from '../../data/sentences.json';
 import { useGame } from '../../context/GameContext';
 import { soundManager } from '../../services/audio/SoundManager';
 import { speechAnalyzer, SpeechAnalysisResult } from '../../services/speech/SpeechAnalyzer';
-import { LoulouMascot } from '../mascot/LoulouMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface LetterJourneyMapProps {
   letterId: string;
@@ -74,20 +74,39 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
   // Level 7 (Sentence Quiz)
   const [sentenceQuizSelected, setSentenceQuizSelected] = useState<number | null>(null);
 
+  // Mascot State
+  const [lumiState, setLumiState] = useState<'idle' | 'listening' | 'success' | 'retry'>('idle');
+  
+  useEffect(() => {
+    setLumiState('idle');
+  }, [activeLevel]);
+
+  // Cleanup microphone on unmount to prevent memory leaks and orphaned listening states
+  useEffect(() => {
+    return () => {
+      speechAnalyzer.stopListening();
+    };
+  }, []);
+
   const levelsList = [
-    { id: 1, title: 'التَّعَرُّف عَلَى الحَرْف', icon: '🔤', desc: 'شكل الحرف والصور المرتبطة' },
-    { id: 2, title: 'صَوْتُ الحَرْفِ وَالمِيكْرُوفُون', icon: '🎙️', desc: 'نطق الحرف مع لولو' },
-    { id: 3, title: 'الحَرَكَاتُ القَصِيرَة', icon: '🎵', desc: 'الفتحة، الضمة، الكسرة' },
-    { id: 4, title: 'المَقَاطِعُ وَالمُدُود', icon: '🌊', desc: 'با، بو، بي' },
-    { id: 5, title: 'الكَلِمَاتُ فِي مَوَاقِعِهَا', icon: '📖', desc: 'أول ووسط وآخر الكلمة' },
-    { id: 6, title: 'مَوْقِعُ الصَّوْتِ', icon: '🎯', desc: 'تحدي تحديد موضع الحرف' },
-    { id: 7, title: 'الجُمَلُ وَالمَعَانِي', icon: '💬', desc: 'تركيب الجمل والقصص' },
-    { id: 8, title: 'التَّحَدِّي النِّهَائِي', icon: '🏆', desc: 'تتويج بطل الحرف' }
+    { id: 1, title: 'لقاء الحرف', icon: '🔤', desc: 'تعال نتعرّف على شكل صديقنا الجديد!' },
+    { id: 2, title: 'صدى الصوت', icon: '🎙️', desc: 'لومي يقول الصوت.. وأنت رجّعه له!' },
+    { id: 3, title: 'الحرف الراقص', icon: '🎵', desc: 'نفس الحرف.. بس بثلاث نغمات مختلفة!' },
+    { id: 4, title: 'الحرف الممدود', icon: '🌊', desc: 'شوف كيف يطول صوت الحرف إذا مددناه!' },
+    { id: 5, title: 'بيت الكلمة', icon: '📖', desc: 'أين يسكن حرفنا داخل الكلمة؟' },
+    { id: 6, title: 'مين الصوت الغريب؟', icon: '🎯', desc: 'لومي بيخبّي الحرف بكلمات.. لاقيه!' },
+    { id: 7, title: 'حكاية قصيرة', icon: '💬', desc: 'خلّينا نبني جملة صغيرة فيها حرفنا!' },
+    { id: 8, title: 'إضاءة النجمة الكبيرة', icon: '🏆', desc: 'أنت الآن حامي نور هذا الحرف!' }
   ];
 
   // Speech recording handler
   const handleStartRecording = (targetText: string) => {
+    if (!speechAnalyzer.isSupported()) {
+      alert('المُتَصَفِّحُ لَا يَدْعَمُ تَمْيِيزَ الصَّوْت. يُرْجَى اسْتِخْدَامُ Chrome أَوْ Edge.');
+      return;
+    }
     setIsRecording(true);
+    setLumiState('listening');
     setSpeechResult(null);
     soundManager.playPop();
 
@@ -100,16 +119,19 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
 
         if (result.status === 'high_confidence' || result.status === 'acceptable') {
           soundManager.playSuccess();
+          setLumiState('success');
           addStars(1);
           addCoins(5);
           updateLetterLevelProgress(letter.id, activeLevel, result.phoneticScore);
         } else {
           soundManager.playEncouragement();
+          setLumiState('retry');
         }
       },
       (vol) => setMicVolume(vol),
       () => {
         setIsRecording(false);
+        setLumiState(prev => prev === 'listening' ? 'idle' : prev);
       }
     );
   };
@@ -120,32 +142,32 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 select-none">
+    <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 select-none font-body">
       
       {/* Top Breadcrumb & Letter Title */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/90 backdrop-blur-md p-4 rounded-3xl border-2 border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[var(--color-lumi-glass)] backdrop-blur-md p-4 rounded-3xl border-2 border-[var(--color-lumi-secondary)]/50 shadow-lg text-white">
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
               soundManager.playClick();
               onBackToLetters();
             }}
-            className="p-2.5 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-700 hover:bg-slate-200 transition-colors"
+            className="p-2.5 rounded-2xl bg-[var(--color-lumi-base)] border-2 border-[var(--color-lumi-secondary)]/30 text-[var(--color-lumi-neutral)] hover:text-white hover:bg-[var(--color-lumi-secondary)] transition-colors"
             title="العودة لقائمة الحروف"
           >
             <ArrowRight className="w-5 h-5" />
           </button>
           
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center text-3xl font-black border-2 border-white shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[var(--color-lumi-primary)] text-slate-900 flex items-center justify-center text-3xl font-black border-2 border-[var(--color-lumi-secondary)] shadow-[0_0_15px_rgba(252,211,77,0.5)]">
               {letter.character}
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-black text-slate-800">
-                رِحْلَةُ حَرْفِ {letter.nameAr}
+              <h1 className="text-xl md:text-2xl font-display font-black text-[var(--color-lumi-primary)]">
+                مَسَارُ نُورِ حَرْفِ {letter.nameAr}
               </h1>
-              <p className="text-xs text-slate-500 font-bold">
-                المستوى {activeLevel} من 8 • نسبة الإتقان {progress.overall}%
+              <p className="text-xs text-[var(--color-lumi-neutral)] font-bold">
+                المرحلة {activeLevel} من 8 • النور المكتمل {progress.overall}%
               </p>
             </div>
           </div>
@@ -157,21 +179,40 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
             soundManager.playClick();
             soundManager.speak(`حرف ${letter.nameAr} .. ${letter.character}`);
           }}
-          className="game-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-extrabold text-xs md:text-sm border border-sky-300 hover:bg-sky-200 transition-colors"
+          className="game-btn px-4 py-2 bg-[var(--color-lumi-base)] text-white rounded-xl font-extrabold text-xs md:text-sm border border-[var(--color-lumi-secondary)] hover:bg-[var(--color-lumi-secondary)] transition-colors"
         >
-          <Volume2 className="w-4 h-4 text-sky-600" />
+          <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
           <span>اسْتَمِعْ لِلحَرْف</span>
         </button>
       </div>
 
-      {/* 8-Level Stepper Pathway */}
-      <div className="bg-white/80 backdrop-blur-md p-3 md:p-4 rounded-3xl border-2 border-slate-200 shadow-sm overflow-x-auto">
-        <div className="flex items-center justify-between min-w-[650px] gap-2">
+      {/* The Path of Light (مسار النور) */}
+      <div className="bg-[var(--color-lumi-glass)] backdrop-blur-md p-4 md:p-6 rounded-3xl border-2 border-[var(--color-lumi-secondary)]/30 shadow-lg overflow-x-auto relative">
+        <div className="flex items-center justify-between min-w-[700px] gap-2 relative z-10">
+          
+          {/* Continuous Glowing Line Background */}
+          <div className="absolute top-1/2 left-4 right-4 h-1.5 -translate-y-1/2 bg-[var(--color-lumi-base)] rounded-full z-0 overflow-hidden">
+            <div 
+              className="h-full bg-[var(--color-lumi-primary)] shadow-[0_0_15px_var(--color-lumi-primary)] transition-all duration-1000 ease-in-out relative" 
+              style={{ width: `${(Math.max(1, activeLevel) - 1) * (100 / 7)}%` }}
+            >
+              <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white/50 to-transparent animate-pulse rounded-r-full" />
+            </div>
+          </div>
+
           {levelsList.map((lvl, index) => {
             const isUnlocked = progress.currentLevel >= lvl.id;
             const isActive = activeLevel === lvl.id;
+            const isCompleted = progress.currentLevel > lvl.id;
+
             return (
-              <div key={lvl.id} className="flex-1 flex items-center">
+              <div key={lvl.id} className="relative z-10 flex flex-col items-center">
+                {isActive && (
+                  <div className="absolute -top-12 animate-float-space drop-shadow-[0_0_10px_rgba(252,211,77,0.5)]">
+                    <LumiMascot state="idle" size="sm" />
+                  </div>
+                )}
+                
                 <button
                   onClick={() => {
                     if (isUnlocked) {
@@ -179,25 +220,26 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                       setActiveLevel(lvl.id);
                     } else {
                       soundManager.playEncouragement();
-                      soundManager.speak('أكمل المستوى السابق أولاً يا بطل!');
+                      soundManager.speak('أَنِرْ المَرْحَلَةَ السَّابِقَةَ أَوَّلًا يَا بَطَل!');
                     }
                   }}
-                  className={`w-full flex flex-col items-center gap-1 p-2 rounded-2xl border-2 transition-all ${
+                  className={`relative w-14 h-14 rounded-full flex items-center justify-center text-2xl border-4 transition-all duration-500 ${
                     isActive
-                      ? 'bg-gradient-to-b from-sky-400 to-blue-500 text-white border-white shadow-card-pop scale-105'
+                      ? 'bg-[var(--color-lumi-primary)] text-slate-900 border-white shadow-[0_0_20px_#fcd34d] scale-125 z-20'
+                      : isCompleted
+                      ? 'bg-[var(--color-lumi-accent)] text-white border-[var(--color-lumi-base)] shadow-[0_0_10px_#10b981]'
                       : isUnlocked
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
-                      : 'bg-slate-100 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed'
+                      ? 'bg-[var(--color-lumi-base)] text-[var(--color-lumi-primary)] border-[var(--color-lumi-secondary)] hover:bg-[var(--color-lumi-secondary)]/30'
+                      : 'bg-slate-800 text-slate-600 border-slate-700 opacity-60 cursor-not-allowed'
                   }`}
                 >
-                  <span className="text-xl">{lvl.icon}</span>
-                  <span className="text-[11px] font-black whitespace-nowrap">
-                    {lvl.id}. {lvl.title.split(' ')[0]}
-                  </span>
+                  {lvl.icon}
                 </button>
-                {index < levelsList.length - 1 && (
-                  <div className={`h-1 w-3 mx-1 rounded-full ${progress.currentLevel > lvl.id ? 'bg-emerald-400' : 'bg-slate-200'}`} />
-                )}
+                <span className={`mt-2 text-[10px] font-black whitespace-nowrap transition-colors ${
+                  isActive ? 'text-[var(--color-lumi-primary)] drop-shadow-md' : 'text-[var(--color-lumi-neutral)]'
+                }`}>
+                  {lvl.title.split(' ')[0]}
+                </span>
               </div>
             );
           })}
@@ -205,7 +247,10 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
       </div>
 
       {/* Main Interactive Stage Container */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border-4 border-sky-300 shadow-card-pop min-h-[480px] flex flex-col justify-between">
+      <div className="bg-[var(--color-lumi-base)] rounded-3xl p-6 md:p-8 border-2 border-[var(--color-lumi-secondary)]/50 shadow-2xl min-h-[480px] flex flex-col justify-between text-white relative overflow-hidden">
+        
+        {/* Background ambient light */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-lumi-secondary)]/10 to-transparent pointer-events-none" />
         
         {/* ========================================================================= */}
         {/* LEVEL 1: Recognition & Shape */}
@@ -214,16 +259,20 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-sky-100 text-sky-800 font-black text-xs px-3 py-1 rounded-full border border-sky-300">
-                  المستوى 1: التَّعَرُّف عَلَى الحَرْف
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[0].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  شَاهِدْ وَتَعَرَّفْ عَلَى حَرْفِ {letter.nameAr}
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[0].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message={`هَذَا حَرْفُ ${letter.nameAr}! شَكْلُهُ مُمَيَّزٌ وَجَمِيل!`}
-                emotion="happy"
+              <LumiMascot
+                message={
+                  lumiState === 'success' ? "رائع جداً! إجابة صحيحة يا بطل!" :
+                  lumiState === 'retry' ? "حاول مرة أخرى يا بطل، أنت قريب جداً!" :
+                  `هذا حرفنا الجديد! شكله مميز وجميل.. اضغط عليه لتسمعه!`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
@@ -235,7 +284,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                   soundManager.playPop();
                   soundManager.speak(letter.character);
                 }}
-                className="w-44 h-44 rounded-3xl bg-gradient-to-tr from-rose-400 to-pink-500 text-white flex items-center justify-center text-8xl font-black border-4 border-white shadow-glow-pink cursor-pointer active:scale-95 transition-transform animate-float"
+                className="w-44 h-44 rounded-3xl bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] flex items-center justify-center text-8xl font-black border-4 border-white shadow-[0_0_20px_rgba(252,211,77,0.6)] cursor-pointer active:scale-95 transition-transform animate-float"
                 title="اضغط للاستماع"
               >
                 {letter.character}
@@ -243,7 +292,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
 
               {/* Related Picture Examples */}
               <div className="space-y-3">
-                <p className="text-sm font-bold text-slate-600">كَلِمَاتٌ تَبْدَأُ بِحَرْفِ {letter.nameAr}:</p>
+                <p className="text-sm font-bold text-[var(--color-lumi-neutral)]">كَلِمَاتٌ تَبْدَأُ بِحَرْفِ {letter.nameAr}:</p>
                 <div className="flex items-center gap-3">
                   {[
                     { emoji: '🦆', name: 'بَطَّة' },
@@ -256,10 +305,10 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                         soundManager.playPop();
                         soundManager.speak(ex.name);
                       }}
-                      className="game-card p-3.5 flex flex-col items-center gap-1 border-2 border-pink-200 hover:border-pink-400 active:scale-95 transition-transform"
+                      className="game-card p-3.5 flex flex-col items-center gap-1 bg-[var(--color-lumi-glass)] border-2 border-[var(--color-lumi-secondary)] hover:border-[var(--color-lumi-primary)] active:scale-95 transition-transform"
                     >
                       <span className="text-3xl">{ex.emoji}</span>
-                      <span className="font-black text-sm text-slate-800">{ex.name}</span>
+                      <span className="font-black text-sm text-white">{ex.name}</span>
                     </button>
                   ))}
                 </div>
@@ -267,9 +316,9 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
             </div>
 
             {/* Mini Quiz: Choose the correct letter */}
-            <div className="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 text-center space-y-3">
-              <p className="font-extrabold text-slate-800 text-base">
-                سُؤَالُ الأَبْطَالِ: أَيْنَ حَرْفُ <span className="text-rose-600 text-xl">({letter.character})</span>؟
+            <div className="bg-[var(--color-lumi-glass)] p-4 rounded-2xl border-2 border-[var(--color-lumi-secondary)] text-center space-y-3">
+              <p className="font-extrabold text-white text-base">
+                سُؤَالُ الأَبْطَالِ: أَيْنَ حَرْفُ <span className="text-[var(--color-lumi-primary)] text-xl">({letter.character})</span>؟
               </p>
               <div className="flex items-center justify-center gap-3">
                 {['ت', letter.character, 'ن', 'ي'].map((char, idx) => (
@@ -278,18 +327,20 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     onClick={() => {
                       if (char === letter.character) {
                         soundManager.playSuccess();
+                        setLumiState('success');
                         setLevel1Selected(char);
                         addStars(1);
                         addCoins(5);
                         updateLetterLevelProgress(letter.id, 1, 95);
                       } else {
                         soundManager.playEncouragement();
+                        setLumiState('retry');
                       }
                     }}
                     className={`w-16 h-16 rounded-2xl font-black text-3xl border-3 transition-all ${
                       level1Selected === char
-                        ? 'bg-emerald-500 text-white border-white shadow-glow-green scale-110'
-                        : 'bg-white text-slate-800 border-slate-300 hover:border-sky-400 hover:bg-sky-50 active:scale-95'
+                        ? 'bg-[var(--color-lumi-accent)] text-white border-white shadow-[0_0_15px_#10b981] scale-110'
+                        : 'bg-[var(--color-lumi-base)] text-[var(--color-lumi-primary)] border-[var(--color-lumi-secondary)] hover:border-[var(--color-lumi-primary)] hover:bg-[var(--color-lumi-secondary)] active:scale-95'
                     }`}
                   >
                     {char}
@@ -297,7 +348,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                 ))}
               </div>
               {level1Selected && (
-                <p className="text-emerald-600 font-black text-sm animate-pop">
+                <p className="text-[var(--color-lumi-accent)] font-black text-sm animate-pop">
                   🌟 رَائِعْ جِدًّا! إِجَابَةٌ صَحِيحَةٌ يَا بَطَل!
                 </p>
               )}
@@ -312,26 +363,31 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-purple-100 text-purple-800 font-black text-xs px-3 py-1 rounded-full border border-purple-300">
-                  المستوى 2: صَوْتُ الحَرْفِ وَالمِيكْرُوفُون
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[1].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  تَدَرَّبْ عَلَى نُطْقِ صَوْتِ {letter.nameAr}
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[1].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message={`قُلْ مَعِي: (${letter.character}) .. اضْغَطْ عَلَى زِرِّ المِيكْرُوفُونِ وَتَحَدَّثْ!`}
-                emotion="listening"
+              <LumiMascot
+                message={
+                  lumiState === 'listening' ? "أنا أستمع إليك الآن..." :
+                  lumiState === 'success' ? "صوتك بطل وواضح جداً!" :
+                  lumiState === 'retry' ? "دعنا نجرب مرة أخرى معاً بصوت أقوى!" :
+                  `قل معي الصوت.. اضغط على زر الميكروفون وأرني مهارتك!`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
 
             {/* Articulation Tip & Mouth Shape */}
-            <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex items-center gap-4">
+            <div className="bg-[var(--color-lumi-glass)] border-2 border-[var(--color-lumi-secondary)] rounded-2xl p-4 flex items-center gap-4">
               <span className="text-4xl">👄</span>
               <div>
-                <h4 className="font-black text-amber-900 text-sm">نَصِيحَةُ لُولُو لِمَخْرَجِ الصَّوْت:</h4>
-                <p className="text-xs md:text-sm text-amber-800 font-medium mt-0.5">
+                <h4 className="font-black text-[var(--color-lumi-primary)] text-sm">نَصِيحَةُ لُومِي لِمَخْرَجِ الصَّوْت:</h4>
+                <p className="text-xs md:text-sm text-white font-medium mt-0.5">
                   {letter.mouthGuide.tip}
                 </p>
               </div>
@@ -340,14 +396,14 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
             {/* Sound & Microphone Challenge Area */}
             <div className="flex flex-col items-center justify-center gap-5 py-4">
               <div className="text-center">
-                <span className="text-7xl md:text-8xl font-black text-rose-500 block mb-2">
+                <span className="text-7xl md:text-8xl font-black text-[var(--color-lumi-primary)] drop-shadow-md block mb-2">
                   {letter.character}
                 </span>
                 <button
                   onClick={() => soundManager.speak(letter.character)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-800 font-bold text-xs hover:bg-rose-200 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-lumi-secondary)] text-white font-bold text-xs hover:bg-white/20 transition-colors"
                 >
-                  <Volume2 className="w-4 h-4" />
+                  <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
                   <span>اسْتَمِعْ لِلصَّوْتِ أَوَّلًا</span>
                 </button>
               </div>
@@ -362,17 +418,17 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                       handleStartRecording(letter.character);
                     }
                   }}
-                  className={`relative p-6 rounded-full border-4 transition-all duration-300 active:scale-95 shadow-card-pop ${
+                  className={`relative p-6 rounded-full border-4 transition-all duration-300 active:scale-95 ${
                     isRecording
-                      ? 'bg-rose-500 text-white border-white animate-pulse shadow-glow-pink scale-110'
-                      : 'bg-gradient-to-r from-sky-400 to-blue-600 text-white border-white shadow-glow-cyan hover:scale-105'
+                      ? 'bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] border-white animate-pulse shadow-[0_0_20px_#fcd34d] scale-110'
+                      : 'bg-[var(--color-lumi-base)] text-[var(--color-lumi-primary)] border-[var(--color-lumi-secondary)] shadow-lg hover:bg-[var(--color-lumi-secondary)] hover:scale-105'
                   }`}
                 >
                   <Mic className="w-10 h-10" />
                 </button>
 
-                <span className="font-extrabold text-sm text-slate-700">
-                  {isRecording ? '🎙️ لُولُو يَسْتَمِعُ إِلَيْكَ الآن...' : 'اضْغَطْ وَقُلْ: ' + letter.character}
+                <span className="font-extrabold text-sm text-white">
+                  {isRecording ? '🎙️ لُومِي يَسْتَمِعُ إِلَيْكَ الآن...' : 'اضْغَطْ وَقُلْ: ' + letter.character}
                 </span>
 
                 {/* Microphone Level Visualizer Bars */}
@@ -381,7 +437,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     {[0.3, 0.6, 0.9, 0.7, 0.4, 0.8, 0.5].map((h, i) => (
                       <div
                         key={i}
-                        className="w-2 bg-sky-500 rounded-full speech-bar"
+                        className="w-2 bg-[var(--color-lumi-primary)] rounded-full speech-bar"
                         style={{
                           height: `${Math.max(20, (micVolume || h) * 100)}%`,
                           animationDelay: `${i * 0.15}s`
@@ -393,13 +449,13 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
 
                 {/* Analysis Result Feedback */}
                 {speechResult && (
-                  <div className={`mt-3 p-4 rounded-2xl border-2 text-center max-w-md ${
+                  <div className={`mt-3 p-4 rounded-2xl border-2 text-center max-w-md bg-[var(--color-lumi-glass)] ${
                     speechResult.status === 'high_confidence'
-                      ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                      : 'bg-yellow-50 border-yellow-300 text-yellow-800'
+                      ? 'border-[var(--color-lumi-accent)] text-[var(--color-lumi-accent)]'
+                      : 'border-yellow-400 text-yellow-400'
                   }`}>
                     <p className="font-black text-base">{speechResult.feedbackMessage}</p>
-                    <p className="text-xs text-slate-600 mt-1">
+                    <p className="text-xs opacity-80 mt-1">
                       دِقَّةُ النُّطْق: {speechResult.phoneticScore}%
                     </p>
                   </div>
@@ -416,16 +472,19 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-emerald-100 text-emerald-800 font-black text-xs px-3 py-1 rounded-full border border-emerald-300">
-                  المستوى 3: الحَرَكَاتُ القَصِيرَة
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[2].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  الفَتْحَة ( َ ) ، الكَسْرَة ( ِ ) ، الضَّمَّة ( ُ )
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[2].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message="اسْتَمِعْ لِكُلِّ حَرَكَةٍ وَحَاوِلْ تَقْلِيدَ الصَّوْتِ يَا بَطَل!"
-                emotion="talking"
+              <LumiMascot
+                message={
+                  lumiState === 'success' ? "أحسنت التدريب! إيقاعك ممتاز!" :
+                  `اضغط على الحركات لنغني معاً: الفتحة، الكسرة، الضمة!`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
@@ -444,19 +503,19 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     }}
                     className={`game-card p-6 flex flex-col items-center justify-between min-h-[220px] border-4 cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-emerald-400 bg-emerald-50/90 shadow-card-pop scale-105'
-                        : 'border-slate-200 hover:border-emerald-300 bg-white'
+                        ? 'border-[var(--color-lumi-primary)] bg-[var(--color-lumi-glass)] shadow-[0_0_15px_rgba(252,211,77,0.3)] scale-105'
+                        : 'border-[var(--color-lumi-secondary)] bg-[var(--color-lumi-base)] hover:border-[var(--color-lumi-primary)]/50'
                     }`}
                   >
-                    <span className="text-xs font-black bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                    <span className="text-xs font-black bg-[var(--color-lumi-glass)] text-white px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]/30">
                       {item.nameAr}
                     </span>
 
-                    <span className="text-6xl font-black text-emerald-600 my-2">
+                    <span className="text-6xl font-black text-[var(--color-lumi-primary)] my-2">
                       {item.syllable}
                     </span>
 
-                    <p className="text-xs text-slate-600 font-bold text-center">
+                    <p className="text-xs text-[var(--color-lumi-neutral)] font-bold text-center">
                       {item.soundTip}
                     </p>
 
@@ -465,9 +524,9 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                         e.stopPropagation();
                         soundManager.speak(item.syllable);
                       }}
-                      className="mt-2 p-2 rounded-xl bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+                      className="mt-2 p-2 rounded-xl bg-[var(--color-lumi-secondary)] text-white hover:bg-white/20 transition-colors"
                     >
-                      <Volume2 className="w-4 h-4" />
+                      <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
                     </button>
                   </div>
                 );
@@ -475,9 +534,9 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
             </div>
 
             {/* Quiz: Find the correct haraka */}
-            <div className="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-[var(--color-lumi-glass)] p-4 rounded-2xl border-2 border-[var(--color-lumi-secondary)] flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <p className="font-extrabold text-slate-800 text-sm">
+                <p className="font-extrabold text-white text-sm">
                   تَحَدِّي الحَرَكَات: اضْغَطْ عَلَى ({syllables.short[selectedHarakatIndex].syllable}) ثُمَّ رَدِّدْ مَعَنَا!
                 </p>
               </div>
@@ -485,11 +544,12 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
               <button
                 onClick={() => {
                   soundManager.playSuccess();
+                  setLumiState('success');
                   addStars(1);
                   addCoins(5);
                   updateLetterLevelProgress(letter.id, 3, 90);
                 }}
-                className="game-btn px-5 py-2.5 bg-emerald-500 text-white rounded-xl font-black text-xs hover:bg-emerald-600 transition-colors"
+                className="game-btn px-5 py-2.5 bg-[var(--color-lumi-accent)] text-white rounded-xl font-black text-xs hover:opacity-90 transition-opacity border border-emerald-400"
               >
                 <span>أَحْسَنْتَ التَّدْرِيب! تَأْكِيد 🌟</span>
               </button>
@@ -504,16 +564,19 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-sky-100 text-sky-800 font-black text-xs px-3 py-1 rounded-full border border-sky-300">
-                  المستوى 4: المَقَاطِعُ وَالمُدُودُ الطَّوِيلَة
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[3].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  مَدُّ الأَلِف (بَا) ، مَدُّ اليَاء (بِي) ، مَدُّ الوَاو (بُو)
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[3].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message="مُدَّ صَوْتَكَ طَوِيلًا جِدًّا مِثْلَ القِطَار: بَااااا!"
-                emotion="cheering"
+              <LumiMascot
+                message={
+                  lumiState === 'success' ? "نَفَسُك طويل وممتاز! تدريب المدود مكتمل!" :
+                  `طوّل صوتك مع حروف المد: ا، و، ي!`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
@@ -531,19 +594,19 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     }}
                     className={`game-card p-6 flex flex-col items-center justify-between min-h-[220px] border-4 cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-sky-400 bg-sky-50/90 shadow-card-pop scale-105'
-                        : 'border-slate-200 hover:border-sky-300 bg-white'
+                        ? 'border-[var(--color-lumi-primary)] bg-[var(--color-lumi-glass)] shadow-[0_0_15px_rgba(252,211,77,0.3)] scale-105'
+                        : 'border-[var(--color-lumi-secondary)] bg-[var(--color-lumi-base)] hover:border-[var(--color-lumi-primary)]/50'
                     }`}
                   >
-                    <span className="text-xs font-black bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                    <span className="text-xs font-black bg-[var(--color-lumi-glass)] text-white px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]/30">
                       {item.nameAr}
                     </span>
 
-                    <span className="text-6xl font-black text-sky-600 my-2">
+                    <span className="text-6xl font-black text-[var(--color-lumi-primary)] my-2">
                       {item.syllable}
                     </span>
 
-                    <p className="text-xs text-slate-600 font-bold text-center">
+                    <p className="text-xs text-[var(--color-lumi-neutral)] font-bold text-center">
                       مِثَال: {item.example}
                     </p>
 
@@ -552,9 +615,9 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                         e.stopPropagation();
                         soundManager.speak(item.syllable);
                       }}
-                      className="mt-2 p-2 rounded-xl bg-sky-100 text-sky-800 hover:bg-sky-200 transition-colors"
+                      className="mt-2 p-2 rounded-xl bg-[var(--color-lumi-secondary)] text-white hover:bg-white/20 transition-colors"
                     >
-                      <Volume2 className="w-4 h-4" />
+                      <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
                     </button>
                   </div>
                 );
@@ -565,11 +628,12 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
               <button
                 onClick={() => {
                   soundManager.playSuccess();
+                  setLumiState('success');
                   addStars(1);
                   addCoins(5);
-                  updateLetterLevelProgress(letter.id, 4, 88);
+                  updateLetterLevelProgress(letter.id, 4, 90);
                 }}
-                className="game-btn px-6 py-3 bg-sky-500 text-white rounded-2xl font-black text-sm"
+                className="game-btn px-6 py-3 bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] rounded-2xl font-black text-sm border-2 border-[var(--color-lumi-primary)]"
               >
                 <span>اكْتَمَلَ تَدْرِيبُ المُدُود 🌟</span>
               </button>
@@ -584,24 +648,29 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-amber-100 text-amber-800 font-black text-xs px-3 py-1 rounded-full border border-amber-300">
-                  المستوى 5: الكَلِمَاتُ فِي مَوَاقِعِهَا
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[4].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  كَلِمَاتٌ بِمَوَاقِعِ الحَرْف (أَوَّل، وَسَط، آخِر)
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[4].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message="انْظُرْ كَيْفَ يَتَغَيَّرُ مَوْقِعُ الحَرْفِ فِي الكَلِمَة!"
-                emotion="happy"
+              <LumiMascot
+                message={
+                  lumiState === 'listening' ? "أنا أستمع إليك الآن..." :
+                  lumiState === 'success' ? "ممتاز! لقد وجدت مكان الحرف بنجاح!" :
+                  lumiState === 'retry' ? "دعنا نجرب نطق الكلمة بوضوح أكبر!" :
+                  `ابحث عن مكان الحرف داخل هذه الكلمات الجميلة!`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
 
             {/* Word Explorer Carousel */}
             <div className="flex flex-col md:flex-row items-center justify-center gap-6 py-4">
-              <div className="game-card p-6 border-4 border-amber-300 bg-amber-50/60 max-w-md w-full text-center space-y-4">
-                <span className="inline-block bg-amber-400 text-slate-900 font-black text-xs px-3 py-1 rounded-full">
+              <div className="game-card p-6 border-4 border-[var(--color-lumi-secondary)] bg-[var(--color-lumi-base)] max-w-md w-full text-center space-y-4">
+                <span className="inline-block bg-[var(--color-lumi-glass)] text-white font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]/30">
                   {words[selectedWordIndex].positionLabel}
                 </span>
 
@@ -610,11 +679,11 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                 </div>
 
                 <div
-                  className="text-4xl md:text-5xl font-black text-slate-800"
+                  className="text-4xl md:text-5xl font-black text-[var(--color-lumi-primary)] drop-shadow-md"
                   dangerouslySetInnerHTML={{ __html: words[selectedWordIndex].highlightedWord }}
                 />
 
-                <p className="text-xs text-slate-600 font-bold">
+                <p className="text-xs text-[var(--color-lumi-neutral)] font-bold">
                   {words[selectedWordIndex].meaning}
                 </p>
 
@@ -625,8 +694,8 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                       key={i}
                       className={`w-9 h-9 rounded-xl font-black text-base flex items-center justify-center border-2 ${
                         ch === letter.character
-                          ? 'bg-rose-500 text-white border-white'
-                          : 'bg-white text-slate-700 border-slate-200'
+                          ? 'bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] border-white shadow-[0_0_10px_#fcd34d]'
+                          : 'bg-[var(--color-lumi-glass)] text-white border-[var(--color-lumi-secondary)]'
                       }`}
                     >
                       {ch}
@@ -638,15 +707,15 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                 <div className="flex items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => soundManager.speak(words[selectedWordIndex].word)}
-                    className="game-btn px-4 py-2 bg-amber-200 text-amber-900 rounded-xl font-bold text-xs flex items-center gap-1.5"
+                    className="game-btn px-4 py-2 bg-[var(--color-lumi-secondary)] text-white rounded-xl font-bold text-xs flex items-center gap-1.5 hover:bg-white/20"
                   >
-                    <Volume2 className="w-4 h-4" />
+                    <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
                     <span>اسْتَمِعْ لِلكَلِمَة</span>
                   </button>
 
                   <button
                     onClick={() => handleStartRecording(words[selectedWordIndex].word)}
-                    className="game-btn px-4 py-2 bg-rose-500 text-white rounded-xl font-bold text-xs flex items-center gap-1.5"
+                    className="game-btn px-4 py-2 bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] rounded-xl font-bold text-xs flex items-center gap-1.5 border border-white"
                   >
                     <Mic className="w-4 h-4" />
                     <span>انْطِقْ أَنْت</span>
@@ -666,8 +735,8 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     }}
                     className={`p-3 rounded-2xl font-black text-xs border-2 text-right flex items-center justify-between ${
                       selectedWordIndex === idx
-                        ? 'bg-amber-400 text-slate-900 border-white shadow-md'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                        ? 'bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] border-white shadow-md scale-105 transition-transform'
+                        : 'bg-[var(--color-lumi-glass)] text-white border-[var(--color-lumi-secondary)] hover:border-[var(--color-lumi-primary)]/50 transition-colors'
                     }`}
                   >
                     <span>{w.word}</span>
@@ -681,11 +750,12 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
               <button
                 onClick={() => {
                   soundManager.playSuccess();
+                  setLumiState('success');
                   addStars(1);
                   addCoins(5);
                   updateLetterLevelProgress(letter.id, 5, 85);
                 }}
-                className="game-btn px-6 py-3 bg-amber-500 text-white rounded-2xl font-black text-sm"
+                className="game-btn px-6 py-3 bg-[var(--color-lumi-accent)] text-white rounded-2xl font-black text-sm border border-emerald-400"
               >
                 <span>مُمْتَاز! اكْتَمَلَ تَدْرِيبُ الكَلِمَات 🌟</span>
               </button>
@@ -700,34 +770,38 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-indigo-100 text-indigo-800 font-black text-xs px-3 py-1 rounded-full border border-indigo-300">
-                  المستوى 6: مَوْقِعُ الصَّوْتِ دَاخِلَ الكَلِمَة
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[5].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  أَيْنَ يَجْلِسُ حَرْفُ {letter.nameAr}؟
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[5].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message="اسْتَمِعْ لِلكَلِمَةِ وَحَدِّدْ: هَل الحَرْف فِي الأَوَّل، الوَسَط، أَم الآخِر؟"
-                emotion="thinking"
+              <LumiMascot
+                message={
+                  lumiState === 'success' ? "بطل! إجابة دقيقة جداً!" :
+                  lumiState === 'retry' ? "ركز قليلاً.. هل تسمعه في البداية أم النهاية؟" :
+                  `هل تستطيع أن تكتشف أين يختبئ الحرف؟ أول؟ وسط؟ أم آخر؟`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
 
-            <div className="bg-indigo-50/80 p-6 rounded-3xl border-3 border-indigo-200 text-center space-y-4 max-w-lg mx-auto">
+            <div className="bg-[var(--color-lumi-glass)] p-6 rounded-3xl border-3 border-[var(--color-lumi-secondary)] text-center space-y-4 max-w-lg mx-auto">
               <span className="text-5xl block">
                 {words[positionQuizIndex].emoji}
               </span>
 
-              <h3 className="text-4xl font-black text-indigo-900">
+              <h3 className="text-4xl font-black text-[var(--color-lumi-primary)] drop-shadow-md">
                 {words[positionQuizIndex].word}
               </h3>
 
               <button
                 onClick={() => soundManager.speak(words[positionQuizIndex].word)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-200 text-indigo-900 rounded-full font-bold text-xs"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--color-lumi-secondary)] text-white rounded-full font-bold text-xs hover:bg-white/20 transition-colors"
               >
-                <Volume2 className="w-4 h-4" />
+                <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
                 <span>اسْتَمِعْ لِلكَلِمَة</span>
               </button>
 
@@ -742,18 +816,20 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     onClick={() => {
                       if (pos.id === words[positionQuizIndex].position) {
                         soundManager.playSuccess();
+                        setLumiState('success');
                         setSelectedPosition(pos.id);
                         addStars(1);
                         addCoins(5);
                         updateLetterLevelProgress(letter.id, 6, 92);
                       } else {
                         soundManager.playEncouragement();
+                        setLumiState('retry');
                       }
                     }}
                     className={`p-3.5 rounded-2xl font-black text-xs md:text-sm border-2 transition-all ${
                       selectedPosition === pos.id
-                        ? 'bg-emerald-500 text-white border-white shadow-glow-green scale-105'
-                        : 'bg-white text-slate-800 border-slate-200 hover:border-indigo-400 active:scale-95'
+                        ? 'bg-[var(--color-lumi-accent)] text-white border-white shadow-[0_0_15px_#10b981] scale-105'
+                        : 'bg-[var(--color-lumi-base)] text-[var(--color-lumi-primary)] border-[var(--color-lumi-secondary)] hover:border-[var(--color-lumi-primary)]/50 active:scale-95'
                     }`}
                   >
                     {pos.label}
@@ -763,7 +839,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
 
               {selectedPosition && (
                 <div className="pt-2">
-                  <p className="text-emerald-600 font-black text-sm">
+                  <p className="text-[var(--color-lumi-accent)] font-black text-sm">
                     🌟 بَطَل! إِجَابَةٌ دَقِيقَةٌ جِدًّا!
                   </p>
                   <button
@@ -771,7 +847,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                       setSelectedPosition(null);
                       setPositionQuizIndex((prev) => (prev + 1) % words.length);
                     }}
-                    className="mt-2 px-4 py-1.5 bg-indigo-600 text-white rounded-xl font-bold text-xs"
+                    className="mt-2 px-4 py-1.5 bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] rounded-xl font-bold text-xs"
                   >
                     السُّؤَالُ التَّالِي ⬅️
                   </button>
@@ -788,40 +864,45 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="bg-purple-100 text-purple-800 font-black text-xs px-3 py-1 rounded-full border border-purple-300">
-                  المستوى 7: الجُمَلُ وَالمَعَانِي
+                <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                  ماذا سأتعلم هنا؟ {levelsList[6].desc}
                 </span>
-                <h2 className="text-2xl font-black text-slate-800 mt-2">
-                  تَرْكِيبُ وَفَهْمُ الجُمَلِ البَسِيطَة
+                <h2 className="text-2xl font-black text-white mt-2">
+                  {levelsList[6].title}
                 </h2>
               </div>
-              <LoulouMascot
-                message="أَنْتَ الآنَ فِي مُسْتَوَى الجُمَل! هَيَّا نَقْرَأُ مَعًا!"
-                emotion="cheering"
+              <LumiMascot
+                message={
+                  lumiState === 'listening' ? "أنا أستمع إليك الآن..." :
+                  lumiState === 'success' ? "أنت حقاً بطل القراءة!" :
+                  lumiState === 'retry' ? "لنجرب مرة أخرى.. أي كلمة تكمل القصة؟" :
+                  `هيا نستمع إلى هذه القصة الصغيرة.. ثم أرني مهارتك!`
+                }
+                state={lumiState}
                 size="sm"
               />
             </div>
 
             {/* Sentence Showcase */}
-            <div className="bg-purple-50 p-6 rounded-3xl border-3 border-purple-200 max-w-xl mx-auto space-y-4 text-center">
+            <div className="bg-[var(--color-lumi-glass)] p-6 rounded-3xl border-3 border-[var(--color-lumi-secondary)] max-w-xl mx-auto space-y-4 text-center">
               <span className="text-5xl block">{sentences[0].emoji}</span>
 
-              <h3 className="text-3xl md:text-4xl font-black text-purple-950">
+              <h3 className="text-3xl md:text-4xl font-black text-[var(--color-lumi-primary)] drop-shadow-md">
                 {sentences[0].sentence}
               </h3>
 
               <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={() => soundManager.speak(sentences[0].sentence)}
-                  className="game-btn px-4 py-2 bg-purple-200 text-purple-900 rounded-xl font-bold text-xs flex items-center gap-1.5"
+                  className="game-btn px-4 py-2 bg-[var(--color-lumi-secondary)] text-white rounded-xl font-bold text-xs flex items-center gap-1.5 hover:bg-white/20"
                 >
-                  <Volume2 className="w-4 h-4" />
+                  <Volume2 className="w-4 h-4 text-[var(--color-lumi-primary)]" />
                   <span>اسْتَمِعْ لِلجُمْلَة</span>
                 </button>
 
                 <button
                   onClick={() => handleStartRecording(sentences[0].sentence)}
-                  className="game-btn px-4 py-2 bg-purple-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5"
+                  className="game-btn px-4 py-2 bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] rounded-xl font-bold text-xs flex items-center gap-1.5 border border-white"
                 >
                   <Mic className="w-4 h-4" />
                   <span>كَرِّرِ الجُمْلَة 🎙️</span>
@@ -829,8 +910,8 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
               </div>
 
               {/* Missing Word Quiz */}
-              <div className="pt-4 border-t border-purple-200 text-right space-y-2">
-                <p className="font-extrabold text-xs text-slate-700">
+              <div className="pt-4 border-t border-[var(--color-lumi-secondary)] text-right space-y-2">
+                <p className="font-extrabold text-xs text-white">
                   {sentences[0].missingWordExercise.question}
                 </p>
                 <div className="flex items-center gap-2">
@@ -840,18 +921,20 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                       onClick={() => {
                         if (idx === sentences[0].missingWordExercise.correctIndex) {
                           soundManager.playSuccess();
+                          setLumiState('success');
                           setSentenceQuizSelected(idx);
                           addStars(2);
                           addCoins(10);
                           updateLetterLevelProgress(letter.id, 7, 90);
                         } else {
                           soundManager.playEncouragement();
+                          setLumiState('retry');
                         }
                       }}
                       className={`flex-1 p-2.5 rounded-xl font-black text-xs border-2 ${
                         sentenceQuizSelected === idx
-                          ? 'bg-emerald-500 text-white border-white shadow-md'
-                          : 'bg-white text-slate-800 border-slate-200 hover:bg-purple-100'
+                          ? 'bg-[var(--color-lumi-accent)] text-white border-white shadow-[0_0_15px_#10b981]'
+                          : 'bg-[var(--color-lumi-base)] text-[var(--color-lumi-primary)] border-[var(--color-lumi-secondary)] hover:border-[var(--color-lumi-primary)]/50'
                       }`}
                     >
                       {opt}
@@ -868,37 +951,56 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
         {/* ========================================================================= */}
         {activeLevel === 8 && (
           <div className="space-y-6 text-center py-4">
+            <div className="flex justify-center mb-4">
+              <span className="bg-[var(--color-lumi-glass)] text-[var(--color-lumi-primary)] font-black text-xs px-3 py-1 rounded-full border border-[var(--color-lumi-secondary)]">
+                ماذا سأتعلم هنا؟ {levelsList[7].desc}
+              </span>
+            </div>
+            
             <div className="max-w-md mx-auto space-y-4">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-tr from-amber-400 to-yellow-500 rounded-full flex items-center justify-center text-5xl border-4 border-white shadow-glow-yellow animate-bounce">
+              <div className="w-24 h-24 mx-auto bg-[var(--color-lumi-primary)] rounded-full flex items-center justify-center text-5xl border-4 border-white shadow-[0_0_25px_rgba(252,211,77,0.8)] animate-bounce">
                 🏆
               </div>
 
-              <h2 className="text-3xl font-black text-slate-800">
-                مُبَارَكْ! أَنْتَ بَطَلُ حَرْفِ {letter.nameAr}!
+              <h2 className="text-3xl font-black text-white">
+                {levelsList[7].title}
               </h2>
 
-              <p className="text-sm text-slate-600 font-medium leading-relaxed">
+              <p className="text-sm text-[var(--color-lumi-neutral)] font-medium leading-relaxed">
                 لَقَدْ أَتْمَمْتَ جَمِيعَ مُسْتَوَيَاتِ الحَرْفِ بِنَجَاحٍ بَاهِرٍ وَتَعَلَّمْتَ الصَّوْتَ وَالحَرَكَاتِ وَالكَلِمَاتِ وَالجُمَل!
               </p>
 
+              <div className="flex justify-center my-2">
+                <LumiMascot
+                  message={
+                    lumiState === 'success' ? "أحسنت صنعاً! الجائزة بانتظارك!" :
+                    `مبارك يا بطل! لقد أضأت نجمة هذا الحرف!`
+                  }
+                  state={lumiState === 'success' ? 'success' : 'success'}
+                  size="sm"
+                />
+              </div>
+
               {/* Trophy Certificate Card */}
-              <div className="bg-gradient-to-br from-amber-50 to-yellow-100 border-4 border-amber-400 p-6 rounded-3xl shadow-md text-center space-y-3">
-                <span className="text-xs font-black text-amber-800 bg-amber-200 px-3 py-1 rounded-full">
+              <div className="bg-[var(--color-lumi-glass)] border-4 border-[var(--color-lumi-primary)] p-6 rounded-3xl shadow-lg text-center space-y-3 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-lumi-primary)]/10 to-transparent pointer-events-none" />
+                
+                <span className="relative text-xs font-black text-[var(--color-lumi-base)] bg-[var(--color-lumi-primary)] px-3 py-1 rounded-full border border-white/50">
                   شَهَادَةُ إِتْقَانِ حَرْفِ {letter.nameAr}
                 </span>
 
-                <div className="text-5xl font-black text-rose-500">
+                <div className="relative text-5xl font-black text-white drop-shadow-md py-2">
                   {letter.character}
                 </div>
 
-                <p className="font-extrabold text-base text-slate-800">
+                <p className="relative font-extrabold text-base text-[var(--color-lumi-primary)]">
                   البَطَلُ المُمَيَّزُ فِي نُطْقِ حَرْفِ {letter.nameAr}
                 </p>
 
-                <div className="flex items-center justify-center gap-4 text-xs font-black text-slate-700 pt-2 border-t border-amber-300">
-                  <span>⭐ +5 نُجُوم</span>
-                  <span>🪙 +30 عُمْلَة</span>
-                  <span>🔓 فَتْحُ الحَرْفِ التَّالِي</span>
+                <div className="relative flex items-center justify-center gap-4 text-xs font-black text-white pt-3 border-t border-[var(--color-lumi-secondary)]/50">
+                  <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-[var(--color-lumi-primary)] fill-[var(--color-lumi-primary)]"/> +5</span>
+                  <span className="flex items-center gap-1">🪙 +30</span>
+                  <span className="text-[var(--color-lumi-accent)]">🔓 فَتْحُ التَّالِي</span>
                 </div>
               </div>
 
@@ -906,13 +1008,14 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                 <button
                   onClick={() => {
                     triggerCelebration();
+                    setLumiState('success');
                     addStars(5);
                     addCoins(30);
                     updateLetterLevelProgress(letter.id, 8, 100);
                   }}
-                  className="game-btn px-6 py-3 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 rounded-2xl font-black text-sm shadow-glow-yellow"
+                  className="game-btn px-6 py-3 bg-[var(--color-lumi-primary)] text-[var(--color-lumi-base)] rounded-2xl font-black text-sm shadow-[0_0_15px_rgba(252,211,77,0.5)] border-2 border-white"
                 >
-                  <Sparkles className="w-5 h-5 text-amber-800" />
+                  <Sparkles className="w-5 h-5" />
                   <span>اسْتَلِمْ جَائِزَةَ التَّتْوِيج! 🎁</span>
                 </button>
 
@@ -921,7 +1024,7 @@ export const LetterJourneyMap: React.FC<LetterJourneyMapProps> = ({
                     soundManager.playClick();
                     onLaunchMiniGame('bubble_pop');
                   }}
-                  className="game-btn px-5 py-3 bg-sky-500 text-white rounded-2xl font-black text-sm"
+                  className="game-btn px-5 py-3 bg-[var(--color-lumi-secondary)] text-white rounded-2xl font-black text-sm hover:bg-white/20"
                 >
                   <span>العَبْ صَيْدَ الحُرُوف 🎮</span>
                 </button>

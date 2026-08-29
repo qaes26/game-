@@ -5,6 +5,7 @@ import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
 import { LetterData } from '../../data/letters';
 import { RealisticTongueAnatomy } from './RealisticTongueAnatomy';
+import { ChildFriendlyMouthGuide } from './ChildFriendlyMouthGuide';
 import { getTongueDataForLetter } from '../../data/tongueArticulationData';
 
 interface AnimatedArticulationTeacherProps {
@@ -23,7 +24,7 @@ export const AnimatedArticulationTeacher: React.FC<AnimatedArticulationTeacherPr
   const [tongueHeight, setTongueHeight] = useState<number>(75);
   const [isVibrating, setIsVibrating] = useState<boolean>(false);
   const [isAirflowVisible, setIsAirflowVisible] = useState<boolean>(false);
-  const [viewMode, setViewMode] = useState<'front_teacher' | 'xray_anatomy' | 'split_view' | 'interactive_game'>('xray_anatomy');
+  const [viewMode, setViewMode] = useState<'kid_mouth' | 'front_teacher' | 'xray_anatomy' | 'split_view' | 'interactive_game'>('kid_mouth');
   const [isAnatomyAnimating, setIsAnatomyAnimating] = useState<boolean>(false);
 
   // Minigame states
@@ -138,7 +139,7 @@ export const AnimatedArticulationTeacher: React.FC<AnimatedArticulationTeacherPr
           </div>
           <div>
             <h2 className="text-base md:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-cyan-200 to-white">
-              المُعَلِّمَةُ سَارَة — فِيدْيُو تَعْلِيمِ النُّطْقِ السَّلِيم
+              المُعَلِّمَةُ سَارَة — دَلِيلُ تَعْلِيمِ النُّطْقِ السَّلِيم
             </h2>
             <p className="text-[11px] text-cyan-200 font-bold">
               تَدْرِيبٌ بَصَرِيٌّ لِحَرْفِ ({letter.char}) مَعَ {childName} ✨
@@ -148,6 +149,17 @@ export const AnimatedArticulationTeacher: React.FC<AnimatedArticulationTeacherPr
 
         {/* View Mode Switcher */}
         <div className="flex items-center gap-1 bg-[#050b1d] p-1 rounded-2xl border border-blue-900/80">
+          <button
+            onClick={() => setViewMode('kid_mouth')}
+            className={`px-2.5 py-1.5 rounded-xl text-[11px] font-black transition-all ${
+              viewMode === 'kid_mouth'
+                ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            👄 دَلِيلُ الفَم
+          </button>
+
           <button
             onClick={() => setViewMode('xray_anatomy')}
             className={`px-2.5 py-1.5 rounded-xl text-[11px] font-black transition-all ${
@@ -195,27 +207,36 @@ export const AnimatedArticulationTeacher: React.FC<AnimatedArticulationTeacherPr
         </div>
       </div>
 
-      {/* Main Video Animation Arena */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        
-        {/* Left / Center Video Stage */}
-        <div className="relative md:col-span-8 bg-gradient-to-b from-[#0e1b42] to-[#070e24] rounded-3xl border-2 border-cyan-500/40 p-4 overflow-hidden shadow-inner flex flex-col items-center justify-center min-h-[320px]">
-          
-          {/* Step Overlay Pill */}
-          <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-[#050b1d]/90 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-400/50 text-[11px] font-black text-cyan-300">
-            <Sparkles className="w-3 h-3 text-yellow-300" />
-            <span>{lessonStep === 1 ? '1. وَضْعِيَّةُ الشَّفَتَيْن' : lessonStep === 2 ? '2. إِطْلاقُ الهَوَاءِ وَالصَّوْت' : '3. نُطْقُ الكَلِمَة'}</span>
-          </div>
+      {/* ===== 0. KID FRIENDLY MOUTH GUIDE (DEFAULT FOR CHILDREN) ===== */}
+      {viewMode === 'kid_mouth' && (
+        <ChildFriendlyMouthGuide
+          letter={letter}
+          onSuccess={onSuccess}
+        />
+      )}
 
-          {/* ===== 1. REALISTIC ANATOMY VIEW (DEFAULT) ===== */}
-          {viewMode === 'xray_anatomy' && (
-            <RealisticTongueAnatomy
-              letter={letter}
-              isAnimating={isAnatomyAnimating}
-              showLabels={true}
-              showAirflow={true}
-            />
-          )}
+      {/* Main Video Animation Arena for Other Modes */}
+      {viewMode !== 'kid_mouth' && (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          
+          {/* Left / Center Video Stage */}
+          <div className="relative md:col-span-8 bg-gradient-to-b from-[#0e1b42] to-[#070e24] rounded-3xl border-2 border-cyan-500/40 p-4 overflow-hidden shadow-inner flex flex-col items-center justify-center min-h-[320px]">
+            
+            {/* Step Overlay Pill */}
+            <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-[#050b1d]/90 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-400/50 text-[11px] font-black text-cyan-300">
+              <Sparkles className="w-3 h-3 text-yellow-300" />
+              <span>{lessonStep === 1 ? '1. وَضْعِيَّةُ الشَّفَتَيْن' : lessonStep === 2 ? '2. إِطْلاقُ الهَوَاءِ وَالصَّوْت' : '3. نُطْقُ الكَلِمَة'}</span>
+            </div>
+
+            {/* ===== 1. REALISTIC ANATOMY VIEW ===== */}
+            {viewMode === 'xray_anatomy' && (
+              <RealisticTongueAnatomy
+                letter={letter}
+                isAnimating={isAnatomyAnimating}
+                showLabels={true}
+                showAirflow={true}
+              />
+            )}
 
           {/* ===== 2. FRONT TEACHER ANIMATION VIEW ===== */}
           {viewMode === 'front_teacher' && (
@@ -514,6 +535,7 @@ export const AnimatedArticulationTeacher: React.FC<AnimatedArticulationTeacherPr
         </div>
 
       </div>
+      )}
 
     </div>
   );

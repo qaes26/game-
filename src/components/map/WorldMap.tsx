@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, Sparkles, Compass, MapPin, Play } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface WorldMapProps {
   onSelectWorld: (worldId: string) => void;
@@ -45,61 +45,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       borderColor: 'border-amber-300',
       shadowColor: 'shadow-amber-200',
       islandEmoji: '🏠'
-    },
-    {
-      id: 'sentences_river',
-      name: 'نهر الجمل',
-      desc: 'جِسْرٌ مُضِيءٌ يَتَشَكَّلُ عِنْدَ بِنَاءِ الجُمَلِ المُفِيدَةِ لِمُسَاعَدَةِ الأَصْدِقَاء',
-      icon: '🌊',
-      tag: 'العالم 4',
-      bgGradient: 'from-sky-400 via-blue-500 to-cyan-500',
-      borderColor: 'border-sky-300',
-      shadowColor: 'shadow-sky-200',
-      islandEmoji: '⛵'
-    },
-    {
-      id: 'echo_mountains',
-      name: 'جبال الصدى',
-      desc: 'كُهُوفُ الصَّدَى لِلتَّمْيِيزِ السَّمْعِيِّ وَالبَصَرِيِّ وَمُحَاكَاةِ الأَصْوَات',
-      icon: '🏔️',
-      tag: 'العالم 5',
-      bgGradient: 'from-purple-400 via-indigo-500 to-slate-600',
-      borderColor: 'border-indigo-300',
-      shadowColor: 'shadow-indigo-200',
-      islandEmoji: '⛰️'
-    },
-    {
-      id: 'sounds_castle',
-      name: 'قلعة الأصوات',
-      desc: 'تَحَدِّيَاتٌ كُبْرَى تَجْمَعُ بَيْنَ الحَرْفِ وَالصَّوْتِ وَالكَلِمَةِ وَالجُمْلَة',
-      icon: '🏰',
-      tag: 'العالم 6',
-      bgGradient: 'from-rose-400 via-pink-500 to-purple-600',
-      borderColor: 'border-pink-300',
-      shadowColor: 'shadow-pink-200',
-      islandEmoji: '👑'
-    },
-    {
-      id: 'sounds_galaxy',
-      name: 'مجرة الأصوات',
-      desc: 'سَفِينَةٌ فَضَائِيَّةٌ تَتَنَقَّلُ بَيْنَ كَوَاكِبِ المَهَارَاتِ وَالتَّمَيُّز',
-      icon: '🚀',
-      tag: 'العالم 7',
-      bgGradient: 'from-indigo-600 via-purple-700 to-slate-900',
-      borderColor: 'border-purple-300',
-      shadowColor: 'shadow-purple-300',
-      islandEmoji: '🛸'
-    },
-    {
-      id: 'star_realm',
-      name: 'عالم النجوم الفضائي',
-      desc: 'سَفِينَةُ لُومِي الفَضَائِيَّةُ مَعَ الكَوَاكِبِ وَالنَّيْبُولا وَالجَوَائِزِ البَرَّاقَة',
-      icon: '🌌',
-      tag: 'العالم 8 - الفضاء',
-      bgGradient: 'from-purple-900 via-slate-950 to-amber-950',
-      borderColor: 'border-yellow-400',
-      shadowColor: 'shadow-yellow-300',
-      islandEmoji: '🌟'
     }
   ];
 

@@ -1,46 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Trophy, RotateCcw, Volume2 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { soundManager } from '../../services/audio/SoundManager';
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const LetterBubblePopGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerCelebration } = useGame();
-  const targetLetter = 'ب';
+  const { selectedLetterId, addStars, addCoins, triggerCelebration } = useGame();
+  
+  const currentLetterObj = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  const targetLetter = currentLetterObj.char;
+
   const [score, setScore] = useState<number>(0);
   const [bubbles, setBubbles] = useState<Array<{ id: number; char: string; x: number; y: number; speed: number; popped: boolean }>>([]);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(30);
+  const hasCelebratedRef = useRef<boolean>(false);
 
-  // Initialize bubbles
-  useEffect(() => {
-    const chars = ['ب', 'ت', 'ث', 'ن', 'ي', 'م', 'ل', 'ب', 'ب'];
+  const initGame = () => {
+    const distractors = ARABIC_LETTERS.filter(l => l.char !== targetLetter).map(l => l.char);
+    const pool = [targetLetter, targetLetter, targetLetter, ...distractors.slice(0, 6)];
+    
     const initial = Array.from({ length: 8 }, (_, i) => ({
       id: i,
-      char: chars[Math.floor(Math.random() * chars.length)],
+      char: pool[Math.floor(Math.random() * pool.length)],
       x: 10 + Math.random() * 80,
       y: 10 + Math.random() * 70,
-      speed: 0.5 + Math.random() * 0.8,
+      speed: 0.5 + Math.random() * 0.7,
       popped: false
     }));
     setBubbles(initial);
-  }, []);
+    setTimeLeft(30);
+    setScore(0);
+    setGameOver(false);
+    hasCelebratedRef.current = false;
+  };
 
-  // Timer countdown
+  // Initialize bubbles
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setGameOver(true);
-      if (score >= 5) {
+    initGame();
+  }, [targetLetter]);
+
+  // Timer countdown without score dependency
+  useEffect(() => {
+    if (gameOver) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setGameOver(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameOver]);
+
+  // Handle Game Over victory
+  useEffect(() => {
+    if (gameOver && !hasCelebratedRef.current) {
+      hasCelebratedRef.current = true;
+      if (score >= 4) {
         triggerCelebration();
         addStars(3);
         addCoins(15);
       }
-      return;
     }
-    const timer = setInterval(() => {
-      setTimeLeft(t => t - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft, score]);
+  }, [gameOver, score, addStars, addCoins, triggerCelebration]);
 
   // Floating animation loop
   useEffect(() => {
@@ -51,12 +79,13 @@ export const LetterBubblePopGame: React.FC<{ onBack: () => void }> = ({ onBack }
           if (b.popped) return b;
           let newY = b.y - b.speed;
           if (newY < -10) {
-            const chars = ['ب', 'ت', 'ن', 'ي', 'م', 'ب'];
+            const distractors = ARABIC_LETTERS.filter(l => l.char !== targetLetter).map(l => l.char);
+            const pool = [targetLetter, targetLetter, ...distractors.slice(0, 5)];
             return {
               ...b,
               y: 100,
               x: 10 + Math.random() * 80,
-              char: chars[Math.floor(Math.random() * chars.length)]
+              char: pool[Math.floor(Math.random() * pool.length)]
             };
           }
           return { ...b, y: newY };
@@ -64,7 +93,7 @@ export const LetterBubblePopGame: React.FC<{ onBack: () => void }> = ({ onBack }
       );
     }, 50);
     return () => clearInterval(interval);
-  }, [gameOver]);
+  }, [gameOver, targetLetter]);
 
   const handlePop = (id: number, char: string) => {
     soundManager.playPop();
@@ -83,7 +112,7 @@ export const LetterBubblePopGame: React.FC<{ onBack: () => void }> = ({ onBack }
                   popped: false,
                   y: 100,
                   x: 10 + Math.random() * 80,
-                  char: Math.random() > 0.4 ? 'ب' : 'ت'
+                  char: Math.random() > 0.4 ? targetLetter : ARABIC_LETTERS[Math.floor(Math.random() * 28)].char
                 }
               : b
           )

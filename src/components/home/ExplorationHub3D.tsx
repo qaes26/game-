@@ -2,7 +2,7 @@ import React from 'react';
 import { Compass, Sparkles, Star, Trophy, ArrowLeft, Play, Flame } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface ExplorationHub3DProps {
   onOpenMap: () => void;
@@ -120,8 +120,8 @@ export const ExplorationHub3D: React.FC<ExplorationHub3DProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { title: '🌿 وادي الحروف', desc: 'اسْتَكْشِف الحُرُوفَ فِي الوَادِي السِّحْرِيّ', action: onOpenMap, border: 'border-emerald-500/40 bg-emerald-950/30' },
-          { title: '🪞 مرآة لومي البصرية', desc: 'تَعَلَّمْ مَخَارِجَ النُّطْقِ وَحَرَكَةَ الفَم', action: onOpenMirror, border: 'border-teal-500/40 bg-teal-950/30' },
-          { title: '🌌 عالم النجوم الفضائي', desc: 'سَفِينَةُ لُومِي وَأَوْسِمَةُ الإِتْقَان', action: onOpenMap, border: 'border-purple-500/40 bg-purple-950/30' }
+          { title: '🌲 غابة المقاطع', desc: 'أَشْجَارٌ تَنْمُو بِنُطْقِ الحَرَكَاتِ وَالمُدُود', action: onOpenMap, border: 'border-green-500/40 bg-green-950/30' },
+          { title: '🏘️ قرية الكلمات', desc: 'قَرْيَةٌ سِحْرِيَّةٌ لِتَرْكِيبِ الكَلِمَات', action: onOpenMap, border: 'border-amber-500/40 bg-amber-950/30' }
         ].map((item, idx) => (
           <div
             key={idx}

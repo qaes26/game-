@@ -6,7 +6,8 @@ import { STAGE_CURRICULUM_DEFINITIONS } from '../../engine/CurriculumEngine';
 import { aiChallengeEngine, GeneratedChallenge } from '../../engine/AIChallengeEngine';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
+import { StagesGuideModal } from '../common/StagesGuideModal';
 
 interface CleanStagePlayerProps {
   letterId: string;
@@ -30,6 +31,7 @@ export const CleanStagePlayer: React.FC<CleanStagePlayerProps> = ({
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const ch = aiChallengeEngine.generateStageChallenge(
@@ -127,7 +129,18 @@ export const CleanStagePlayer: React.FC<CleanStagePlayerProps> = ({
           <span>خُرُوجٌ لِلرِّحْلَة</span>
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              audioManager.playClick();
+              setIsGuideModalOpen(true);
+            }}
+            className="px-3 py-1.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/50 active:scale-95 transition-all flex items-center gap-1.5 text-xs font-black shadow-sm"
+            title="دليل شَرْحِ المَرْحَلَة"
+          >
+            <span>📖</span>
+            <span className="hidden sm:inline">شَرْحُ المَرْحَلَة</span>
+          </button>
           <span className="text-xs font-black text-amber-950 bg-gradient-to-r from-amber-400 to-yellow-400 px-3.5 py-1 rounded-full border border-white shadow-sm">
             المرحلة {stageNumber} من 8 • {stageDef.titleAr}
           </span>
@@ -220,6 +233,14 @@ export const CleanStagePlayer: React.FC<CleanStagePlayerProps> = ({
       <footer className="relative z-10 max-w-4xl mx-auto w-full text-center text-xs text-amber-200/70 font-bold py-2">
         <span>المرحلة {stageNumber}: {stageDef.landmark3D}</span>
       </footer>
+
+      {/* Stages 8-Step Comprehensive Curriculum Guide Modal */}
+      <StagesGuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        onSelectStage={(num) => onCompleteStageAndNext(num)}
+        initialStage={stageNumber}
+      />
 
     </div>
   );

@@ -2,15 +2,23 @@ import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Volume2, Shield, Crown } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const SoundsCastleWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
 
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  
+  const shortTarget = letterData.syllables.short[0];
+  const longTarget = letterData.syllables.long[0] || letterData.syllables.long[1] || letterData.syllables.short[0];
+  const wordTarget = letterData.words[0];
+  
   const castleTrials = [
-    { title: 'تَحَدِّي صَوْتِ الحَرْف', task: 'انْقُرْ عَلَى صَوْتِ: بَ', options: ['بَ', 'تَ', 'مَ'], correct: 'بَ' },
-    { title: 'تَحَدِّي المَقْطَع', task: 'اخْتَرْ مَدَّ الأَلِف: بَا', options: ['بُو', 'بَا', 'بِي'], correct: 'بَا' },
-    { title: 'تَحَدِّي الكَلِمَة', task: 'اخْتَرْ الكَلِمَةَ الَّتِي تَبْدَأُ بِـ ب', options: ['بَاب', 'شَمْس', 'قَلَم'], correct: 'بَاب' }
+    { title: 'تَحَدِّي صَوْتِ الحَرْف', task: `انْقُرْ عَلَى صَوْتِ: ${shortTarget.syl}`, options: [shortTarget.syl, 'تَ', 'مَ'].sort(() => Math.random() - 0.5), correct: shortTarget.syl },
+    { title: 'تَحَدِّي المَقْطَع', task: `اخْتَرْ: ${longTarget.nameAr}`, options: [longTarget.syl, 'بِي', 'تُو'].sort(() => Math.random() - 0.5), correct: longTarget.syl },
+    { title: 'تَحَدِّي الكَلِمَة', task: `اخْتَرْ الكَلِمَةَ الَّتِي تَحْتَوِي عَلَى ${letterData.char}`, options: [wordTarget.word, 'شَمْس', 'قَلَم'].sort(() => Math.random() - 0.5), correct: wordTarget.word }
   ];
 
   const [currentTrialIdx, setCurrentTrialIdx] = useState<number>(0);
@@ -65,6 +73,14 @@ export const SoundsCastleWorld: React.FC<{ onBack: () => void }> = ({ onBack }) 
         </div>
       </div>
 
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`أَهْلًا يَا ${childName || 'البَطَل'} فِي قَلْعَةِ الأَصْوَات! أَجِبْ عَنْ تَحَدِّيَاتِ القَلْعَةِ الشُّجَاعَةِ لِتَتَوَّجَ بَطَلَ المَمْلَكَة!` }
+        shortHint="حُلَّ تَحَدِّي القَلْعَة"
+        autoSpeak={true}
+        emotion="cheering"
+      />
+
       {/* Castle Scene */}
       <div className="relative w-full min-h-[440px] rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-b from-rose-900 via-purple-900 to-slate-900 p-6 flex flex-col justify-between text-white text-center">
         
@@ -92,14 +108,6 @@ export const SoundsCastleWorld: React.FC<{ onBack: () => void }> = ({ onBack }) 
               ))}
             </div>
           </div>
-        </div>
-
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="أَنْتَ بَطَلُ القَلْعَةِ الشُّجَاع.. وَاصِلِ التَّحَدِّي!"
-            emotion="cheering"
-            size="md"
-          />
         </div>
 
       </div>

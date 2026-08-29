@@ -3,7 +3,7 @@ import { ArrowRight, Volume2, Sparkles, Star, Crown } from 'lucide-react';
 import { ARABIC_LETTERS, LetterData } from '../../data/letters';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
 
 interface CleanLetterSelectProps {
   onSelectLetter: (letterId: string) => void;
@@ -63,14 +63,13 @@ export const CleanLetterSelect: React.FC<CleanLetterSelectProps> = ({
       {/* Main Grid Area: Clean, Spacious, Highly Legible */}
       <main className="relative z-10 max-w-6xl mx-auto w-full my-6 space-y-4">
         
-        {/* Mascot Prompt */}
-        <div className="flex justify-center">
-          <LumiMascot
-            message={`اضْغَطْ عَلَى أَيِّ حَرْفٍ يَا ${childName || 'البَطَل'} لِتَسْتَمِعَ لِصَوْتِهِ المَلَكِيِّ النَّقِيّ!`}
-            emotion="happy"
-            size="sm"
-          />
-        </div>
+        {/* Lumi Voice Guide Banner */}
+        <LumiGuideBanner
+          message={`مَرْصَدُ الحُرُوفِ العَرَبِيَّةِ يَا ${childName || 'البَطَل'}! اخْتَرْ أَيَّ حَرْفٍ مِنَ الحُرُوفِ الثَّمَانِيَةِ وَالعِشْرِينَ لِتَسْتَمِعَ لِصَوْتِهِ وَتَبْدَأَ رِحْلَتَهُ السَّاحِرَة!`}
+          shortHint="اخْتَرْ حَرْفَكَ المُفَضَّل"
+          autoSpeak={true}
+          emotion="happy"
+        />
 
         {/* 28 Arabic Letters in Exact Order */}
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3.5 md:gap-4">

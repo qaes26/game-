@@ -10,6 +10,16 @@ import crypto from 'crypto';
 const audioCache = new Map();
 const MAX_CACHE_ENTRIES = 500;
 
+// In-Flight Request Deduplication Map to prevent concurrent duplicate synthesis
+const inFlightRequests = new Map();
+
+function withTimeout(promise, ms = 6500, timeoutErrorMsg = 'Synthesis Timeout') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMsg)), ms))
+  ]);
+}
+
 async function synthesizeWithEdgeTTS(text, voice = 'ar-SA-ZariyahNeural') {
   const tts = new MsEdgeTTS();
   await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
@@ -44,6 +54,46 @@ function synthesizeWithGoogleFemaleFallback(text) {
   });
 }
 
+async function performSynthesisPipeline(cleanText, activeVoice) {
+  let audioBuffer = null;
+
+  // 1. Primary Neural Female Voice Synthesis (ar-SA-ZariyahNeural)
+  try {
+    audioBuffer = await withTimeout(synthesizeWithEdgeTTS(cleanText, activeVoice), 6500, 'Primary EdgeTTS Timeout');
+  } catch (primaryErr) {
+    console.warn(`[EdgeTTS] Primary voice (${activeVoice}) error:`, primaryErr?.message || primaryErr);
+
+    // 2. Secondary Fallback: ar-JO-SanaNeural (Levant Female)
+    try {
+      audioBuffer = await withTimeout(synthesizeWithEdgeTTS(cleanText, 'ar-JO-SanaNeural'), 5000, 'Secondary EdgeTTS Timeout');
+    } catch (secondaryErr) {
+      console.warn('[EdgeTTS] Secondary voice (ar-JO-SanaNeural) error:', secondaryErr?.message || secondaryErr);
+
+      // 3. Tertiary Fallback: ar-EG-SalmaNeural (Egyptian Female)
+      try {
+        audioBuffer = await withTimeout(synthesizeWithEdgeTTS(cleanText, 'ar-EG-SalmaNeural'), 5000, 'Tertiary EdgeTTS Timeout');
+      } catch (tertiaryErr) {
+        console.warn('[EdgeTTS] Tertiary voice (ar-EG-SalmaNeural) error:', tertiaryErr?.message || tertiaryErr);
+      }
+    }
+  }
+
+  // 4. Fallback: Google Arabic Female Stream
+  if (!audioBuffer || audioBuffer.length === 0) {
+    try {
+      audioBuffer = await withTimeout(synthesizeWithGoogleFemaleFallback(cleanText), 5000, 'Google Fallback Timeout');
+    } catch (fallbackErr) {
+      console.error('[EdgeTTS] All fallback synthesis failed:', fallbackErr?.message || fallbackErr);
+    }
+  }
+
+  if (!audioBuffer || audioBuffer.length === 0) {
+    throw new Error('Failed to synthesize female audio via all providers');
+  }
+
+  return audioBuffer.toString('base64');
+}
+
 export const handler = async (event) => {
   // Handle HTTP OPTIONS for CORS preflight
   if (event.httpMethod === 'OPTIONS') {
@@ -71,7 +121,8 @@ export const handler = async (event) => {
       };
     }
 
-    const cleanText = decodeURIComponent(rawText).trim();
+    // Limit text length to 500 characters to prevent memory exhaustion
+    const cleanText = decodeURIComponent(rawText).trim().slice(0, 500);
     const requestedVoice = event.queryStringParameters?.voice || 'ar-SA-ZariyahNeural';
 
     // Strictly enforce Arabic female voices only
@@ -95,56 +146,26 @@ export const handler = async (event) => {
       };
     }
 
-    let audioBuffer = null;
+    // 2. In-Flight Request Deduplication
+    let synthesisPromise = inFlightRequests.get(hash);
+    if (!synthesisPromise) {
+      synthesisPromise = performSynthesisPipeline(cleanText, activeVoice)
+        .then((base64Audio) => {
+          if (audioCache.size >= MAX_CACHE_ENTRIES) {
+            const oldestKey = audioCache.keys().next().value;
+            if (oldestKey) audioCache.delete(oldestKey);
+          }
+          audioCache.set(hash, base64Audio);
+          return base64Audio;
+        })
+        .finally(() => {
+          inFlightRequests.delete(hash);
+        });
 
-    // 2. Primary Neural Female Voice Synthesis (ar-SA-ZariyahNeural)
-    try {
-      audioBuffer = await synthesizeWithEdgeTTS(cleanText, activeVoice);
-    } catch (primaryErr) {
-      console.warn(`[EdgeTTS] Primary voice (${activeVoice}) error:`, primaryErr?.message || primaryErr);
-      
-      // Secondary Fallback: ar-JO-SanaNeural (Levant Female)
-      try {
-        audioBuffer = await synthesizeWithEdgeTTS(cleanText, 'ar-JO-SanaNeural');
-      } catch (secondaryErr) {
-        console.warn('[EdgeTTS] Secondary voice (ar-JO-SanaNeural) error:', secondaryErr?.message || secondaryErr);
-        
-        // Tertiary Fallback: ar-EG-SalmaNeural (Egyptian Female)
-        try {
-          audioBuffer = await synthesizeWithEdgeTTS(cleanText, 'ar-EG-SalmaNeural');
-        } catch (tertiaryErr) {
-          console.warn('[EdgeTTS] Tertiary voice (ar-EG-SalmaNeural) error:', tertiaryErr?.message || tertiaryErr);
-        }
-      }
+      inFlightRequests.set(hash, synthesisPromise);
     }
 
-    // 3. Fallback: Google Arabic Female Stream
-    if (!audioBuffer || audioBuffer.length === 0) {
-      try {
-        audioBuffer = await synthesizeWithGoogleFemaleFallback(cleanText);
-      } catch (fallbackErr) {
-        console.error('[EdgeTTS] All fallback synthesis failed:', fallbackErr);
-      }
-    }
-
-    if (!audioBuffer || audioBuffer.length === 0) {
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Failed to synthesize female audio' })
-      };
-    }
-
-    const base64Audio = audioBuffer.toString('base64');
-
-    if (audioCache.size >= MAX_CACHE_ENTRIES) {
-      const oldestKey = audioCache.keys().next().value;
-      if (oldestKey) audioCache.delete(oldestKey);
-    }
-    audioCache.set(hash, base64Audio);
+    const base64Audio = await synthesisPromise;
 
     return {
       statusCode: 200,
@@ -158,7 +179,7 @@ export const handler = async (event) => {
       isBase64Encoded: true
     };
   } catch (err) {
-    console.error('[EdgeTTS Lambda Exception]:', err);
+    console.error('[EdgeTTS Lambda Exception]:', err?.message || err);
     return {
       statusCode: 500,
       headers: {
@@ -169,3 +190,4 @@ export const handler = async (event) => {
     };
   }
 };
+

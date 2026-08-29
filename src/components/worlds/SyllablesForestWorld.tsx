@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Volume2, RotateCcw } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const SyllablesForestWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
   
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+
   const treeSyllables = [
-    { syl: 'بَ', vowel: 'فتحة', name: 'باء مفتوحة' },
-    { syl: 'بِ', vowel: 'كسرة', name: 'باء مكسورة' },
-    { syl: 'بُ', vowel: 'ضمة', name: 'باء مضمومة' },
-    { syl: 'بَا', vowel: 'مد بالألف', name: 'مد الألف' },
-    { syl: 'بِي', vowel: 'مد بالياء', name: 'مد الياء' },
-    { syl: 'بُو', vowel: 'مد بالواو', name: 'مد الواو' }
-  ];
+    ...letterData.syllables.short.map(s => ({ syl: s.syl, vowel: s.nameAr, name: s.nameAr })),
+    ...letterData.syllables.long.map(s => ({ syl: s.syl, vowel: s.nameAr, name: s.nameAr }))
+  ].slice(0, 6);
 
   const [wateredTrees, setWateredTrees] = useState<string[]>([]);
 
@@ -64,6 +64,14 @@ export const SyllablesForestWorld: React.FC<{ onBack: () => void }> = ({ onBack 
         </div>
       </div>
 
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'} فِي غَابَةِ المَقَاطِع! انْقُرْ عَلَى الشُّجَيْرَاتِ لِتَسْتَمِعَ لِمَقَاطِعِ الحَرَكَاتِ وَالمُدُودِ وَتَجْعَلَ الأَشْجَارَ تَنْمُو!` }
+        shortHint="انْقُرْ لِسَمَاعِ المَقْطَع"
+        autoSpeak={true}
+        emotion="happy"
+      />
+
       {/* Magical Forest Scene */}
       <div className="relative w-full min-h-[460px] rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-b from-teal-900 via-emerald-800 to-green-900 p-6 flex flex-col justify-between">
         
@@ -104,15 +112,6 @@ export const SyllablesForestWorld: React.FC<{ onBack: () => void }> = ({ onBack 
               </div>
             );
           })}
-        </div>
-
-        {/* Bottom Mascot in Forest */}
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="كُلَّمَا نَطَقْتَ مَقْطَعًا صَحِيحًا تَكْبُرُ شَجَرَةٌ فِي الغَابَة!"
-            emotion="cheering"
-            size="md"
-          />
         </div>
 
       </div>

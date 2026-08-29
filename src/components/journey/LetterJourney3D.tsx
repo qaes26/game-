@@ -5,7 +5,7 @@ import { STAGE_CURRICULUM_DEFINITIONS, StageDefinition } from '../../engine/Curr
 import { aiChallengeEngine, GeneratedChallenge } from '../../engine/AIChallengeEngine';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface LetterJourney3DProps {
   letterId: string;

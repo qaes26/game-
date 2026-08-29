@@ -35,13 +35,53 @@ export function normalizeArabicText(text: string): string {
     .toLowerCase();
 }
 
+export const ARABIC_LETTER_PHONETIC_ALIASES: Record<string, string[]> = {
+  'ا': ['الف', 'ألف', 'ا', 'حرف الالف', 'حرف ألف', 'اه', 'آ', 'أ', 'إ'],
+  'أ': ['الف', 'ألف', 'ا', 'حرف الالف', 'حرف ألف', 'اه', 'آ', 'أ', 'إ'],
+  'إ': ['الف', 'ألف', 'ا', 'حرف الالف', 'حرف ألف', 'اه', 'آ', 'أ', 'إ'],
+  'آ': ['الف', 'ألف', 'ا', 'حرف الالف', 'حرف ألف', 'اه', 'آ', 'أ', 'إ'],
+  'ب': ['با', 'باء', 'الباء', 'حرف الباء', 'به', 'اب', 'ب', 'بي', 'بو'],
+  'ت': ['تا', 'تاء', 'التاء', 'حرف التاء', 'ته', 'ات', 'ت', 'تي', 'تو'],
+  'ث': ['ثا', 'ثاء', 'الثاء', 'حرف الثاء', 'ثه', 'اث', 'ث', 'ثي', 'ثو'],
+  'ج': ['جا', 'جيم', 'الجيم', 'حرف الجيم', 'جه', 'اج', 'ج', 'جي', 'جو'],
+  'ح': ['حا', 'حاء', 'الحاء', 'حرف الحاء', 'حه', 'اح', 'ح', 'حي', 'حو'],
+  'خ': ['خا', 'خاء', 'الخاء', 'حرف الخاء', 'خه', 'اخ', 'خ', 'خي', 'خو'],
+  'د': ['دا', 'دال', 'الدال', 'حرف الدال', 'ده', 'اد', 'د', 'دي', 'دو'],
+  'ذ': ['ذا', 'ذال', 'الذال', 'حرف الذال', 'ذه', 'اذ', 'ذ', 'ذي', 'ذو'],
+  'ر': ['را', 'راء', 'الراء', 'حرف الراء', 'ره', 'ار', 'ر', 'ري', 'رو'],
+  'ز': ['زا', 'زاي', 'الزاي', 'حرف الزاي', 'زين', 'زه', 'از', 'ز', 'زي', 'زو'],
+  'س': ['سا', 'سين', 'السين', 'حرف السين', 'سه', 'اس', 'س', 'سي', 'سو'],
+  'ش': ['شا', 'شين', 'الشين', 'حرف الشين', 'شه', 'اش', 'ش', 'شي', 'شو'],
+  'ص': ['صا', 'صاد', 'الصاد', 'حرف الصاد', 'صه', 'اص', 'ص', 'صي', 'صو'],
+  'ض': ['ضا', 'ضاد', 'الضاد', 'حرف الضاد', 'ضه', 'اض', 'ض', 'ضي', 'ضو'],
+  'ط': ['طا', 'طاء', 'الطاء', 'حرف الطاء', 'طه', 'اط', 'ط', 'طي', 'طو'],
+  'ظ': ['ظا', 'ظاء', 'الظاء', 'حرف الظاء', 'ظه', 'اظ', 'ظ', 'ظي', 'ظو'],
+  'ع': ['عا', 'عين', 'العين', 'حرف العين', 'عه', 'اع', 'ع', 'عي', 'عو'],
+  'غ': ['غا', 'غين', 'الغين', 'حرف الغين', 'غه', 'اغ', 'غ', 'غي', 'غو'],
+  'ف': ['فا', 'فاء', 'الفاء', 'حرف الفاء', 'فه', 'اف', 'ف', 'في', 'فو'],
+  'ق': ['قا', 'قاف', 'القاف', 'حرف القاف', 'قه', 'اق', 'ق', 'قي', 'قو'],
+  'ك': ['كا', 'كاف', 'الكاف', 'حرف الكاف', 'كه', 'اك', 'ك', 'كي', 'كو'],
+  'ل': ['لا', 'لام', 'اللام', 'حرف اللام', 'له', 'ال', 'ل', 'لي', 'لو'],
+  'م': ['ما', 'ميم', 'الميم', 'حرف الميم', 'مه', 'ام', 'م', 'مي', 'مو'],
+  'ن': ['نا', 'نون', 'النون', 'حرف النون', 'نه', 'ان', 'ن', 'ني', 'نو'],
+  'ه': ['ها', 'هاء', 'الهاء', 'حرف الهاء', 'هه', 'اه', 'ه', 'هي', 'هو'],
+  'و': ['وا', 'واو', 'الواو', 'حرف الواو', 'وه', 'او', 'و', 'وي', 'وو'],
+  'ي': ['يا', 'ياء', 'الياء', 'حرف الياء', 'يه', 'اي', 'ي', 'يي', 'يو']
+};
+
 // Calculate similarity score between target Arabic sound/word and recognized text
 export function calculateArabicSimilarity(target: string, recognized: string): number {
   const normTarget = normalizeArabicText(target);
   const normRec = normalizeArabicText(recognized);
 
-  if (normTarget === normRec) return 1.0;
   if (!normRec) return 0.0;
+  if (normTarget === normRec) return 1.0;
+
+  const baseLetter = normTarget.charAt(0);
+  const aliases = ARABIC_LETTER_PHONETIC_ALIASES[baseLetter] || [];
+  if (aliases.includes(normRec) || aliases.some(a => normRec.includes(a) || a.includes(normRec))) {
+    return 1.0;
+  }
 
   // Direct containment check
   if (normRec.includes(normTarget) || normTarget.includes(normRec)) {
@@ -105,6 +145,7 @@ export class WebSpeechAnalyzer implements ISpeechAnalyzer {
   private audioCtx: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private animFrameId: number | null = null;
+  private watchdogTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -176,7 +217,17 @@ export class WebSpeechAnalyzer implements ISpeechAnalyzer {
     // 2. Setup Web Speech Recognition
     if (this.recognition) {
       let finalTranscript = '';
-      let highestConfidence = 0.5;
+      let highestConfidence = 0.75;
+      const startTime = Date.now();
+
+      this.watchdogTimer = setTimeout(() => {
+        if (this.isListening) {
+          console.warn('Speech recognition watchdog triggered.');
+          if (onError) onError('timeout');
+          this.evaluateAttempt(targetText, finalTranscript, highestConfidence, onResult);
+          this.stopListening();
+        }
+      }, 10000);
 
       this.recognition.onresult = (event: any) => {
         for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -190,15 +241,19 @@ export class WebSpeechAnalyzer implements ISpeechAnalyzer {
       };
 
       this.recognition.onerror = (event: any) => {
-        // Non-punitive fallback: If speech recognition failed due to quiet mic or network, evaluate gracefully
         if (this.isListening) {
-          this.evaluateAttempt(targetText, finalTranscript || targetText, highestConfidence, onResult);
+          if (onError) onError(event.error);
+          this.evaluateAttempt(targetText, finalTranscript, highestConfidence, onResult);
         }
         this.stopListening();
       };
 
       this.recognition.onend = () => {
         if (this.isListening) {
+          const duration = Date.now() - startTime;
+          if (duration < 1000 && !finalTranscript) {
+            if (onError) onError('browser-blocked');
+          }
           this.evaluateAttempt(targetText, finalTranscript, highestConfidence, onResult);
           this.stopListening();
         }
@@ -210,10 +265,9 @@ export class WebSpeechAnalyzer implements ISpeechAnalyzer {
         // Fallback simulation if already started
       }
     } else {
-      // Fallback timer when Web Speech is not fully supported in the specific browser
       setTimeout(() => {
         if (this.isListening) {
-          this.evaluateAttempt(targetText, targetText, 0.85, onResult);
+          this.evaluateAttempt(targetText, '', 0, onResult);
           this.stopListening();
         }
       }, 2500);
@@ -240,7 +294,7 @@ export class WebSpeechAnalyzer implements ISpeechAnalyzer {
 
     const result: SpeechAnalysisResult = {
       targetText,
-      recognizedText: recognizedText || targetText,
+      recognizedText: recognizedText,
       confidence: finalScore,
       status,
       feedbackMessage: getChildEncouragement(status),
@@ -253,6 +307,10 @@ export class WebSpeechAnalyzer implements ISpeechAnalyzer {
 
   public stopListening(): void {
     this.isListening = false;
+    if (this.watchdogTimer) {
+      clearTimeout(this.watchdogTimer);
+      this.watchdogTimer = null;
+    }
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;

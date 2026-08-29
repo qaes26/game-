@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { audioManager } from '../../audio/AudioManager';
 import { Sparkles, ArrowLeft, Volume2, Star } from 'lucide-react';
-import { LivingLumiCanvas } from '../lumi/LivingLumiCanvas';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface CinematicIntroSceneProps {
   onStartJourney: () => void;
@@ -80,11 +80,9 @@ export const CinematicIntroScene: React.FC<CinematicIntroSceneProps> = ({ onStar
           title="انقر على لومي للتحدث!"
         >
           {/* Animated 60FPS Living Mascot Canvas */}
-          <LivingLumiCanvas
-            isSpeaking={isSpeaking}
-            emotion={dialogueStep === 0 ? 'happy' : 'cheering'}
-            size={220}
-            interactive={true}
+          <LumiMascot
+            state={isSpeaking ? 'listening' : 'idle'}
+            size="xl"
           />
 
           <div className="absolute -bottom-2 inset-x-0 flex justify-center pointer-events-none">

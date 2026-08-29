@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Trophy, Rocket, Star, Volume2 } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const StarRealmSpaceWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { stars, coins, addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, stars, coins, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
   const [spaceshipFired, setSpaceshipFired] = useState<boolean>(false);
 
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+
   const starConstellations = [
-    { name: 'كَوْكَبَةُ الحُرُوفِ الذَّهَبِيَّة', icon: '✨', starsCount: 10 },
-    { name: 'سَدِيمُ الكَلِمَاتِ البَرَّاق', icon: '🌌', starsCount: 20 },
+    { name: `كَوْكَبَةُ حَرْفِ ال${letterData.nameAr} الذَّهَبِيَّة`, icon: '✨', starsCount: 10 },
+    { name: `سَدِيمُ كَلِمَةِ ${letterData.words[0]?.word || 'البَطَل'} البَرَّاق`, icon: '🌌', starsCount: 20 },
     { name: 'مَجَرَّةُ الأَبْطَالِ الخَالِدَة', icon: '🏆', starsCount: 50 }
   ];
 
@@ -56,6 +60,14 @@ export const StarRealmSpaceWorld: React.FC<{ onBack: () => void }> = ({ onBack }
         </div>
       </div>
 
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`أَهْلًا بِكَ يَا ${childName || 'البَطَل'} فِي عَالَمِ النُّجُومِ وَالفَضَاء! انْقُرْ عَلَى زِرِّ إِطْلاقِ السَّفِينَةِ الفَضَائِيَّةِ لِتُحَلِّقَ بَيْنَ النُّجُومِ وَتَجْمَعَ الجَوَائِز!` }
+        shortHint="اطْلِقِ السَّفِينَةَ الفَضَائِيَّة"
+        autoSpeak={true}
+        emotion="excited"
+      />
+
       {/* Real Space Environment Canvas */}
       <div className="relative w-full min-h-[500px] rounded-3xl border-4 border-yellow-400 shadow-2xl overflow-hidden bg-gradient-to-b from-purple-950 via-slate-950 to-indigo-950 p-6 flex flex-col justify-between text-white text-center">
         
@@ -96,15 +108,6 @@ export const StarRealmSpaceWorld: React.FC<{ onBack: () => void }> = ({ onBack }
             <Rocket className="w-5 h-5" />
             <span>إِطْلاقُ السَّفِينَةِ الفَضَائِيَّة! 🚀</span>
           </button>
-        </div>
-
-        {/* Bottom Mascot */}
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="عَالَمُ النُّجُومِ هُوَ عَالَمُ الأَبْطَال.. أَنْتَ رَائِعٌ جِدًّا يَا بَطَل!"
-            emotion="excited"
-            size="md"
-          />
         </div>
 
       </div>

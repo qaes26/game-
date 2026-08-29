@@ -4,7 +4,7 @@ import { ARABIC_LETTERS, LetterData } from '../../data/letters';
 import { STAGE_CURRICULUM_DEFINITIONS } from '../../engine/CurriculumEngine';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface CleanLetterOverviewProps {
   letterId: string;

@@ -81,8 +81,8 @@ export interface GameContextType {
   updateLetterStage: (letterId: string, stageNum: number, isComplete: boolean) => void;
   addStars: (amount: number) => void;
   addCoins: (amount: number) => void;
-  triggerVictoryCelebration: () => void;
   triggerCelebration: () => void;
+  triggerVictoryCelebration: () => void;
   resetProgress: () => void;
   // Multi-Child Profile Management (Local Isolation on Same Device)
   profiles: ChildProfile[];
@@ -370,7 +370,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     audioManager.setVolume(v);
   };
 
-  const triggerVictoryCelebration = () => {
+  const triggerCelebration = () => {
     audioManager.playVictory();
     try {
       confetti({
@@ -514,8 +514,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateLetterStage,
         addStars,
         addCoins,
-        triggerVictoryCelebration,
-        triggerCelebration: triggerVictoryCelebration,
+        triggerCelebration,
+        triggerVictoryCelebration: triggerCelebration,
         resetProgress,
         profiles,
         activeProfileId,

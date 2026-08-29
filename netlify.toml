@@ -21,6 +21,7 @@
   to = "/.netlify/functions/tts"
   status = 200
 
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

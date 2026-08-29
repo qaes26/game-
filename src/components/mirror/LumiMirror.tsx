@@ -3,7 +3,7 @@ import { Camera, CameraOff, Sparkles, Volume2, ArrowRight } from 'lucide-react';
 import { ARABIC_LETTERS } from '../../data/letters';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 export const LumiMirror: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { addStars, addCoins } = useGame();
@@ -24,20 +24,26 @@ export const LumiMirror: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
         streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
         setCameraActive(true);
-      } catch {
-        alert('يرجى منح إذن الكاميرا لتشغيل المرآة.');
+      } catch (err) {
+        console.warn('Camera access denied or unavailable:', err);
+        alert('يرجى منح إذن الكاميرا لتشغيل المرآة التفاعلية.');
       }
     }
   };
+
+  // Attach stream whenever cameraActive changes and video element mounts
+  useEffect(() => {
+    if (cameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [cameraActive]);
 
   useEffect(() => {
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
       }
     };
   }, []);

@@ -4,10 +4,12 @@ import { ARABIC_LETTERS, LetterData } from '../../data/letters';
 import { STAGE_CURRICULUM_DEFINITIONS } from '../../engine/CurriculumEngine';
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
 import { InteractiveLetter3D } from '../3d/InteractiveLetter3D';
 import { ChildProfileModal } from '../common/ChildProfileModal';
 import { PWAInstallButton } from '../common/PWAInstallButton';
+
+import { StagesGuideModal } from '../common/StagesGuideModal';
 
 interface MobileStageMapProps {
   onStartStage: (letterId: string, stageNum: number) => void;
@@ -36,6 +38,7 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
   } = useGame();
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState<boolean>(false);
 
   const currentLetter: LetterData =
     ARABIC_LETTERS.find((l) => l.id === selectedLetterId) || ARABIC_LETTERS[1];
@@ -93,18 +96,16 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
 
     if (unlocked) {
       audioManager.playPortal();
-      if (stgDef) {
-        audioManager.speak(`المَرْحَلَةُ ${stageNum} لِـ ${childName}: ${stgDef.titleAr}`);
-      }
+      if (stgDef) audioManager.speak(stgDef.titleAr);
       setSelectedStagePreview(stageNum);
     } else {
       audioManager.playClick();
-      audioManager.speak(`أَكْمِلِ المَرْحَلَةَ السَّابِقَةَ أَوَّلًا لِفَتْحِ هَذِهِ المَرْحَلَة يَا ${childName}!`);
+      audioManager.speak('يَجِبُ إِنْهَاءُ المَرْحَلَةِ السَّابِقَةِ أَوَّلًا');
     }
   };
 
-  // Stage Node Icon List
-  const stageIcons = ['🔍', '🎙️', '🎵', '🌊', '📖', '🎯', '💬', '👑'];
+  // Stage Node Icon List (Tree of Light Narrative)
+  const stageIcons = ['🌱', '💧', '🌿', '🎋', '🍎', '🐝', '🌲', '🌳'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#050814] via-[#091230] to-[#040711] text-white pb-24 select-none relative overflow-x-hidden">
@@ -150,55 +151,32 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
             </div>
           </button>
 
-          {/* Star & Coin Badges & PWA Install Button */}
+          {/* Star & Coin Badges & Stages Guide & PWA Install Button */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                audioManager.playClick();
+                setIsGuideModalOpen(true);
+              }}
+              className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500/30 to-yellow-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-400/60 active:scale-95 transition-all flex items-center gap-1 text-xs font-black shadow-sm"
+              title="دليل شَرْحِ المَرَاحِل الثَّمَانِيَة"
+            >
+              <span>📖</span>
+              <span className="hidden xs:inline">شَرْحُ المَرَاحِل</span>
+            </button>
             <PWAInstallButton />
-            <div className="flex items-center gap-1 bg-amber-500/20 px-3 py-1 rounded-xl border border-amber-400/50 text-xs font-black text-amber-300 shadow-sm">
+            <div className="flex items-center gap-1 bg-amber-500/20 px-2.5 py-1 rounded-xl border border-amber-400/50 text-xs font-black text-amber-300 shadow-sm">
               <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300 animate-spin-slow" />
               <span>{stars}</span>
             </div>
-            <div className="flex items-center gap-1 bg-yellow-500/20 px-2.5 py-1 rounded-xl border border-yellow-400/40 text-xs font-black text-yellow-300">
+            <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-xl border border-yellow-400/40 text-xs font-black text-yellow-300">
               <span>🪙</span>
               <span>{coins}</span>
             </div>
           </div>
         </div>
 
-        {/* 28 Letters Horizontal Slider */}
-        <div className="max-w-md mx-auto mt-3 pt-2 border-t border-blue-900/60">
-          <div className="flex items-center justify-between mb-1.5 px-1">
-            <span className="text-[11px] font-black text-amber-300/90 flex items-center gap-1">
-              <span>اخْتَرْ حَرْفَكَ المُلَفَّت:</span>
-              <span className="text-cyan-300 font-black">({currentLetter.nameAr})</span>
-            </span>
-            <span className="text-[10px] text-slate-400 font-bold">28 حَرْفًا</span>
-          </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1">
-            {ARABIC_LETTERS.map((ltr) => {
-              const isSelected = ltr.id === selectedLetterId;
-              const ltrProgress = letterProgressMap[ltr.id];
-              const isMastered = ltrProgress?.masteryPercentage === 100;
-
-              return (
-                <button
-                  key={ltr.id}
-                  onClick={() => handleSelectLetter(ltr.id)}
-                  className={`flex-shrink-0 w-11 h-12 rounded-2xl font-black text-lg flex flex-col items-center justify-center transition-all duration-200 active:scale-90 relative ${
-                    isSelected
-                      ? 'bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 text-slate-950 border-2 border-white shadow-glow-yellow scale-110'
-                      : 'bg-[#101c44] text-white border border-blue-900/80 hover:border-amber-400/60'
-                  }`}
-                >
-                  <span>{ltr.char}</span>
-                  {isMastered && (
-                    <span className="absolute -top-1 -right-1 text-[10px]">👑</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* 28 Letters Horizontal Slider removed as per global letter feature */}
       </header>
 
       {/* Main Roadmap Area */}
@@ -277,13 +255,13 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
             </p>
           </button>
         </div>
-        <div className="flex justify-center">
-          <LumiMascot
-            message={`أَهْلًا يَا ${childName}! أَنَا لُومِي.. أُرَافِقُكَ فِي مَرَاحِلِ حَرْفِ (${currentLetter.char}) السَّاحِرَة! اضْغَطْ عَلَى المَرْحَلَةِ لِنَنْطَلِق!` }
-            emotion="happy"
-            size="sm"
-          />
-        </div>
+        {/* Lumi Voice Guide */}
+        <LumiGuideBanner
+          message={`أَهْلًا يَا ${childName || 'البَطَل'}! هُنَا نَزْرَعُ شَجَرَةَ حَرْفِ (${currentLetter.char}).. اجْتَزِ المَرَاحِلَ الثَّمَانِيَةَ لِتُكَبِّرَ البَذْرَةَ وَتُضِيءَ الغَابَة!` }
+          shortHint="اضْغَطْ عَلَى البَذْرَةِ لِتَبْدَأ"
+          autoSpeak={true}
+          emotion="happy"
+        />
 
         {/* Winding 8-Stage Map Path */}
         <div className="relative py-4 px-2">
@@ -419,15 +397,19 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
             const stgDef = STAGE_CURRICULUM_DEFINITIONS.find((s) => s.stageNumber === selectedStagePreview) || STAGE_CURRICULUM_DEFINITIONS[0];
 
             return (
-              <div className="bg-gradient-to-b from-[#132252] to-[#0a1435] w-full max-w-sm rounded-3xl p-6 border-3 border-amber-400 shadow-[0_0_50px_rgba(245,158,11,0.4)] text-center space-y-4 animate-pop">
+              <div className="bg-gradient-to-b from-[#132252] to-[#0a1435] w-full max-w-sm rounded-3xl p-5 border-3 border-amber-400 shadow-[0_0_50px_rgba(245,158,11,0.4)] text-center space-y-3.5 animate-pop max-h-[92vh] overflow-y-auto">
                 
                 {/* Header Badge */}
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-black text-amber-950 bg-gradient-to-r from-amber-400 to-yellow-300 px-3 py-0.5 rounded-full border border-white">
+                  <span className="text-xs font-black text-amber-950 bg-gradient-to-r from-amber-400 to-yellow-300 px-3 py-0.5 rounded-full border border-white shadow-sm">
                     المَرْحَلَةُ {selectedStagePreview} مِنْ 8 🚀
                   </span>
                   <button
-                    onClick={() => setSelectedStagePreview(null)}
+                    onClick={() => {
+                      audioManager.playClick();
+                      audioManager.stop();
+                      setSelectedStagePreview(null);
+                    }}
                     className="w-8 h-8 rounded-full bg-slate-800 text-slate-300 font-black flex items-center justify-center hover:bg-slate-700 active:scale-95"
                   >
                     ✕
@@ -435,26 +417,49 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
                 </div>
 
                 {/* Stage Hero Icon */}
-                <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-cyan-400 flex items-center justify-center text-4xl border-3 border-white shadow-glow-yellow">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-cyan-400 flex items-center justify-center text-3xl border-2 border-white shadow-glow-yellow">
                   {stageIcons[selectedStagePreview - 1]}
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black text-white">
+                  <h3 className="text-xl font-black text-white">
                     {stgDef.titleAr}
                   </h3>
                   <p className="text-xs text-cyan-200 font-bold">
                     {stgDef.objectiveAr}
                   </p>
-                  <p className="text-[11px] text-amber-300 font-bold pt-1">
-                    المَعْلَم: {stgDef.landmark3D}
+                </div>
+
+                {/* Stage Explanation & Audio Narrator Box */}
+                <div className="bg-[#08102a] p-3 rounded-2xl border border-blue-900/80 text-right space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black text-amber-300 flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                      <span>شَرْحُ المَرْحَلَة:</span>
+                    </span>
+                    <button
+                      onClick={() => {
+                        audioManager.playClick();
+                        audioManager.speak(stgDef.explanationAr);
+                      }}
+                      className="px-2.5 py-1 rounded-xl bg-[#172c68] hover:bg-[#1f3b8a] text-amber-300 text-[11px] font-black border border-amber-400/50 flex items-center gap-1 active:scale-95 shadow-sm transition-all"
+                    >
+                      <Volume2 className="w-3.5 h-3.5" />
+                      <span>اسْتَمِعْ 🔊</span>
+                    </button>
+                  </div>
+                  <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                    {stgDef.explanationAr}
+                  </p>
+                  <p className="text-[11px] font-bold text-cyan-200/90 pt-1 border-t border-blue-900/40">
+                    🎮 <span className="text-cyan-300">طريقة اللعب:</span> {stgDef.howToPlayAr}
                   </p>
                 </div>
 
                 {/* Rewards Preview */}
-                <div className="flex items-center justify-center gap-3 bg-[#0a122c] p-2.5 rounded-2xl border border-blue-900">
+                <div className="flex items-center justify-center gap-3 bg-[#0a122c] p-2 rounded-2xl border border-blue-900">
                   <div className="flex items-center gap-1 text-xs font-black text-amber-300">
-                    <Star className="w-4 h-4 fill-amber-300" />
+                    <Star className="w-3.5 h-3.5 fill-amber-300" />
                     <span>+1 نجمة</span>
                   </div>
                   <div className="flex items-center gap-1 text-xs font-black text-yellow-300">
@@ -471,7 +476,7 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
                     setSelectedStagePreview(null);
                     onStartStage(currentLetter.id, stgNum);
                   }}
-                  className="w-full py-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 rounded-2xl font-black text-lg border-2 border-white shadow-glow-yellow hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 rounded-2xl font-black text-base border-2 border-white shadow-glow-yellow hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   <Play className="w-5 h-5 fill-slate-950" />
                   <span>انْطَلِقْ لِلْمَرْحَلَة! 🚀</span>
@@ -487,6 +492,14 @@ export const MobileStageMap: React.FC<MobileStageMapProps> = ({
       <ChildProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
+      />
+
+      {/* Stages 8-Step Comprehensive Curriculum Guide Modal */}
+      <StagesGuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        onSelectStage={(num) => onStartStage(currentLetter.id, num)}
+        initialStage={selectedStagePreview || activeStage}
       />
 
     </div>

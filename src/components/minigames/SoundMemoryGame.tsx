@@ -26,6 +26,7 @@ export const SoundMemoryGame: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   const [cards, setCards] = useState<CardItem[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [completed, setCompleted] = useState<boolean>(false);
+  const [isLocked, setIsLocked] = useState<boolean>(false);
 
   const initGame = () => {
     const deck: CardItem[] = [];
@@ -37,6 +38,7 @@ export const SoundMemoryGame: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     setCards(deck.sort(() => Math.random() - 0.5));
     setFlippedCards([]);
     setCompleted(false);
+    setIsLocked(false);
   };
 
   useEffect(() => {
@@ -44,11 +46,10 @@ export const SoundMemoryGame: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   }, []);
 
   const handleCardClick = (index: number) => {
-    if (cards[index].flipped || cards[index].matched || flippedCards.length === 2) return;
+    if (isLocked || cards[index].flipped || cards[index].matched || flippedCards.length === 2) return;
 
     soundManager.playPop();
-    const newCards = [...cards];
-    newCards[index].flipped = true;
+    const newCards = cards.map((c, i) => i === index ? { ...c, flipped: true } : c);
     soundManager.speak(cards[index].nameAr);
     setCards(newCards);
 
@@ -56,6 +57,7 @@ export const SoundMemoryGame: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     setFlippedCards(newFlipped);
 
     if (newFlipped.length === 2) {
+      setIsLocked(true);
       const first = newCards[newFlipped[0]];
       const second = newCards[newFlipped[1]];
 
@@ -63,27 +65,26 @@ export const SoundMemoryGame: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         // Matched!
         soundManager.playSuccess();
         setTimeout(() => {
-          first.matched = true;
-          second.matched = true;
-          setCards([...newCards]);
+          setCards(prev => {
+            const updated = prev.map((c, i) => (i === newFlipped[0] || i === newFlipped[1]) ? { ...c, matched: true } : c);
+            if (updated.every(c => c.matched)) {
+              setCompleted(true);
+              triggerCelebration();
+              addStars(3);
+              addCoins(15);
+            }
+            return updated;
+          });
           setFlippedCards([]);
-
-          // Check if all matched
-          if (newCards.every(c => c.matched)) {
-            setCompleted(true);
-            triggerCelebration();
-            addStars(3);
-            addCoins(15);
-          }
+          setIsLocked(false);
         }, 500);
       } else {
         // Not matched
         soundManager.playEncouragement();
         setTimeout(() => {
-          first.flipped = false;
-          second.flipped = false;
-          setCards([...newCards]);
+          setCards(prev => prev.map((c, i) => (i === newFlipped[0] || i === newFlipped[1]) ? { ...c, flipped: false } : c));
           setFlippedCards([]);
+          setIsLocked(false);
         }, 1000);
       }
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Play, Sparkles, Compass, Star, Coins, Flame, ArrowLeft } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface MagicalHomeProps {
   onOpenMap: () => void;
@@ -115,8 +115,8 @@ export const MagicalHome: React.FC<MagicalHomeProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { title: '🌿 وادي الحروف', desc: 'اسْتَكْشِف الحُرُوفَ فِي الوَادِي الأَخْضَر', action: onOpenMap, color: 'border-emerald-300 bg-emerald-50' },
-          { title: '🪞 مرآة لومي', desc: 'تَعَلَّمْ حَرَكَةَ الفَمِ وَمَخَارِجَ الأَصْوَات', action: onOpenMirror, color: 'border-teal-300 bg-teal-50' },
-          { title: '🌌 عالم النجوم الفضائي', desc: 'سَفِينَةُ لُومِي وَالكَوَاكِبُ وَالمَجَرَّات', action: onOpenMap, color: 'border-purple-300 bg-purple-50' }
+          { title: '🌲 غابة المقاطع', desc: 'أَشْجَارٌ تَنْمُو بِنُطْقِ الحَرَكَاتِ وَالمُدُود', action: onOpenMap, color: 'border-green-300 bg-green-50' },
+          { title: '🏘️ قرية الكلمات', desc: 'قَرْيَةٌ سِحْرِيَّةٌ لِتَرْكِيبِ الكَلِمَات', action: onOpenMap, color: 'border-amber-300 bg-amber-50' }
         ].map((item, idx) => (
           <div
             key={idx}

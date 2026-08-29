@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Volume2, Mic, CheckCircle2, Trophy, Star, Award, 
 import { ARABIC_LETTERS, LetterData } from '../../data/letters';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface LetterJourneyAdventureProps {
   letterId: string;

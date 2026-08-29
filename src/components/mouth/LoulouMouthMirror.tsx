@@ -25,20 +25,26 @@ export const LoulouMouthMirror: React.FC<{ onBack: () => void }> = ({ onBack }) 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
         streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
         setCameraActive(true);
       } catch (err) {
+        console.warn('Camera error:', err);
         alert('تعذر الوصول للكاميرا، يرجى منح الإذن في المتصفح.');
       }
     }
   };
 
+  // Attach stream whenever cameraActive changes and video element mounts
+  useEffect(() => {
+    if (cameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [cameraActive]);
+
   useEffect(() => {
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
       }
     };
   }, []);

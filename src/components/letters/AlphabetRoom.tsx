@@ -3,7 +3,7 @@ import { Sparkles, Trophy, Volume2, ArrowRight, CheckCircle2 } from 'lucide-reac
 import { ARABIC_LETTERS, LetterData } from '../../data/letters';
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface AlphabetRoomProps {
   onSelectLetter: (letterId: string) => void;

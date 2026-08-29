@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Volume2, Rocket } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const SoundsGalaxyWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
 
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  
   const skillPlanets = [
-    { id: 'planet_letters', name: 'كَوْكَبُ الحُرُوف', emoji: '🪐', sound: 'أ ب ت ث', color: 'from-sky-400 to-blue-600' },
-    { id: 'planet_syllables', name: 'كَوْكَبُ المَقَاطِع', emoji: '🌕', sound: 'با بو بي', color: 'from-emerald-400 to-teal-600' },
-    { id: 'planet_words', name: 'كَوْكَبُ الكَلِمَات', emoji: '🪐', sound: 'باب بيت بطة', color: 'from-amber-400 to-orange-600' },
-    { id: 'planet_sentences', name: 'كَوْكَبُ الجُمَل', emoji: '⭐', sound: 'أنا أحب لومي', color: 'from-purple-400 to-pink-600' }
+    { id: 'planet_letters', name: 'كَوْكَبُ الحُرُوف', emoji: '🪐', sound: letterData.char, color: 'from-sky-400 to-blue-600' },
+    { id: 'planet_syllables', name: 'كَوْكَبُ المَقَاطِع', emoji: '🌕', sound: letterData.syllables.short.map(s => s.syl).join(' '), color: 'from-emerald-400 to-teal-600' },
+    { id: 'planet_words', name: 'كَوْكَبُ الكَلِمَات', emoji: '🪐', sound: letterData.words.map(w => w.word).join(' '), color: 'from-amber-400 to-orange-600' },
+    { id: 'planet_sentences', name: 'كَوْكَبُ الجُمَل', emoji: '⭐', sound: letterData.sentences[0]?.sentence || 'أنا أحب لومي', color: 'from-purple-400 to-pink-600' }
   ];
 
   const [visitedPlanets, setVisitedPlanets] = useState<string[]>([]);
@@ -62,6 +66,14 @@ export const SoundsGalaxyWorld: React.FC<{ onBack: () => void }> = ({ onBack }) 
         </div>
       </div>
 
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'} فِي مَجَرَّةِ الأَصْوَات! انْقُرْ عَلَى الكَوَاكِبِ الفَضَائِيَّةِ لِتَزُورَهَا وَتَسْتَمِعَ لأَصْوَاتِهَا البَرَّاقَة!` }
+        shortHint="انْقُرْ عَلَى الكَوْكَب"
+        autoSpeak={true}
+        emotion="excited"
+      />
+
       {/* Galaxy Space Scene */}
       <div className="relative w-full min-h-[460px] rounded-3xl border-4 border-indigo-400 shadow-2xl overflow-hidden bg-gradient-to-b from-indigo-950 via-slate-950 to-purple-950 p-6 flex flex-col justify-between text-white">
         
@@ -101,15 +113,6 @@ export const SoundsGalaxyWorld: React.FC<{ onBack: () => void }> = ({ onBack }) 
               </div>
             );
           })}
-        </div>
-
-        {/* Mascot */}
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="سَفِينَتُنَا الفَضَائِيَّةُ تَطِيرُ بِسُرْعَةِ النُّورِ بَيْنَ الكَوَاكِب!"
-            emotion="excited"
-            size="md"
-          />
         </div>
 
       </div>

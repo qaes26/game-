@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, ArrowLeft, Volume2, Shield, Compass, BookOpen, Star, Crown, Flame } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 import { VoiceSettingsModal } from '../common/VoiceSettingsModal';
 
 interface CleanMainMenuProps {

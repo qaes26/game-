@@ -2,17 +2,22 @@ import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Volume2, DoorOpen, Check } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const WordsVillageWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
 
-  const villageLocations = [
-    { id: 'house', word: 'بَاب', name: 'بَابُ المَنْزِل', emoji: '🚪', unlockedDesc: 'انْفَتَحَ بَابُ البَيْتِ المُضِيء!' },
-    { id: 'pond', word: 'بَطَّة', name: 'بِرْكَةُ البَطِّ', emoji: '🦆', unlockedDesc: 'البَطَّةُ تَسْبَحُ فِي المَاءِ بِفَرَح!' },
-    { id: 'bakery', word: 'خُبْز', name: 'مَخْبَزُ القَرْيَة', emoji: '🍞', unlockedDesc: 'خَرَجَ الخُبْزُ الطَّازَجُ الشَّهِيّ!' },
-    { id: 'dock', word: 'بَحْر', name: 'مِينَاءُ البَحْر', emoji: '🌊', unlockedDesc: 'تَحَرَّكَتِ السَّفِينَةُ فِي البَحْر!' }
-  ];
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  
+  const villageLocations = letterData.words.slice(0, 4).map(w => ({
+    id: w.id,
+    word: w.word,
+    name: w.meaning,
+    emoji: w.emoji,
+    unlockedDesc: `اِكْتَشَفْنَا كَلِمَةَ ${w.word}!`
+  }));
 
   const [unlockedLocations, setUnlockedLocations] = useState<string[]>([]);
 
@@ -58,9 +63,17 @@ export const WordsVillageWorld: React.FC<{ onBack: () => void }> = ({ onBack }) 
         </div>
 
         <div className="bg-amber-100 text-amber-900 px-4 py-1.5 rounded-2xl font-black text-xs md:text-sm border border-amber-300">
-          🏡 مَعَالِمُ مَفْتُوحَة: {unlockedLocations.length} / 4
+          🔑 أَمَاكِنٌ مَفْتُوحَة: {unlockedLocations.length} / 4
         </div>
       </div>
+
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`أَهْلًا بِكَ يَا ${childName || 'البَطَل'} فِي قَرْيَةِ الكَلِمَات! انْقُرْ عَلَى مَنَازِلِ وَأَمَاكِنِ القَرْيَةِ لِتَسْتَمِعَ لِلكَلِمَةِ وَتَفْتَحَ أَبْوَابَهَا السِّحْرِيَّة!` }
+        shortHint="انْقُرْ عَلَى المَكَان"
+        autoSpeak={true}
+        emotion="happy"
+      />
 
       {/* Village Scene Canvas */}
       <div className="relative w-full min-h-[460px] rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-b from-amber-100 via-orange-100 to-amber-200 p-6 flex flex-col justify-between">
@@ -102,15 +115,6 @@ export const WordsVillageWorld: React.FC<{ onBack: () => void }> = ({ onBack }) 
               </div>
             );
           })}
-        </div>
-
-        {/* Bottom Mascot */}
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="كُلَّمَا تَعَرَّفْتَ عَلَى كَلِمَةٍ فِي القَرْيَةِ تَفْتَحُ بَابًا جَدِيدًا!"
-            emotion="happy"
-            size="md"
-          />
         </div>
 
       </div>

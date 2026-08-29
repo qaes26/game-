@@ -1,26 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles, Volume2, Check } from 'lucide-react';
 import { audioManager } from '../../audio/AudioManager';
 import { useGame } from '../../context/GameContext';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiGuideBanner } from '../common/LumiGuideBanner';
+
+import { ARABIC_LETTERS } from '../../data/letters';
 
 export const SentencesRiverWorld: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { addStars, addCoins, triggerVictoryCelebration } = useGame();
+  const { childName, addStars, addCoins, triggerVictoryCelebration, selectedLetterId } = useGame();
 
-  const sentenceChallenges = [
-    {
-      id: 1,
-      targetSentence: 'هَذَا بَابُ البَيْتِ.',
-      words: ['هَذَا', 'بَابُ', 'البَيْتِ'],
-      emoji: '🚪🏠'
-    },
-    {
-      id: 2,
-      targetSentence: 'البَطَّةُ تَسْبَحُ فِي المَاءِ.',
-      words: ['البَطَّةُ', 'تَسْبَحُ', 'فِي', 'المَاءِ'],
-      emoji: '🦆🌊'
-    }
-  ];
+  const letterData = ARABIC_LETTERS.find(l => l.id === selectedLetterId) || ARABIC_LETTERS[1];
+  
+  const sentenceChallenges = letterData.sentences.map((s, idx) => ({
+    id: idx + 1,
+    targetSentence: s.sentence,
+    words: s.sentence.split(' '),
+    emoji: s.emoji
+  }));
 
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [placedWords, setPlacedWords] = useState<string[]>([]);
@@ -28,10 +24,15 @@ export const SentencesRiverWorld: React.FC<{ onBack: () => void }> = ({ onBack }
 
   const currentQ = sentenceChallenges[currentIdx];
 
-  const handlePickWord = (w: string) => {
+  const [availableWords, setAvailableWords] = useState<string[]>(() => {
+    return [...sentenceChallenges[0].words].sort(() => Math.random() - 0.5);
+  });
+
+  const handlePickWord = (w: string, index: number) => {
     audioManager.playClick();
     const newPlaced = [...placedWords, w];
     setPlacedWords(newPlaced);
+    setAvailableWords(prev => prev.filter((_, i) => i !== index));
 
     if (newPlaced.length === currentQ.words.length) {
       if (newPlaced.join(' ') === currentQ.words.join(' ')) {
@@ -43,15 +44,20 @@ export const SentencesRiverWorld: React.FC<{ onBack: () => void }> = ({ onBack }
 
         setTimeout(() => {
           if (currentIdx < sentenceChallenges.length - 1) {
-            setCurrentIdx(prev => prev + 1);
+            const nextIdx = currentIdx + 1;
+            setCurrentIdx(nextIdx);
             setPlacedWords([]);
+            setAvailableWords([...sentenceChallenges[nextIdx].words].sort(() => Math.random() - 0.5));
             setBridgeBuilt(false);
           } else {
             triggerVictoryCelebration();
           }
         }, 1500);
       } else {
-        setTimeout(() => setPlacedWords([]), 800);
+        setTimeout(() => {
+          setPlacedWords([]);
+          setAvailableWords([...currentQ.words].sort(() => Math.random() - 0.5));
+        }, 800);
       }
     }
   };
@@ -90,6 +96,14 @@ export const SentencesRiverWorld: React.FC<{ onBack: () => void }> = ({ onBack }
         </button>
       </div>
 
+      {/* Lumi Voice Guide Banner */}
+      <LumiGuideBanner
+        message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'} فِي نَهْرِ الجُمَل! رَتِّبِ الكَلِمَاتِ بِالتَّرْتِيبِ الصَّحِيحِ لِيَبْنِيَ لُومِي لَكَ جِسْرًا سِحْرِيًّا لِعُبُورِ النَّهْر!` }
+        shortHint="رَتِّبِ الكَلِمَات"
+        autoSpeak={true}
+        emotion="happy"
+      />
+
       {/* River Scene */}
       <div className="relative w-full min-h-[440px] rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-b from-sky-400 via-blue-500 to-indigo-600 p-6 flex flex-col justify-between">
         
@@ -122,26 +136,17 @@ export const SentencesRiverWorld: React.FC<{ onBack: () => void }> = ({ onBack }
               اخْتَرْ الكَلِمَاتِ بِالتَّرْتِيبِ الصَّحِيح:
             </p>
             <div className="flex items-center justify-center gap-3">
-              {[...currentQ.words].sort(() => Math.random() - 0.5).map((w, i) => (
+              {availableWords.map((w, index) => (
                 <button
-                  key={i}
-                  onClick={() => handlePickWord(w)}
-                  className="game-btn px-6 py-3 bg-white text-slate-900 rounded-2xl font-black text-base border-2 border-sky-300 hover:scale-105 active:scale-95 shadow-md"
+                  key={index}
+                  onClick={() => handlePickWord(w, index)}
+                  className="game-btn px-6 py-3 bg-white text-slate-900 rounded-2xl font-black text-base border-2 border-sky-300 hover:scale-105 active:scale-95 shadow-md transition-all"
                 >
                   {w}
                 </button>
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Mascot */}
-        <div className="mt-4 flex justify-end">
-          <LumiMascot
-            message="رَائِع! الجِسْرُ يَتَشَكَّلُ مَعَ كُلِّ جُمْلَةٍ تُكَمِّلُهَا!"
-            emotion="cheering"
-            size="md"
-          />
         </div>
 
       </div>

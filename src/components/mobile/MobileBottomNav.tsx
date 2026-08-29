@@ -34,15 +34,15 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
     },
     {
       id: 'worlds' as MobileTab,
-      label: 'العوالم 🪐',
+      label: 'العوالم 🌍',
       icon: Compass,
-      voice: 'خَرِيطَةُ العَوَالِمِ الثَّمَانِيَة'
+      voice: 'خَرِيطَةُ العَوَالِمِ الثَّلاثَةِ السَّاحِرَة'
     },
     {
       id: 'games' as MobileTab,
       label: 'الألعاب 🎮',
       icon: Gamepad2,
-      voice: 'مَرْكَزُ الأَلْعَابِ وَالتَّحَدِّيَات'
+      voice: 'قَلْعَةُ الأَلْعَابِ الثَّلاثِ التَّفَاعُلِيَّة'
     },
     {
       id: 'parent' as MobileTab,

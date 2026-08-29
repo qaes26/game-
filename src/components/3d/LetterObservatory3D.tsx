@@ -3,7 +3,7 @@ import { Sparkles, ArrowRight, Volume2, Play, Lock, CheckCircle2 } from 'lucide-
 import { ARABIC_LETTERS, LetterData } from '../../data/letters';
 import { useGame } from '../../context/GameContext';
 import { audioManager } from '../../audio/AudioManager';
-import { LumiMascot } from '../lumi/LumiMascot';
+import { LumiMascot } from '../mascot/LumiMascot';
 
 interface LetterObservatory3DProps {
   onSelectLetter: (letterId: string) => void;
