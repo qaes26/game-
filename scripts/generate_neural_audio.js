@@ -146,14 +146,26 @@ const staticAudios = [
   { category: 'dialogue', id: 'complete_previous_first', text: 'أَكْمِلِ المَرْحَلَةَ السَّابِقَةَ أَوَّلًا لِفَتْحِ هَذِهِ المَرْحَلَة!' },
 
   // Stages
-  { category: 'stages', id: 'stage_1', text: 'المَرْحَلَةُ الأُولَى: مَخْرَجُ وَصَوْتُ الحَرْفِ الصَّافِي!' },
-  { category: 'stages', id: 'stage_2', text: 'المَرْحَلَةُ الثَّانِيَة: مُحَاكَاةُ الصَّوْتِ وَتَشْرِيحُ حَرَكَةِ اللِّسَان!' },
-  { category: 'stages', id: 'stage_3', text: 'المَرْحَلَةُ الثَّالِثَة: الحَرَكَاتُ القَصِيرَة.. الفَتْحَةُ وَالضَّمَّةُ وَالكَسْرَة!' },
-  { category: 'stages', id: 'stage_4', text: 'المَرْحَلَةُ الرَّابِعَة: المُدُودُ الطَّوِيلَةُ وَالمَقَاطِع!' },
-  { category: 'stages', id: 'stage_5', text: 'المَرْحَلَةُ الخَامِسَة: اسْتِكْشَافُ وَنُطْقُ الكَلِمَات!' },
-  { category: 'stages', id: 'stage_6', text: 'المَرْحَلَةُ السَّادِسَة: مَوْضِعُ الحَرْفِ فِي أَوَّلِ وَوَسَطِ وَآخِرِ الكَلِمَة!' },
-  { category: 'stages', id: 'stage_7', text: 'المَرْحَلَةُ السَّابِعَة: نُطْقُ وَبِنَاءُ الجُمَلِ المُفِيدَة!' },
-  { category: 'stages', id: 'stage_8', text: 'المَرْحَلَةُ الثَّامِنَة: التَّحَدِّي الخِتَامِيُّ وَالتَّتْوِيجُ المَلَكِيّ!' },
+  // Stages - Tree of Light Titles
+  { category: 'stages', id: 'stage_1', text: 'البَذْرَةُ المُضِيئَة' },
+  { category: 'stages', id: 'stage_2', text: 'قَطَرَاتُ الصَّوْت' },
+  { category: 'stages', id: 'stage_3', text: 'بَرَاعِمُ النَّغَمَات' },
+  { category: 'stages', id: 'stage_4', text: 'غُصُونٌ تَمْتَد' },
+  { category: 'stages', id: 'stage_5', text: 'ثِمَارُ الكَلِمَات' },
+  { category: 'stages', id: 'stage_6', text: 'النَّحْلَةُ البَاحِثَة' },
+  { category: 'stages', id: 'stage_7', text: 'غَابَةُ الحِكَايَات' },
+  { category: 'stages', id: 'stage_8', text: 'الشَّجَرَةُ المُتَوَهِّجَة' },
+
+  // Stages - Tree of Light Explanations
+  { category: 'stages', id: 'stage_1_explain', text: 'تَعَالَ نَكْتَشِفُ بَذْرَةَ النُّورِ الجَدِيدَةَ وَنُشَاهِدُ شَكْلَهَا الجَمِيل!' },
+  { category: 'stages', id: 'stage_2_explain', text: 'اِسْقِ البَذْرَةَ بِصَوْتِكَ العَالِي لِيَسْمَعَهَا لُومِي وَتَكْبَر!' },
+  { category: 'stages', id: 'stage_3_explain', text: 'البَذْرَةُ تَكْبَرُ بِثَلَاثِ حَرَكَات.. هَيَّا نَعْزِفُ نَغَمَاتِهَا مَعًا!' },
+  { category: 'stages', id: 'stage_4_explain', text: 'اِسْحَبِ الصَّوْتَ طَوِيلًا لِتَمْتَدَّ غُصُونُ الشَّجَرَةِ الرَّائِعَة!' },
+  { category: 'stages', id: 'stage_5_explain', text: 'الشَّجَرَةُ أَثْمَرَت! أَيْنَ يَخْتَبِئُ حَرْفُنَا دَاخِلَ هَذِهِ الثَّمَرَة؟' },
+  { category: 'stages', id: 'stage_6_explain', text: 'لُومِي خَبَّأَ الحَرْفَ بَيْنَ الزُّهُور.. سَاعِدِ النَّحْلَةَ فِي العُثُورِ عَلَيْه!' },
+  { category: 'stages', id: 'stage_7_explain', text: 'لِنَجْمَعْ ثِمَارَنَا المُضِيئَةَ وَنَبْنِي بِهَا حِكَايَةً صَغِيرَةً مُفِيدَة!' },
+  { category: 'stages', id: 'stage_8_explain', text: 'رَائِع! شَجَرَةُ حَرْفِنَا تُضِيءُ الغَابَةَ كُلَّهَا الْآنَ بِفَضْلِك!' },
+
   { category: 'stages', id: 'next_stage', text: 'مُبَارَكٌ يَا بَطَل! فُتِحَتْ لَكَ المَرْحَلَةُ التَّالِيَة.. هَيَّا نَنْطَلِق!' },
   { category: 'stages', id: 'listen_sound', text: 'اسْتَمِعْ لِصَوْتِ الحَرْف!' },
 
