@@ -6,6 +6,7 @@ export type MascotState = 'idle' | 'listening' | 'success' | 'retry';
 
 interface LumiMascotProps {
   state?: MascotState;
+  emotion?: string;
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   message?: string;
