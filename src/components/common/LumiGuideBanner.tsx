@@ -96,9 +96,9 @@ export const LumiGuideBanner: React.FC<LumiGuideBannerProps> = ({
       </div>
 
       {/* Guide Speech Text */}
-      <div className="flex-1 min-w-0 pr-1">
-        <div className="flex items-center gap-1.5 mb-1">
-          <span className="text-[10px] sm:text-xs font-black text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/40 inline-flex items-center gap-1">
+      <div className="flex-1 min-w-0 pr-2 flex flex-col justify-center">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span className="whitespace-nowrap text-[10px] sm:text-xs font-black text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/40 inline-flex items-center gap-1">
             <Sparkles className="w-3 h-3 fill-amber-300 text-amber-300" />
             مرشدك السحري لومي يشرح لك:
           </span>

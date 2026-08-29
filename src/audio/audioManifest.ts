@@ -198,7 +198,22 @@ export const DIALOGUE_AUDIO_MAP: Record<string, string> = {
   'cheer_raneem': '/audio/dialogue/cheer_raneem.mp3',
   'complete_previous_first': '/audio/dialogue/complete_previous_first.mp3',
 
+  // Hub Sections
+  'hub_banner_main': '/audio/hub/hub_banner_main.mp3',
+  'hub_stages': '/audio/hub/hub_stages.mp3',
+  'hub_ai_lab': '/audio/hub/hub_ai_lab.mp3',
+  'hub_letters': '/audio/hub/hub_letters.mp3',
+  'hub_worlds': '/audio/hub/hub_worlds.mp3',
+  'hub_games': '/audio/hub/hub_games.mp3',
+
   // Arabic Text Direct Match
+  'مَرْحَبًا يَا بَطَل! أَنَا لُومِي.. اخْتَرْ طَرِيقَ المَرَاحِلِ لِتَتَدَرَّبَ، أَوْ مَرْصَدَ الحُرُوفِ لِتَسْتَكْشِف، أَوْ مُخْتَبَرَ الذَّكَاءِ الاصْطِنَاعِيِّ لِتُقَيِّمَ نُطْقَك!': '/audio/hub/hub_banner_main.mp3',
+  'طَرِيقُ المَرَاحِلِ السِّحْرِيّ.. اخْتَرْ حَرْفَكَ لِتَبْدَأَ المَرَاحِلَ الثَّمَانِيَة!': '/audio/hub/hub_stages.mp3',
+  'مُخْتَبَرُ النُّطْقِ بِالذَّكَاءِ الاصْطِنَاعِيّ.. انْطِقِ الكَلِمَةَ لِيُقَيِّمَكَ الذَّكَاءُ الاصْطِنَاعِيُّ فَوْرًا!': '/audio/hub/hub_ai_lab.mp3',
+  'مَرْصَدُ الحُرُوفِ الكَامِلَة.. ثَمَانِيَةٌ وَعِشْرُونَ حَرْفًا عَرَبِيًّا!': '/audio/hub/hub_letters.mp3',
+  'العَوَالِمُ الثَّلاثَةُ السَّاحِرَة.. وَادِي الحُرُوفِ وَغَابَةُ المَقَاطِعِ وَقَرْيَةُ الكَلِمَات!': '/audio/hub/hub_worlds.mp3',
+  'قَلْعَةُ الأَلْعَابِ الثَّلاث.. أَلْعَابٌ مُمْتِعَةٌ لِصَيْدِ الحُرُوفِ وَالمَقَاطِعِ وَالكَلِمَات!': '/audio/hub/hub_games.mp3',
+
   'مَا اسْمُكَ يَا بَطَل؟ اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
   'مَرْحَبًا يَا بَطَل! اكْتُبِ اسْمَكَ هُنَا لِنَبْدَأَ رِحْلَتَنَا السَّاحِرَة!': '/audio/dialogue/ask_name.mp3',
   'مرحبا يا بطل! اكتب اسمك هنا لنبدأ رحلتنا الساحرة!': '/audio/dialogue/ask_name.mp3',

@@ -30,7 +30,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       bgGradient: 'from-[#1e3a8a] via-[#1d4ed8] to-[#0ea5e9]',
       borderColor: 'border-cyan-400',
       glowColor: 'shadow-[0_0_35px_rgba(14,165,233,0.4)]',
-      voiceText: `طَرِيقُ المَرَاحِلِ السِّحْرِيّ يَا ${childName || 'البَطَل'}.. اخْتَرْ حَرْفَكَ لِتَبْدَأَ المَرَاحِلَ الثَّمَانِيَة!`,
+      voiceText: 'طَرِيقُ المَرَاحِلِ السِّحْرِيّ.. اخْتَرْ حَرْفَكَ لِتَبْدَأَ المَرَاحِلَ الثَّمَانِيَة!',
       requiresLetterPick: false
     },
     {
@@ -42,7 +42,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       bgGradient: 'from-[#0f766e] via-[#0d9488] to-[#14b8a6]',
       borderColor: 'border-teal-300',
       glowColor: 'shadow-[0_0_35px_rgba(20,184,166,0.5)]',
-      voiceText: `مُخْتَبَرُ النُّطْقِ بِالذَّكَاءِ الاصْطِنَاعِيّ يَا ${childName || 'البَطَل'}.. انْطِقِ الكَلِمَةَ لِيُقَيِّمَكَ الذَّكَاءُ الاصْطِنَاعِيُّ فَوْرًا!`,
+      voiceText: 'مُخْتَبَرُ النُّطْقِ بِالذَّكَاءِ الاصْطِنَاعِيّ.. انْطِقِ الكَلِمَةَ لِيُقَيِّمَكَ الذَّكَاءُ الاصْطِنَاعِيُّ فَوْرًا!',
       requiresLetterPick: false
     },
     {
@@ -54,7 +54,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       bgGradient: 'from-[#065f46] via-[#059669] to-[#10b981]',
       borderColor: 'border-emerald-400',
       glowColor: 'shadow-[0_0_35px_rgba(16,185,129,0.4)]',
-      voiceText: `مَرْصَدُ الحُرُوفِ الكَامِلَةِ يَا ${childName || 'البَطَل'}.. ثَمَانِيَةٌ وَعِشْرُونَ حَرْفًا عَرَبِيًّا!`,
+      voiceText: 'مَرْصَدُ الحُرُوفِ الكَامِلَة.. ثَمَانِيَةٌ وَعِشْرُونَ حَرْفًا عَرَبِيًّا!',
       requiresLetterPick: false
     },
     {
@@ -66,7 +66,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       bgGradient: 'from-[#3b0764] via-[#6b21a8] to-[#9333ea]',
       borderColor: 'border-purple-400',
       glowColor: 'shadow-[0_0_35px_rgba(147,51,234,0.4)]',
-      voiceText: `العَوَالِمُ الثَّلاثَةُ السَّاحِرَةُ يَا ${childName || 'البَطَل'}.. وَادِي الحُرُوفِ وَغَابَةُ المَقَاطِعِ وَقَرْيَةُ الكَلِمَات!`,
+      voiceText: 'العَوَالِمُ الثَّلاثَةُ السَّاحِرَة.. وَادِي الحُرُوفِ وَغَابَةُ المَقَاطِعِ وَقَرْيَةُ الكَلِمَات!',
       requiresLetterPick: false
     },
     {
@@ -78,7 +78,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
       bgGradient: 'from-[#7c2d12] via-[#c2410c] to-[#f97316]',
       borderColor: 'border-amber-400',
       glowColor: 'shadow-[0_0_35px_rgba(249,115,22,0.4)]',
-      voiceText: `قَلْعَةُ الأَلْعَابِ الثَّلاثِ يَا ${childName || 'البَطَل'}.. أَلْعَابٌ مُمْتِعَةٌ لِصَيْدِ الحُرُوفِ وَالمَقَاطِعِ وَالكَلِمَات!`,
+      voiceText: 'قَلْعَةُ الأَلْعَابِ الثَّلاث.. أَلْعَابٌ مُمْتِعَةٌ لِصَيْدِ الحُرُوفِ وَالمَقَاطِعِ وَالكَلِمَات!',
       requiresLetterPick: false
     }
   ];
@@ -152,7 +152,7 @@ export const ChildKingdomHub: React.FC<ChildKingdomHubProps> = ({ onNavigate }) 
         
         {/* Lumi Voice Guide Banner */}
         <LumiGuideBanner
-          message={`مَرْحَبًا بِكَ يَا ${childName || 'البَطَل'}! أَنَا لُومِي.. اخْتَرْ طَرِيقَ المَرَاحِلِ لِتَتَدَرَّبَ، أَوْ مَرْصَدَ الحُرُوفِ لِتَسْتَكْشِف، أَوْ مُخْتَبَرَ اللِّسَانِ لِتُشَاهِدَ النُّطْق!`}
+          message="مَرْحَبًا يَا بَطَل! أَنَا لُومِي.. اخْتَرْ طَرِيقَ المَرَاحِلِ لِتَتَدَرَّبَ، أَوْ مَرْصَدَ الحُرُوفِ لِتَسْتَكْشِف، أَوْ مُخْتَبَرَ الذَّكَاءِ الاصْطِنَاعِيِّ لِتُقَيِّمَ نُطْقَك!"
           shortHint="اخْتَرْ أَيَّ قِسْمٍ لِنَبْدَأ"
           autoSpeak={true}
           emotion="happy"
